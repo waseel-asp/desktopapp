@@ -10,7 +10,7 @@ function createWindow() {
             nodeIntegration: true,
         },
     });
-    mainWindow.loadFile('index.html');
+    mainWindow.loadFile('autoupdaterui.html');
     mainWindow.on('closed', function() {
         mainWindow = null;
     });

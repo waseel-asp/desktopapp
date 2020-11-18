@@ -2,7 +2,7 @@
     "name": "desktopapp",
     "version": "1.0.3",
     "description": "desktopapp",
-    "main": "websocketmain.js",
+    "main": "autoupdater.js",
     "scripts": {
         "start": "electron .",
         "build": "electron-builder build --win --publish never",
