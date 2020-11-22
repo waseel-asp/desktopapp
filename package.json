@@ -2,12 +2,11 @@
     "name": "desktopapp",
     "version": "1.0.7",
     "description": "desktopapp",
-
     "main": "autoupdater.js",
     "scripts": {
         "start": "electron .",
         "build": "electron-builder build --win --publish never",
-        "deploy": "electron-builder build --win --linux --publish always"
+        "deploy": "electron-builder build --win --publish always"
     },
 
     "repository": {
