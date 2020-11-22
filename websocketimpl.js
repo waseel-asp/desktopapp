@@ -1,3 +1,5 @@
+var oracleconnection = require('./oracleconnection');
+
 var stompClient = null;
 
 function setConnected(connected) {
@@ -19,6 +21,7 @@ function connect() {
         console.log('Connected: ' + frame);
         stompClient.subscribe('/topic/greetings', function(greeting) {
             showGreeting(JSON.parse(greeting.body).content);
+            console.log(oracleconnection.run());
         });
     });
 }
