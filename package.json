@@ -26,8 +26,7 @@
     "dependencies": {
         "electron-updater": "^4.3.5",
         "http-server": "^0.12.3",
-        "nodejs-websocket": "^1.7.2",
-        "oracledb": "5.0.0"
+        "nodejs-websocket": "^1.7.2"
     },
     "resolutions": {
         "fs-extra": "9.0.1",
