@@ -2,7 +2,11 @@ const { electron, BrowserWindow } = require('electron');
 const httpRequest = require('https');
 
 function callLogin() {
-    var body = JSON.stringify({ username: 'dlhadmin', password: 'dlhclm' });
+    var body = JSON.stringify({
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value
+    });
+    console.log(body);
     var responseData;
     const options = {
         hostname: 'api.qa-eclaims.waseel.com',
@@ -18,11 +22,12 @@ function callLogin() {
         res.on('data', (chunk) => {
             responseData = JSON.parse(`${chunk}`);
             console.log(res.statusCode);
+            console.log(responseData);
             if (res.statusCode == 200) {
                 localStorage.setItem('access_token', responseData.access_token);
-                window.location.href = "login/page.html"
+                window.location.href = "dbconfigui.html"
             } else {
-                window.location.href = "autoupdaterui.html"
+                window.location.href = "../autoupdaterui.html"
             }
         });
     });
