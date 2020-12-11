@@ -3,50 +3,53 @@
 <head>
     <title>Login</title>
     <link href="../webjars/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 20px;
-            font-family: sans-serif;
-            background-color: #eaeaea;
-            text-align: center;
-        }
-
-        .label-padding {
-            padding: 0.375rem 0.375rem;
-        }
-    </style>
+    <link href="../style.css" rel="stylesheet">
 </head>
 
 <body>
-    <h1>Login</h1>
-    <form>
-        <div class="form-group row">
-            <label class="col-sm-3 label-padding text-right">Username : </label>
-            <div class="col-sm-6">
-                <input class="form-control" id="username" type="text" />
+    <div class="container">
+        <div class="card card-container">
+            <!-- Icon -->
+            <img src="../images/waseel_logo_Dark_Blue.png" class="profile-img-card" id="icon" alt="Logo" />
+            <div class="card-body">
+                <form class="form-signin" onsubmit="callLogin();return false">
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <input class="form-control" id="username" placeholder="Username" type="text" required oninvalid="this.setCustomValidity('Please provide a username')"
+                                oninput="setCustomValidity('')" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <input class="form-control" id="password" placeholder="Password" type="password" required oninvalid="this.setCustomValidity('Please provide a password')"
+                                oninput="setCustomValidity('')" />
+                        </div>
+                    </div>
+                    <div class="form-group row col-sm-12">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="urlOption" value="STAG">
+                            <label class="form-check-label" for="staging">Staging</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="urlOption" value="PROD">
+                            <label class="form-check-label" for="production">Production</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="urlOption" value="QA" checked="checked">
+                            <label class="form-check-label" for="qa">QA</label>
+                        </div>
+                    </div>
+                    <div style="display: none;" id="errorArea" class="errorArea">
+                        <p id="errorMessage"></p>
+                    </div>
+                    <br/>
+                    <div class="form-group row">
+                        <button type="submit" class="btn btn-lg btn-primary btn-block btn-signin">Sign In</button>
+                    </div>
+                </form>
             </div>
         </div>
-        <div class="form-group row">
-            <label class="col-sm-3 label-padding text-right">Password : </label>
-            <div class="col-sm-6">
-                <input class="form-control" id="password" type="password" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-check col-sm-6 text-right">
-                <input class="form-check-input" type="radio" name="urlOption" value="staging">
-                <label class="form-check-label" for="staging">Staging</label>
-            </div>
-            <div class="form-check col-sm-6 text-left">
-                <input class="form-check-input" type="radio" name="urlOption" value="production">
-                <label class="form-check-label" for="production">Production</label>
-            </div>
-        </div>
-        <div class="form-group">
-            <button type="button" class="btn btn-primary" onclick="callLogin()">Sign In</button>
-        </div>
-    </form>
+    </div>
+    <script src="../environment.js"></script>
     <script src="login.js"></script>
 </body>

@@ -21,7 +21,8 @@
     "homepage": "https://github.com/waseel-asp/desktopapp#readme",
     "devDependencies": {
         "electron": "^11.0.1",
-        "electron-builder": "^22.9.1"
+        "electron-builder": "^22.9.1",
+        "jwt-decode": "^3.1.2"
     },
     "dependencies": {
         "electron-updater": "^4.3.5",
