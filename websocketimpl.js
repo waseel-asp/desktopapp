@@ -1,4 +1,4 @@
-var oracleconnection = require('./oracleconnection');
+var dbconnection = require('./dbConnection');
 
 var stompClient = null;
 
@@ -14,16 +14,18 @@ function setConnected(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('http://localhost:8080/gs-guide-websocket');
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}, function(frame) {
-        setConnected(true);
-        console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/greetings', function(greeting) {
-            showGreeting(JSON.parse(greeting.body).content);
-            console.log(oracleconnection.run());
-        });
-    });
+    dbconnection.connect();
+    // dbconnection.query("");
+    // dbconnection.connect2();
+    // var socket = new SockJS('http://localhost:8080/gs-guide-websocket');
+    // stompClient = Stomp.over(socket);
+    // stompClient.connect({}, function(frame) {
+    //     setConnected(true);
+    //     console.log('Connected: ' + frame);
+    //     stompClient.subscribe('/topic/greetings', function(greeting) {
+    //         showGreeting(JSON.parse(greeting.body).content);
+    //     });
+    // });
 }
 
 function disconnect() {
