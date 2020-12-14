@@ -35,7 +35,8 @@ function callLogin() {
                 var decoded = jwt_decode(token);
  
                 console.log(decoded);
-                window.location.href = "../home/page.html"
+                // window.location.href = "../home/page.html"
+                window.location.href = "../dbconfiguration/dbconfigui.html";
             } else {
                 if (res.statusCode < 500 && res.statusCode >= 400) {
                     console.log("In eroror");

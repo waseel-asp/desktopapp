@@ -4,9 +4,10 @@ module.exports = {
         // oracle(function () {
         //     oracleQuery("");
         // });
-        mssql(function () {
-            mssqlQuery("");
-        });
+        oracle();
+        // mssql(function () {
+        //     mssqlQuery("");
+        // });
     },
     query: function (queryString) {
         // mssql(queryString);
@@ -40,7 +41,7 @@ function mssql(callback) {
     });
 }
 
-async function oracle(callback) {
+async function oracle() {
 
     const oracledb = require('oracledb');
 
@@ -56,7 +57,7 @@ async function oracle(callback) {
         });
         console.log("Successfully connected to Oracle!");
         this.connection = oracle;
-        callback();
+        // callback();
 
     } catch (err) {
         console.error(err);
@@ -86,12 +87,13 @@ async function oracleQuery(queryString) {
     try {
 
         const result = await this.connection.execute(
-            `SELECT * from wsl_geninfo`
+            queryString
         );
-        console.log(result.rows);
+        console.log("ddd" , result.rows);
         return result.rows;
 
     } catch (err) {
-        return null;
+        console.log(err)
+        return err;
     }
 }

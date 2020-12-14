@@ -48,4 +48,16 @@ body {
     color: #ff3d3d;
     border-radius: 5px;
     padding: 10px;
-} 
+}
+.btn-logout{
+    background: #89ABE3FF;
+    color: black;
+    box-shadow: #AFAFAF;
+    align-items: center;
+    font-size: medium;
+    font-weight: bold;
+}
+.bgclass {       
+    background: #3060aa;
+    color: #fff;
+}

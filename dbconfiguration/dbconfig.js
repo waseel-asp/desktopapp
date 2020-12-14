@@ -14,5 +14,15 @@ function databaseConfiguration() {
         password: document.getElementById('password').value
     });
     console.log(body);
+    connectDatabase(dbtype);
+    //save database in sqlite
     return;
 }
+
+function connectDatabase(selectDb){
+    console.log("test connect");
+    if(selectDb == 'ORACLE'){
+        oracle();
+    }
+
+  }
