@@ -33,7 +33,6 @@ function callLogin() {
                 localStorage.setItem('access_token', responseData.access_token);
                 var token = responseData.access_token;
                 var decoded = jwt_decode(token);
- 
                 console.log(decoded);
                 // window.location.href = "../home/page.html"
                 window.location.href = "../dbconfiguration/dbconfigui.html";

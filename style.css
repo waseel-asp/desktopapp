@@ -61,3 +61,12 @@ body {
     background: #3060aa;
     color: #fff;
 }
+.radio-bg {
+    background-color: #eff5ff;
+    color: #3060aa;
+    position: relative;
+}
+.radio-right {
+    position: absolute;
+    right: 5%;
+}

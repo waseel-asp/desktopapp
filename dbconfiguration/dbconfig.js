@@ -1,3 +1,22 @@
+
+(function() {
+    var jwt_decode = require('jwt-decode')
+    var token = localStorage.getItem('access_token');
+   
+    var decoded = jwt_decode(token);
+
+// let payerList = decoded.payers;
+// var selectList = document.getElementById('payerSelect');
+// for (var i = 0; i < payerList.length; i++) {
+//     console.log(payerList[i]);
+    
+//     var option = document.createElement("option");
+//     option.value = payerList[i];
+//     option.text = payerList[i];
+//     selectList.appendChild(option);
+// }
+ })();
+
 function databaseConfiguration() {
     var ele = document.getElementsByName('dbtype');
     var dbtype;
