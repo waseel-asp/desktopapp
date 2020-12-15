@@ -19,7 +19,7 @@
             <a class="nav-link" href="#" onclick="connect()">Link 1</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">Link 2</a>
+            <a class="nav-link" href="../extraction/extractionui.html">Extract</a>
         </li>
     </ul>
     <div class="navbar-nav ml-auto" onclick="logout()">
@@ -28,7 +28,10 @@
 
 </nav>
 
-
-<script src="page.js"></script>
-
+<script>
+    function logout(){
+    localStorage.removeItem('access_token');
+    window.location.href = "../login/loginui.html";
+}
+</script>
 </html>

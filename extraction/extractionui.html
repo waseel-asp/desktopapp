@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Database Configuration</title>
+    <link href="../webjars/bootstrap.min.css" rel="stylesheet">
+    <link href="../style.css" rel="stylesheet">
+    <script>window.$ = window.jQuery = require('../webjars/jquery.min.js');</script>
+</head>
+
+<body>
+    <div id="nav-placeholder">
+    </div>
+    <div class="container">
+        <div class="card">
+            <div>
+                <h5 style="color: #3060aa; text-align: center; padding: 10px">Extract Claims</h5>
+            </div>
+            <hr>
+            <form onsubmit="connect();return false;">
+                <div>
+                    <div class="form-group row">
+                        <div class="col-sm-6">
+                            <input type="date" id="startDate" class="form-control select-bg" name="startDate" placeholder="startDate" required oninvalid="this.setCustomValidity('Please provide a start date')"
+                            oninput="setCustomValidity('')">
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="date" id="endDate" class="form-control select-bg" name="endDate" placeholder="endDate" required oninvalid="this.setCustomValidity('Please provide an end date')"
+                            oninput="setCustomValidity('')">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-6">
+                            <select id="selectedPayer" class="form-control select-bg" required oninvalid="this.setCustomValidity('Please select a payer')"
+                            oninput="setCustomValidity('')">
+                                <option name="Select Payer" value="">Select Payer</option>
+                                <option value="102">TSH</option>
+                                <option value="2">2</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <select id="selectedClaim" class="form-control select-bg" required oninvalid="this.setCustomValidity('Please select a claim type')"
+                            oninput="setCustomValidity('')">
+                                <option name="Claim Type" value="">Claim Type</option>
+                                <option value="INPATIENT">INPATIENT</option>
+                                <option value="OUTPATIENT">OUTPATIENT</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group text-right" style="padding-top: 1.5rem">
+                        <button type="submit" class="btn btn-primary btn-signin">Extract Claims</button>
+                    </div>
+                </div>
+            </form>
+            <button type="button" onclick="openConnection()" class="btn btn-primary btn-signin">Connect</button>
+        </div>
+    </div>
+    <script src="extraction.js"></script>
+    <script src="../dbConnection.js"></script>
+    <script>
+        $(function () {
+            $("#nav-placeholder").load("../home/page.html");
+        })
+    </script>
+</body>
+
+</html>

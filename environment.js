@@ -3,7 +3,7 @@ var prodURL = "";
 var qaURL = "api.qa-eclaims.waseel.com";
 var serviceURL = "";
 
-function selectURL(urlOption){
+exports.selectURL = function(urlOption){
     if(urlOption == "STAG"){
         serviceURL = stagURL;
     }else if(urlOption == "PROD"){

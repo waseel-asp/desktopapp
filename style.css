@@ -66,6 +66,10 @@ body {
     color: #3060aa;
     position: relative;
 }
+.select-bg {
+    background-color: #eff5ff;
+    color: #3060aa;
+}
 .radio-right {
     position: absolute;
     right: 5%;
