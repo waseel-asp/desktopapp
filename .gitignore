@@ -7,6 +7,7 @@
 
 # dependencies
 /node_modules
+/db
 
 # profiling files
 chrome-profiler-events*.json
@@ -47,3 +48,5 @@ Thumbs.db
 electron-builder.yml
 package-lock.json
 yarn.lock
+
+/db/*.db

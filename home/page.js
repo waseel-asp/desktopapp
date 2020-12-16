@@ -1,11 +1,11 @@
 const { app, Menu } = require('electron');
 const foo = require('electron').remote;
 
-function connect(){
+function connect() {
   console.log("test connect");
   oracle();
-  oracleQuery("select * from WSL_GENINFO where PROVIDERID='DLH'").then(genInfoData =>{
-    for(var i=0; i<genInfoData.length;i++){
+  oracleQuery("select * from WSL_GENINFO where PROVIDERID='DLH'").then(genInfoData => {
+    for (var i = 0; i < genInfoData.length; i++) {
       const discharge = require('../models/Discharge.js');
       const admission = require('../models/Admission.js');
       const caseDescription = require('../models/CaseDescription.js');
@@ -18,9 +18,9 @@ function connect(){
       const visitInformation = require('../models/visitInformation.js');
       const claim = require('../models/Claim.js');
       const amount = require('../models/Amount.js');
-      
+
       discharge.setDischargeDate(genInfoData[i].DISCHARGEDATE);
-      discharge.setActualLengthOfStay(convertToAgePeriod(genInfoData[i].LENGTHOFSTAY,genInfoData[i].UNITOFSTAY));
+      discharge.setActualLengthOfStay(convertToAgePeriod(genInfoData[i].LENGTHOFSTAY, genInfoData[i].UNITOFSTAY));
       console.log(discharge.getDischargeInfo());
       admission.setAdmissionDate(genInfoData[i].ADMISSIONDATE);
       admission.setAdmissionType(null);
@@ -29,10 +29,10 @@ function connect(){
       admission.setEstimatedLengthOfStay(null);
       admission.setDischarge(discharge.getDischargeInfo());
       console.log(admission.getAdmissionInfo());
-      
+
       var diagnosisList = [];
-      oracleQuery("select * from WSL_CLAIM_DIAGNOSIS where PROVCLAIMNO='"+genInfoData[i].PROVCLAIMNO+"'").then(diagnosisData =>{
-        for(var x=0; x<diagnosisData.length; x++) {
+      oracleQuery("select * from WSL_CLAIM_DIAGNOSIS where PROVCLAIMNO='" + genInfoData[i].PROVCLAIMNO + "'").then(diagnosisData => {
+        for (var x = 0; x < diagnosisData.length; x++) {
           const diagnosis = require('../models/Diagnosis.js');
           diagnosis.setDiagnosisCode(diagnosisData[x].DIAGNOSISCODE);
           diagnosis.setDiagnosisDescription(diagnosisData[x].DIAGNOSISDESC);
@@ -76,7 +76,7 @@ function connect(){
       caseInformation.setCaseDescription(caseDescription.getCaseDescriptionInfo());
       caseInformation.setPatient(patient.getPatientInfo());
       caseInformation.setPhysician(physician.getPhysicianInfo());
-        
+
       claimGDPN.setGDPNData(
         amount.getAmountValue(genInfoData[i].TOTCLAIMNETAMT, "SAR"),
         amount.getAmountValue(0.0, "SAR"),
@@ -109,65 +109,65 @@ function connect(){
       visitInformation.setVisitType(genInfoData[i].VISITTYPE);
 
       var invoiceList = [];
-      oracleQuery("select * from WSL_INVOICES where PROVCLAIMNO='"+genInfoData[i].PROVCLAIMNO+"'").then(invoiceData =>{
-          console.log("======== Invoice Data ========");
-          console.log(invoiceData);
-          // console.log(genInfoData[i].PROVCLAIMNO);
-          for(var j=0; j<invoiceData.length; j++) {
-            const invoice = require('../models/Invoice.js');
-            const invoiceGDPN = require('../models/GDPN.js');
-            invoice.setInvoiceNumber(invoiceData[j].INVOICENO);
-            invoice.setInvoiceDate(invoiceData[j].INVOICEDATE);
-            invoice.setInvoiceDepartment(invoiceData[j].INVOICEDEPT);
-            invoiceGDPN.setGDPNData(
-              amount.getAmountValue(invoiceData[j].TOTINVNETAMT, "SAR"),
-              amount.getAmountValue(0.0, "SAR"),
-              amount.getAmountValue(invoiceData[j].TOTINVNETVATAMOUNT, "SAR"),
-              amount.getAmountValue(invoiceData[j].TOTINVPATSHARE, "SAR"),
-              amount.getAmountValue(0.0, "SAR"),
-              amount.getAmountValue(invoiceData[j].TOTINVPATSHAREVATAMOUNT, "SAR"),
-              amount.getAmountValue(invoiceData[j].TOTINVDISC, "SAR"),
-              amount.getAmountValue(invoiceData[j].TOTINVGRSAMT, "SAR"),
-              amount.getAmountValue(0.0, "SAR"),
-              amount.getAmountValue(0.0, "SAR"));
-            invoice.setInvoiceGDPN(invoiceGDPN.getGDPNInfo());
-            var serviceList = [];
-            oracleQuery("select * from WSL_SERVICE_DETAILS where INVOICENO='"+invoiceData[j].INVOICENO+"'")
-              .then(serviceData => {
-                console.log("======== Service Data ========");
-                console.log(serviceData);
-                for(var k=0; k<serviceData.length; k++) {
-                  const service = require('../models/Service.js');
-                  const serviceGDPN = require('../models/GDPN.js');
-                  service.setDrugUse(null);
-                  service.setRequestedQuantity(serviceData[k].QTY);
-                  service.setServiceCode(serviceData[k].SERVICECODE);
-                  service.setServiceComment(null);
-                  service.setServiceDate(serviceData[k].SERVICEDATE);
-                  service.setServiceDescription(serviceData[k].SERVICEDESC);
-                  service.setServiceNumber(null);
-                  service.setServiceType(serviceData[k].UNITSERVICETYPE);
-                  service.setToothNumber(serviceData[k].TOOTHNO);
-                  service.setUnitPrice(amount.getAmountValue(serviceData[k].UNITSERVICEPRICE, "SAR"));
-                  serviceGDPN.setGDPNData(
-                    amount.getAmountValue(serviceData[k].TOTSERVICENETAMT, "SAR"),
-                    amount.getAmountValue(serviceData[k].TOTSERVICENETVATRATE, "SAR"),
-                    amount.getAmountValue(serviceData[k].TOTSERVICENETVATAMOUNT, "SAR"),
-                    amount.getAmountValue(serviceData[k].TOTSERVICEPATSHARE, "SAR"),
-                    amount.getAmountValue(serviceData[k].TOTSERVICEPATSHAREVATRATE, "SAR"),
-                    amount.getAmountValue(serviceData[k].TOTSERVICEPATSHAREVATAMOUNT, "SAR"),
-                    amount.getAmountValue(serviceData[k].TOTSERVICEDISC, "SAR"),
-                    amount.getAmountValue(serviceData[k].TOTSERVICEGRSAMT, "SAR"),
-                    amount.getAmountValue(0.0, "SAR"),
-                    amount.getAmountValue(0.0, "SAR"));
-                  service.setServiceGDPN(serviceGDPN.getGDPNInfo());
-                  serviceList.push(service.getServiceInfo());
-                }
+      oracleQuery("select * from WSL_INVOICES where PROVCLAIMNO='" + genInfoData[i].PROVCLAIMNO + "'").then(invoiceData => {
+        console.log("======== Invoice Data ========");
+        console.log(invoiceData);
+        // console.log(genInfoData[i].PROVCLAIMNO);
+        for (var j = 0; j < invoiceData.length; j++) {
+          const invoice = require('../models/Invoice.js');
+          const invoiceGDPN = require('../models/GDPN.js');
+          invoice.setInvoiceNumber(invoiceData[j].INVOICENO);
+          invoice.setInvoiceDate(invoiceData[j].INVOICEDATE);
+          invoice.setInvoiceDepartment(invoiceData[j].INVOICEDEPT);
+          invoiceGDPN.setGDPNData(
+            amount.getAmountValue(invoiceData[j].TOTINVNETAMT, "SAR"),
+            amount.getAmountValue(0.0, "SAR"),
+            amount.getAmountValue(invoiceData[j].TOTINVNETVATAMOUNT, "SAR"),
+            amount.getAmountValue(invoiceData[j].TOTINVPATSHARE, "SAR"),
+            amount.getAmountValue(0.0, "SAR"),
+            amount.getAmountValue(invoiceData[j].TOTINVPATSHAREVATAMOUNT, "SAR"),
+            amount.getAmountValue(invoiceData[j].TOTINVDISC, "SAR"),
+            amount.getAmountValue(invoiceData[j].TOTINVGRSAMT, "SAR"),
+            amount.getAmountValue(0.0, "SAR"),
+            amount.getAmountValue(0.0, "SAR"));
+          invoice.setInvoiceGDPN(invoiceGDPN.getGDPNInfo());
+          var serviceList = [];
+          oracleQuery("select * from WSL_SERVICE_DETAILS where INVOICENO='" + invoiceData[j].INVOICENO + "'")
+            .then(serviceData => {
+              console.log("======== Service Data ========");
+              console.log(serviceData);
+              for (var k = 0; k < serviceData.length; k++) {
+                const service = require('../models/Service.js');
+                const serviceGDPN = require('../models/GDPN.js');
+                service.setDrugUse(null);
+                service.setRequestedQuantity(serviceData[k].QTY);
+                service.setServiceCode(serviceData[k].SERVICECODE);
+                service.setServiceComment(null);
+                service.setServiceDate(serviceData[k].SERVICEDATE);
+                service.setServiceDescription(serviceData[k].SERVICEDESC);
+                service.setServiceNumber(null);
+                service.setServiceType(serviceData[k].UNITSERVICETYPE);
+                service.setToothNumber(serviceData[k].TOOTHNO);
+                service.setUnitPrice(amount.getAmountValue(serviceData[k].UNITSERVICEPRICE, "SAR"));
+                serviceGDPN.setGDPNData(
+                  amount.getAmountValue(serviceData[k].TOTSERVICENETAMT, "SAR"),
+                  amount.getAmountValue(serviceData[k].TOTSERVICENETVATRATE, "SAR"),
+                  amount.getAmountValue(serviceData[k].TOTSERVICENETVATAMOUNT, "SAR"),
+                  amount.getAmountValue(serviceData[k].TOTSERVICEPATSHARE, "SAR"),
+                  amount.getAmountValue(serviceData[k].TOTSERVICEPATSHAREVATRATE, "SAR"),
+                  amount.getAmountValue(serviceData[k].TOTSERVICEPATSHAREVATAMOUNT, "SAR"),
+                  amount.getAmountValue(serviceData[k].TOTSERVICEDISC, "SAR"),
+                  amount.getAmountValue(serviceData[k].TOTSERVICEGRSAMT, "SAR"),
+                  amount.getAmountValue(0.0, "SAR"),
+                  amount.getAmountValue(0.0, "SAR"));
+                service.setServiceGDPN(serviceGDPN.getGDPNInfo());
+                serviceList.push(service.getServiceInfo());
+              }
             });
-            invoice.setService(serviceList);
-            invoiceList.push(invoice.getInvoiceInfo());
-          }
-        });
+          invoice.setService(serviceList);
+          invoiceList.push(invoice.getInvoiceInfo());
+        }
+      });
       claim.setAdmission(admission.getAdmissionInfo());
       claim.setAttachment(new Array());
       claim.setCaseInformation(caseInformation.getCaseInformation());
@@ -181,23 +181,22 @@ function connect(){
       console.log(claim.getClaimInfo());
       localStorage.setItem('data', claim.getClaimInfo());
     }
-   
-  });
 
-  
+  });
 }
-function logout(){
-    localStorage.removeItem('access_token');
-    window.location.href = "../login/loginui.html";
+
+function logout() {
+  localStorage.removeItem('access_token');
+  window.location.href = "../login/loginui.html";
 }
 
 function convertToAgePeriod(value, unit) {
-  if(value == null) {
+  if (value == null) {
     value = 0;
     unit = "days";
   }
   var periodUnit = null;
-  if(unit != null) {
+  if (unit != null) {
     if (unit.toLowerCase() === "years" || unit.toLowerCase() === "year") {
       periodUnit = "Y";
     } else if (unit.toLowerCase() === "months" || unit.toLowerCase() === "month") {
