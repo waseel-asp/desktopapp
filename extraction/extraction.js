@@ -1,6 +1,17 @@
+const wslConnection = require('../wslConnection')
 
-function openConnection(){
-    oracle();
+function openConnection() {
+    wslConnection.connect(function (isConnectionAvailable) {
+        if (!isConnectionAvailable) {
+            alert("No Connection available");
+        } else {
+            wslConnection.query("SELECT * from wsl_geninfo").then(data => {
+                console.log(data)
+            }, err => {
+                console.log(err)
+            });
+        }
+    });
 }
 function connect() {
     console.log("test connect");
@@ -15,7 +26,7 @@ function connect() {
     console.log(decoded)
     var prov_id = decoded.prov_id;
     var prov_code = decoded.prov_code;
-    oracleQuery("select * from WSL_GENINFO where PROVIDERID='DLH' AND CLAIMTYPE='"+selectedClaim+"' AND PAYERID='"+selectedPayer+"' AND CLAIMDATE BETWEEN TO_DATE('"+startDate+"','yyyy-mm-dd') AND TO_DATE('"+endDate+"','yyyy-mm-dd') ").then(genInfoData => {
+    oracleQuery("select * from WSL_GENINFO where PROVIDERID='DLH' AND CLAIMTYPE='" + selectedClaim + "' AND PAYERID='" + selectedPayer + "' AND CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd') AND TO_DATE('" + endDate + "','yyyy-mm-dd') ").then(genInfoData => {
         for (var i = 0; i < genInfoData.length; i++) {
             const discharge = require('../models/Discharge.js');
             const admission = require('../models/Admission.js');

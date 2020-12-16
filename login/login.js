@@ -1,6 +1,7 @@
 const { electron, BrowserWindow } = require('electron');
 const httpRequest = require('https');
 const environment = require('../environment.js');
+const jwt_decode = require('jwt-decode');
 
 function callLogin() {
     var body = JSON.stringify({
@@ -14,10 +15,10 @@ function callLogin() {
             urlOption = ele[i].value;
     }
     console.log(body + "fff" + urlOption);
-    localStorage.setItem('environment',urlOption);
+    localStorage.setItem('environment', urlOption);
     var url = environment.selectURL(urlOption)
     console.log(url);
-    
+
     var responseData;
     const options = {
         hostname: url,
@@ -35,7 +36,9 @@ function callLogin() {
             if (res.statusCode == 200) {
                 localStorage.setItem('access_token', responseData.access_token);
                 // window.location.href = "../home/page.html"
+
                 window.location.href = "../dbconfiguration/dbconfigui.html";
+
             } else {
                 if (res.statusCode < 500 && res.statusCode >= 400) {
                     console.log("In eroror");

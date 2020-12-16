@@ -1,47 +1,85 @@
+const sqlLiteConnection = require('../sqlLiteConnection')
+sqlLiteConnection.initSqllite();
 
-(function() {
-    var jwt_decode = require('jwt-decode')
-    var token = localStorage.getItem('access_token');
-   
-    var decoded = jwt_decode(token);
-
-// let payerList = decoded.payers;
-// var selectList = document.getElementById('payerSelect');
-// for (var i = 0; i < payerList.length; i++) {
-//     console.log(payerList[i]);
-    
-//     var option = document.createElement("option");
-//     option.value = payerList[i];
-//     option.text = payerList[i];
-//     selectList.appendChild(option);
-// }
- })();
 
 function databaseConfiguration() {
+
     var ele = document.getElementsByName('dbtype');
-    var dbtype;
+    var dbType;
     for (i = 0; i < ele.length; i++) {
         if (ele[i].checked)
-            dbtype = ele[i].value;
+            dbType = ele[i].value;
     }
-    var body = JSON.stringify({
-        ip: document.getElementById('ip').value,
-        port: document.getElementById('port').value,
-        database: document.getElementById('database').value,
-        dbtype: dbtype,
-        username: document.getElementById('username').value,
-        password: document.getElementById('password').value
-    });
-    console.log(body);
-    connectDatabase(dbtype);
-    //save database in sqlite
-    return;
+    var hostname = document.getElementById('ip').value;
+    var port = document.getElementById('port').value;
+    var databaseName = document.getElementById('database').value;
+    var username = document.getElementById('username').value;
+    var password = document.getElementById('password').value;
+
+    var payer = document.getElementById('payerSelect').value;
+    var payer_value = document.getElementById('payer').value;
+    var claim = document.getElementById('claim_name').value;
+    var claim_value = document.getElementById('claimtype').value;
+
+    saveDbConfig(dbType, hostname, port, databaseName, username, password);
 }
 
-function connectDatabase(selectDb){
-    console.log("test connect");
-    if(selectDb == 'ORACLE'){
-        oracle();
+function saveDbConfig(dbType, hostname, port, databaseName, username, password) {
+    var provider_id = localStorage.getItem("provider_id");
+    let sql = `SELECT * FROM dbconfig where provider_id=?`;
+    try {
+        sqlLiteConnection.getDb().all(sql, [provider_id], (err, rows) => {
+            if (err) {
+                throw err;
+            }
+            if (rows.length > 1) {
+                console.log("Multiple connections");
+                return;
+            }
+            else if (rows.length == 0) {
+                sqlLiteConnection.getDb().run(`INSERT INTO dbconfig(provider_id, db_type, hostname, port, database_name, username, password) VALUES(?,?,?,?,?,?,?)`,
+                    [provider_id, dbType, hostname, port, databaseName, username, password], function (err) {
+                        if (err) {
+                            return console.log(err.message);
+                        }
+                        // get the last insert id
+                        console.log(`A row has been inserted with row id ${this.lastID}`);
+                    });
+            } else if (rows.length == 1) {
+                sqlLiteConnection.getDb().run(`UPDATE dbconfig set provider_id = ?, db_type = ?, hostname = ?, port = ?, database_name = ?, username = ?, password = ? where provider_id=?`,
+                    [provider_id, dbType, hostname, port, databaseName, username, password, provider_id], function (err) {
+                        if (err) {
+                            return console.log(err.message);
+                        }
+                        // get the last insert id
+                        console.log(`A row has been update with row id ${this.lastID}`);
+                    });
+
+            }
+            window.location.href = "../extraction/extractionui.html";
+
+        });
+
+    } catch (error) {
+        console.log(error);
     }
 
-  }
+}
+
+function saveMapping(payer, payer_value, claim, claim_value){
+
+    try{
+
+        // sqlLiteConnection.getDb().run(`INSERT INTO dbconfig(provider_id, db_type, hostname, port, database_name, username, password) VALUES(?,?,?,?,?,?,?)`,
+        //             [provider_id, dbType, hostname, port, databaseName, username, password], function (err) {
+        //                 if (err) {
+        //                     return console.log(err.message);
+        //                 }
+        //                 // get the last insert id
+        //                 console.log(`A row has been inserted with row id ${this.lastID}`);
+        //             });
+    }catch(error){
+        console.error(error);
+    }
+
+}

@@ -12,105 +12,115 @@
 
     </div>
     <div class="container">
-            <div class="card">
-        <div>
-            <h5 style="color: #3060aa; text-align: center; padding: 10px">Midtables Configuration</h5>
-        </div>
-        <hr>
-        <div>
+        <div class="card">
             <div>
-                <h6 style="color: grey">Database Configuration</h6>
-                <form onsubmit="databaseConfiguration();return false;">
-                    <div>
-                        <div class="form-group row">
-                            <div class="col-sm-6">
-                                <div class="form-control radio-bg">
-                                    <label class="form-check-label" for="oracle">Oracle</label>
-                                    <input class="form-check-input text-right radio-right" id="oracle" type="radio" name="dbtype" value="ORACLE" required>
+                <h5 style="color: #3060aa; text-align: center; padding: 10px">Midtables Configuration</h5>
+            </div>
+            <hr>
+            <div>
+                <div>
+                    <h6 style="color: grey">Database Configuration</h6>
+                    <form onsubmit="databaseConfiguration();return false;">
+                        <div>
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <div class="form-control radio-bg">
+                                        <label class="form-check-label" for="oracle">Oracle</label>
+                                        <input class="form-check-input text-right radio-right" id="oracle" type="radio"
+                                            name="dbtype" value="Oracle" required>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-control radio-bg">
-                                    <label class="form-check-label" for="sqlserver">SqlServer</label>
-                                    <input class="form-check-input text-right radio-right" id="sqlserver" type="radio" name="dbtype" value="SQLSERVER" required>
+                                <div class="col-sm-6">
+                                    <div class="form-control radio-bg">
+                                        <label class="form-check-label" for="sqlserver">SqlServer</label>
+                                        <input class="form-check-input text-right radio-right" id="sqlserver"
+                                            type="radio" name="dbtype" value="SqlServer" required>
+                                    </div>
                                 </div>
-                            </div>
-                            <!-- <div class="form-control col-sm-4 input-color relative">
+                                <!-- <div class="form-control col-sm-4 input-color relative">
                             <label class="form-check-label" for="mysql">MySql</label>
                             <input class="form-check-input text-right radio-right" id="mysql" type="radio" name="dbtype" value="mysql" required>
                         </div> -->
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-sm-6">
-                                <input class="form-control" type="text" id="ip" placeholder="HostName/IP" required />
                             </div>
-                            <div class="col-sm-2">
-                                <input class="form-control" type="text" id="port" placeholder="port" required />
-                            </div>
-                            <div class="col-sm-4">
-                                <input class="form-control" type="text" id="database" placeholder="DatabaseName/SID" required />
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-sm-6">
-                                <input class="form-control" id="username" type="text" placeholder="Username" required />
-                            </div>
-                            <div class="col-sm-6">
-                                <input class="form-control" id="password" type="password" placeholder="Password" required />
-                            </div>
-                        </div>
-                        <div style="display: none;" id="databaseError" class="errorArea">
-                            <p id="databaseErrorMessage"></p>
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            <h6 style="color: grey">Pre-Extraction Mapping</h6>
-                        </div>
-                        <div>
                             <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="text" id="ip" placeholder="HostName/IP"
+                                        required />
+                                </div>
+                                <div class="col-sm-2">
+                                    <input class="form-control" type="text" id="port" placeholder="port"
+                                        required />
+                                </div>
                                 <div class="col-sm-4">
-                                    <select class="form-control select-bg" id="payerSelect">
-                                        <option selected name="Select Payer" value="Select Payer">Select Payer</option>
-                                        <!-- <option>1</option>
+                                    <input class="form-control" type="text" id="database" placeholder="DatabaseName/SID"
+                                        required />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <input class="form-control" id="username" type="text" placeholder="Username"
+                                        required />
+                                </div>
+                                <div class="col-sm-6">
+                                    <input class="form-control" id="password" type="password" placeholder="Password"
+                                        required />
+                                </div>
+                            </div>
+                            <div style="display: none;" id="databaseError" class="errorArea">
+                                <p id="databaseErrorMessage"></p>
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                <h6 style="color: grey">Pre-Extraction Mapping</h6>
+                            </div>
+                            <div>
+                                <div class="form-group row">
+                                    <div class="col-sm-4">
+                                        <select class="form-control select-bg" id="payerSelect">
+                                            <option selected name="Select Payer" value="Select Payer">Select Payer
+                                            </option>
+                                            <!-- <option>1</option>
                                         <option>2</option>
                                         <option>3</option> -->
-                                    </select>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input class="form-control" id="payer" type="text" placeholder="TSH" />
+                                    </div>
                                 </div>
-                                <div class="col-sm-8">
-                                    <input class="form-control" id="payer" type="text" placeholder="TSH" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-sm-4">
-                                    <select class="form-control select-bg">
-                                        <option selected name="Claim Type" value="Claim Type">Claim Type</option>
-                                        <option value="INPATIENT">INPATIENT</option>
-                                        <option value="OUTPATIENT">OUTPATIENT</option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-8">
-                                    <input class="form-control" id="claimtype" type="text" placeholder="Claim Type(ex: IP)" />
+                                <div class="form-group row">
+                                    <div class="col-sm-4">
+                                        <select class="form-control select-bg" id="claim_name">
+                                            <option selected name="Claim Type" value="Claim Type">Claim Type</option>
+                                            <option value="INPATIENT">INPATIENT</option>
+                                            <option value="OUTPATIENT">OUTPATIENT</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input class="form-control" id="claimtype" type="text"
+                                            placeholder="Claim Type(ex: IP)" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group text-right" style="padding-top: 1.5rem">
-                        <button type="submit" class="btn btn-primary btn-signin">Save</button>
-                    </div>
-                </form>
+                        <div class="form-group text-right" style="padding-top: 1.5rem">
+                            <button type="submit" class="btn btn-primary btn-signin">Save</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-    </div>
     <script src="dbconfig.js"></script>
-    <script src="../dbConnection.js"></script>
     <script>
         $(function () {
             $("#nav-placeholder").load("../home/page.html");
             var jwt_decode = require('jwt-decode')
             var token = localStorage.getItem('access_token');
             var decoded = jwt_decode(token);
+            
+            localStorage.setItem("provider_id", decoded.prov_id)
             let decodepayers = decoded.payers;
             let payers = [];
             for (let payerid in decodepayers) {
