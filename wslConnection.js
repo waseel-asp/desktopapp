@@ -4,6 +4,37 @@ sqlLiteConnection.initSqllite();
 let connection, dbParams;
 
 module.exports = {
+    checkConnection: function(params, callback){
+        dbParams = params;
+        console.log(dbParams);
+        if (dbParams) {
+            if (dbParams.db_type == "Oracle") {
+
+                oracle().then(data => {
+                    console.log("Successfully connected to Oracle!");
+                    callback(true);
+                }, err => {
+                    console.log(err);
+                    callback(false);
+                });
+
+            } else if (dbParams.db_type == "SqlServer") {
+
+                mssql().then(data => {
+                    console.log("Successfully connected to MSSQL!");
+                    callback(true);
+                }, err => {
+                    console.log(err);
+                    callback(false);
+                });
+            } else {
+                callback(false);
+            }
+        } else {
+            callback(false);
+        }
+
+    },
     connect: function (callback) {
 
         fetchDbConfig(function (isConnectionAvailable) {
