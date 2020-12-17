@@ -40,12 +40,11 @@ function callLogin() {
                 window.location.href = "../dbconfiguration/dbconfigui.html";
 
             } else {
-                if (res.statusCode < 500 && res.statusCode >= 400) {
+                if (res.statusCode <= 500 && res.statusCode >= 400) {
                     console.log("In eroror");
                     document.getElementById("errorArea").style.display = "block";
                     document.getElementById("errorMessage").innerHTML = "username/password is invaild!";
                 }
-
                 // window.location.href = "../autoupdaterui.html"
             }
         });
