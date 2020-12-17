@@ -1,9 +1,28 @@
+$(function () {
+    $("#nav-placeholder").load("../home/page.html");
+    var jwt_decode = require('jwt-decode')
+    var token = localStorage.getItem('access_token');
+    var decoded = jwt_decode(token);
+    let decodepayers = decoded.payers;
+    let payers = [];
+    for (let payerid in decodepayers) {
+        payers.push({ id: `${payerid}`, name: `${decodepayers[payerid]}` })
+    }
+    var selectList = document.getElementById('selectedPayer');
+    for (var i = 0; i < payers.length; i++) {
+        var option = document.createElement("option");
+        option.value = payers[i].id;
+        option.text = payers[i].name.split(',')[0];
+        selectList.appendChild(option);
+    }
+});
 const wslConnection = require('../wslConnection')
 const sendClaim = require('./sendClaim.js');
 const sqlLiteConnection = require('../sqlLiteConnection')
 sqlLiteConnection.initSqllite();
 
 function openConnection() {
+    //add logic to check the database data exist in database.
     wslConnection.connect(function (isConnectionAvailable) {
         if (!isConnectionAvailable) {
             alert("No Connection available");
@@ -23,7 +42,12 @@ function connect() {
     var endDate = document.getElementById('endDate').value;
     var selectedPayer = document.getElementById('selectedPayer').value;
     var selectedClaim = document.getElementById('selectedClaim').value;
-    console.log(selectedPayer + "" + startDate);
+    
+    if(new Date(startDate) > new Date(endDate))
+    {
+    alert("Please ensure that the End Date is greater than or equal to the Start Date.");
+    return false;
+    }
     var provider_id = localStorage.getItem('provider_id');
     // var prov_code = decoded.prov_code;
     var payer, claim;

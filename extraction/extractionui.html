@@ -21,10 +21,12 @@
                 <div>
                     <div class="form-group row">
                         <div class="col-sm-6">
+                            <label style="font-weight: bold">Start Date:</label>
                             <input type="date" id="startDate" class="form-control select-bg" name="startDate" placeholder="startDate" required oninvalid="this.setCustomValidity('Please provide a start date')"
                             oninput="setCustomValidity('')">
                         </div>
                         <div class="col-sm-6">
+                            <label style="font-weight: bold">End Date:</label>
                             <input type="date" id="endDate" class="form-control select-bg" name="endDate" placeholder="endDate" required oninvalid="this.setCustomValidity('Please provide an end date')"
                             oninput="setCustomValidity('')">
                         </div>
@@ -34,8 +36,6 @@
                             <select id="selectedPayer" class="form-control select-bg" required oninvalid="this.setCustomValidity('Please select a payer')"
                             oninput="setCustomValidity('')">
                                 <option name="Select Payer" value="">Select Payer</option>
-                                <option value="102">TSH</option>
-                                <option value="2">2</option>
                             </select>
                         </div>
                         <div class="col-sm-6">
@@ -70,11 +70,6 @@
     </div>
     <script src="extraction.js"></script>
     <!-- <script src="../dbConnection.js"></script> -->
-    <script>
-        $(function () {
-            $("#nav-placeholder").load("../home/page.html");
-        })
-    </script>
 </body>
 
 </html>
