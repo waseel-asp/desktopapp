@@ -43,7 +43,7 @@
                             oninput="setCustomValidity('')">
                                 <option name="Claim Type" value="">Claim Type</option>
                                 <option value="INPATIENT">INPATIENT</option>
-                                <option value="OUTPATIENT">OUTPATIENT</option>
+                                <option value="Outpatient">OUTPATIENT</option>
                             </select>
                         </div>
                     </div>
@@ -53,6 +53,17 @@
                 </div>
             </form>
             <button type="button" onclick="openConnection()" class="btn btn-primary btn-signin">Connect</button>
+        </div>
+    </div>
+    <div class="container" style="display: none;" id="summary-container">
+        <div class="card">
+            <div>
+                <h5 style="color: #3060aa; text-align: center; padding: 10px">Extract Claims</h5>
+            </div>
+            <hr>
+            <div>
+                <table id="summary-table" class="table"></table>
+            </div>
         </div>
     </div>
     <script src="extraction.js"></script>
