@@ -118,8 +118,6 @@
             var jwt_decode = require('jwt-decode')
             var token = localStorage.getItem('access_token');
             var decoded = jwt_decode(token);
-
-            localStorage.setItem("provider_id", decoded.prov_id)
             let decodepayers = decoded.payers;
             let payers = [];
             for (let payerid in decodepayers) {

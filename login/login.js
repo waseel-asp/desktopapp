@@ -36,7 +36,12 @@ function callLogin() {
             if (res.statusCode == 200) {
                 localStorage.setItem('access_token', responseData.access_token);
                 // window.location.href = "../home/page.html"
-
+                var jwt_decode = require('jwt-decode')
+                var token = localStorage.getItem('access_token');
+                var decoded = jwt_decode(token);
+    
+                localStorage.setItem("provider_id", decoded.prov_id)
+    
                 window.location.href = "../dbconfiguration/dbconfigui.html";
 
             } else {

@@ -15,24 +15,32 @@ $(function () {
         option.text = payers[i].name.split(',')[0];
         selectList.appendChild(option);
     }
+    openConnection();
 });
 const wslConnection = require('../wslConnection')
 const sendClaim = require('./sendClaim.js');
 const sqlLiteConnection = require('../sqlLiteConnection')
 sqlLiteConnection.initSqllite();
-
+let database_type;
 function openConnection() {
     //add logic to check the database data exist in database.
-    wslConnection.connect(function (isConnectionAvailable) {
-        if (!isConnectionAvailable) {
-            alert("No Connection available");
-        } else {
-            wslConnection.query("SELECT * from wsl_geninfo").then(data => {
-                console.log(data)
-            }, err => {
-                console.log(err)
-            });
-        }
+    wslConnection.fetchDatabase(function(dbParams){
+        console.log("dddd",dbParams);
+       if(dbParams == null){
+           if(window.confirm("You have not added database configuration yet. Do you want to add new one?")){
+               window.location.href = "../dbconfiguration/dbconfigui.html";
+           }
+       }else{
+        database_type = dbParams.db_type;
+        
+        wslConnection.checkConnection(dbParams ,function(isConnectionAvailabe){
+            if(isConnectionAvailabe){
+               console.log("Connection succesful.")
+            }else{
+                alert("Failed to connect to database");
+            }
+        });
+       }    
     });
 }
 
@@ -69,7 +77,7 @@ function connect() {
         } else {
             var claimList = [];
             var query = "";
-            var database = 'oracle';
+            var database = database_type;
             if(database.toLowerCase() == "oracle") {
                 query = "select * from WSL_GENINFO where PROVIDERID='DLH' AND CLAIMTYPE='" + claim + "' AND PAYERID='" + payer + "' AND CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd') AND TO_DATE('" + endDate + "','yyyy-mm-dd') ";
             } else {
@@ -255,7 +263,7 @@ function connect() {
                     localStorage.setItem('data', claim.getClaimInfo());
                     claimList.push(claim.getClaimInfo());
                 }
-                sendClaim.sendClaim(claimList);
+               sendClaim.sendClaim(claimList);
             }, err => {
                 console.log(err);
             });

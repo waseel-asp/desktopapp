@@ -87,6 +87,11 @@ module.exports = {
             }
         }
     },
+    fetchDatabase : function(callback){
+        fetchDatabaseData(function(dbParams){
+            callback(dbParams);
+        });
+    },
 
 }
 
@@ -114,6 +119,28 @@ function fetchDbConfig(callback) {
     }
 }
 
+function fetchDatabaseData(callback){
+    let sql = `SELECT * FROM dbconfig where provider_id = ?`;
+    try {
+            sqlLiteConnection.getDb().all(sql, [localStorage.getItem("provider_id")], (err, rows) => {
+                if (err) {
+                    throw err;
+                }
+                if (rows.length == 1) {
+                    dbParams = rows[0];
+                    callback(dbParams);
+                }else if(rows.length == 0){
+                    console.log("No Connection...");
+                    callback(null);
+                } else if (rows.length >1) {
+                    console.log("Multiple dataconnections...");
+                }
+            });
+        
+    } catch (error) {
+        console.error(error);
+    }
+}
 async function mssql() {
 
     const sql = require('mssql');
