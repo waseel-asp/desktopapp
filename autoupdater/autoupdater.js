@@ -9,7 +9,6 @@ function createWindow() {
             nodeIntegration: true,
         },
     });
-    //mainWindow.loadFile('autoupdaterui.html');
     mainWindow.loadFile('login/loginui.html');
     mainWindow.on('closed', function() {
         mainWindow = null;

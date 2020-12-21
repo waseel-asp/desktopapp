@@ -39,9 +39,9 @@ function callLogin() {
                 var jwt_decode = require('jwt-decode')
                 var token = localStorage.getItem('access_token');
                 var decoded = jwt_decode(token);
-    
+
                 localStorage.setItem("provider_id", decoded.prov_id)
-    
+
                 window.location.href = "../dbconfiguration/dbconfigui.html";
 
             } else {
@@ -50,7 +50,7 @@ function callLogin() {
                     document.getElementById("errorArea").style.display = "block";
                     document.getElementById("errorMessage").innerHTML = "username/password is invaild!";
                 }
-                // window.location.href = "../autoupdaterui.html"
+
             }
         });
     });
