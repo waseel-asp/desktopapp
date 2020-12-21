@@ -5,6 +5,15 @@
     <link href="../webjars/bootstrap.min.css" rel="stylesheet">
     <link href="../style.css" rel="stylesheet">
     <style>
+        #upnotification {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 20px;
+            font-family: sans-serif;
+            background-color: #eaeaea;
+            text-align: center;
+        }
+        
         #notification {
             position: fixed;
             bottom: 20px;
@@ -64,7 +73,7 @@
                 </form>
             </div>
         </div>
-        <div>
+        <div id="upnotification">
             <div id="notification" class="hidden">
                 <p id="message"></p>
                 <button id="close-button" onClick="closeNotification()">Close</button>

@@ -1,7 +1,7 @@
 {
-    "name": "desktopapp",
-    "version": "1.0.11",
-    "description": "desktopapp",
+    "name": "waseele_desktop",
+    "version": "1.0.12",
+    "description": "waseele desktop",
     "main": "autoupdater.js",
     "scripts": {
         "start": "electron .",
