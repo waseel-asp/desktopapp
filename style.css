@@ -1,8 +1,8 @@
 body {
     background-color: #e8e8e8
-  }
+}
 
-  .card {
+.card {
     background-color: #F7F7F7;
     /* just in case there no content*/
     padding: 20px 25px 30px;
@@ -21,9 +21,11 @@ body {
     max-width: 450px;
     padding: 40px 40px;
 }
-.card-body{
+
+.card-body {
     padding: 2rem;
-  }
+}
+
 .profile-img-card {
     width: 30%;
     height: 30%;
@@ -33,15 +35,18 @@ body {
     -webkit-border-radius: 50%;
     border-radius: 50%;
 }
-.btn-signin{
+
+.btn-signin {
     background-color: #3060aa;
     color: #fff;
 }
+
 .btn-primary:hover {
     background-color: #3060aa;
 }
-.errorArea{
-    margin-left:10%;
+
+.errorArea {
+    margin-left: 10%;
     width: 80%;
     background-color: #EAEAEA;
     border: 1px solid #AFAFAF;
@@ -49,7 +54,8 @@ body {
     border-radius: 5px;
     padding: 10px;
 }
-.btn-logout{
+
+.btn-logout {
     background: #89ABE3FF;
     color: black;
     box-shadow: #AFAFAF;
@@ -57,20 +63,49 @@ body {
     font-size: medium;
     font-weight: bold;
 }
-.bgclass {       
+
+.bgclass {
     background: #3060aa;
     color: #fff;
 }
+
 .radio-bg {
     background-color: #eff5ff;
     color: #3060aa;
     position: relative;
 }
-.select-bg, .select-bg:focus {
+
+.select-bg,
+.select-bg:focus {
     background-color: #eff5ff;
     color: #3060aa;
 }
+
 .radio-right {
     position: absolute;
     right: 5%;
+}
+
+#upnotification {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 20px;
+    font-family: sans-serif;
+    background-color: #eaeaea;
+    text-align: center;
+}
+
+#notification {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 200px;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: white;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.hidden {
+    display: none;
 }
