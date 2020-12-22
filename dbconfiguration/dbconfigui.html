@@ -75,7 +75,7 @@
                             <div>
                                 <div class="form-group row">
                                     <div class="col-sm-4">
-                                        <select class="form-control select-bg" id="payerSelect" required>
+                                        <select class="form-control select-bg" id="payerSelect" required onchange="changePayerMappingValue()">
                                             <option selected name="Select Payer" value="">Select Payer
                                             </option>
                                             <!-- <option>1</option>
@@ -90,7 +90,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-4">
-                                        <select class="form-control select-bg" id="claim_name" required>
+                                        <select class="form-control select-bg" id="claim_name" required onchange="changeClaimMappingValue()">
                                             <option selected name="Claim Type" value="">Claim Type</option>
                                             <option value="INPATIENT">INPATIENT</option>
                                             <option value="OUTPATIENT">OUTPATIENT</option>
@@ -104,7 +104,7 @@
                             </div>
                         </div>
                         <div class="form-group text-right" style="padding-top: 1.5rem">
-                            <button type="submit" class="btn btn-primary btn-signin">Save</button>
+                            <button type="submit" class="btn btn-primary btn-signin" id="save-config-button">Save</button>
                         </div>
                     </form>
                 </div>
@@ -130,6 +130,7 @@
                 option.text = payers[i].name.split(',')[0];
                 selectList.appendChild(option);
             }
+            getExistingDatabaseValue();
         });
     </script>
 </body>

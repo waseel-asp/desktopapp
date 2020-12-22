@@ -37,6 +37,11 @@ body {
     background-color: #3060aa;
     color: #fff;
 }
+.btn-signin:disabled{
+    opacity: 0.65;
+    background-color: #3060aa;
+    color: #fff;
+}
 .btn-primary:hover {
     background-color: #3060aa;
 }
