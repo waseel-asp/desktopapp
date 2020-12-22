@@ -45,5 +45,6 @@ testem.log
 Thumbs.db
 
 #my personal access token
+electron-builder.yml
 package-lock.json
 /midtables_config.db
