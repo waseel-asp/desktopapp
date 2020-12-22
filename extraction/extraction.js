@@ -46,6 +46,8 @@ function openConnection() {
 
 function connect() {
     console.log("test connect");
+    document.getElementById("summary-container").style.display = "none";
+    document.getElementById("summary-error").style.display = "none";
     var startDate = document.getElementById('startDate').value;
     var endDate = document.getElementById('endDate').value;
     var selectedPayer = document.getElementById('selectedPayer').value;
@@ -129,7 +131,6 @@ async function setClaims(query, callback) {
 
             var diagnosisList = [];
             await wslConnection.query("select * from WSL_CLAIM_DIAGNOSIS where PROVCLAIMNO='" + genInfoData.PROVCLAIMNO + "'").then(diagnosisData => {
-                console.log(diagnosisData);
                 for (var x = 0; x < diagnosisData.length; x++) {
                     diagnosis.setDiagnosisCode(diagnosisData[x].DIAGNOSISCODE);
                     diagnosis.setDiagnosisDescription(diagnosisData[x].DIAGNOSISDESC);

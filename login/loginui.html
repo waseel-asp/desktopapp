@@ -10,19 +10,18 @@
     <div class="container">
         <div class="card card-container">
             <!-- Icon -->
+            <p id="version"></p>
             <img src="../images/waseel_logo_Dark_Blue.png" class="profile-img-card" id="icon" alt="Logo" />
             <div class="card-body">
                 <form class="form-signin" onsubmit="callLogin();return false">
                     <div class="form-group row">
                         <div class="col-sm-12">
-                            <input class="form-control" id="username" placeholder="Username" type="text" required oninvalid="this.setCustomValidity('Please provide a username')"
-                                oninput="setCustomValidity('')" />
+                            <input class="form-control" id="username" placeholder="Username" type="text" required oninvalid="this.setCustomValidity('Please provide a username')" oninput="setCustomValidity('')" />
                         </div>
                     </div>
                     <div class="form-group row">
                         <div class="col-sm-12">
-                            <input class="form-control" id="password" placeholder="Password" type="password" required oninvalid="this.setCustomValidity('Please provide a password')"
-                                oninput="setCustomValidity('')" />
+                            <input class="form-control" id="password" placeholder="Password" type="password" required oninvalid="this.setCustomValidity('Please provide a password')" oninput="setCustomValidity('')" />
                         </div>
                     </div>
                     <div class="form-group row col-sm-12">
@@ -49,7 +48,15 @@
                 </form>
             </div>
         </div>
+        <div id="upnotification">
+            <div id="notification" class="hidden">
+                <p id="message"></p>
+                <button id="close-button" onClick="closeNotification()">Close</button>
+                <button id="restart-button" onClick="restartApp()" class="hidden">Restart</button>
+            </div>
+        </div>
     </div>
-    
+
     <script src="login.js"></script>
+    <script src="../autoupdater/autoupdater_frontend.js"></script>
 </body>

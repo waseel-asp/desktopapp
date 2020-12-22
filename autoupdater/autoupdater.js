@@ -4,14 +4,13 @@ const { autoUpdater } = require('electron-updater');
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 800,
-        height: 600,
+        height: 800,
         webPreferences: {
             nodeIntegration: true,
         },
     });
-    // mainWindow.loadFile('autoupdaterui.html');
     mainWindow.loadFile('login/loginui.html');
-    mainWindow.on('closed', function () {
+    mainWindow.on('closed', function() {
         mainWindow = null;
     });
     mainWindow.once('ready-to-show', () => {
@@ -25,13 +24,13 @@ app.on('ready', () => {
     createWindow();
 });
 
-app.on('window-all-closed', function () {
+app.on('window-all-closed', function() {
     if (process.platform !== 'darwin') {
         app.quit();
     }
 });
 
-app.on('activate', function () {
+app.on('activate', function() {
     if (mainWindow === null) {
         createWindow();
     }

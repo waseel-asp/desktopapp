@@ -27,12 +27,11 @@ exports.sendClaim = function (claims) {
     };
 
     const req = httpRequest.request(options, (res) => {
-        console.log(res);
+        // console.log(res);
         res.on('data', (chunk) => {
             responseData = JSON.parse(`${chunk}`);
             console.log(responseData);
             if (res.statusCode == 200 || res.statusCode == 201) {
-                console.log('status ok');
                 document.getElementById("summary-container").style.display = "block";
                 var table = document.getElementById('summary-table');
                 while (table.firstChild) {
@@ -41,7 +40,6 @@ exports.sendClaim = function (claims) {
                 var lengthOfResponse = Object.keys(responseData).length;
                 var j = 0;
                 var len = Math.floor(lengthOfResponse/3);
-                console.log(len + " : " + lengthOfResponse/3)
                 for (var i = 0; i<len; i++) {
                     var row = document.createElement("div");
                     row.setAttribute('class','row');
