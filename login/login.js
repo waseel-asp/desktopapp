@@ -31,8 +31,14 @@ function callLogin() {
 
     const req = httpRequest.request(options, (res) => {
         document.getElementById("errorArea").style.display = "none";
+        let chunks_of_data = [];
         res.on('data', (chunk) => {
-            responseData = JSON.parse(`${chunk}`);
+            chunks_of_data.push(chunk);
+        });
+        res.on('end', () => {
+            let response_body = Buffer.concat(chunks_of_data);
+            responseData = JSON.parse(response_body.toString());
+
             if (res.statusCode == 200) {
                 localStorage.setItem('access_token', responseData.access_token);
                 // window.location.href = "../home/page.html"
@@ -52,6 +58,7 @@ function callLogin() {
                 }
 
             }
+
         });
     });
 
