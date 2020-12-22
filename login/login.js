@@ -41,7 +41,7 @@ function callLogin() {
                 var decoded = jwt_decode(token);
 
                 localStorage.setItem("provider_id", decoded.prov_id)
-
+                localStorage.setItem("provider_code", decoded.prov_code);
                 window.location.href = "../dbconfiguration/dbconfigui.html";
 
             } else {

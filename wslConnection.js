@@ -172,12 +172,12 @@ async function oracle() {
 }
 
 async function mssqlQuery(queryString) {
-    console.log(this.connection);
+    // console.log(this.connection);
     return this.connection.query(queryString);
 }
 
 async function oracleQuery(queryString) {
-    console.log(this.connection);
+    // console.log(this.connection);
     return await this.connection.execute(queryString);
 }
 

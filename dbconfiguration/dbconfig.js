@@ -1,10 +1,56 @@
-const sqlLiteConnection = require('../sqlLiteConnection');
-const wslConnection = require('../wslConnection');
+const sqlLiteConnection = require('../sqlLiteConnection.js');
+const wslConnection = require('../wslConnection.js');
 sqlLiteConnection.initSqllite();
 
+function getExistingDatabaseValue() {
+    wslConnection.fetchDatabase(function(dbParams){
+        console.log("dddd",dbParams);
+        if(dbParams != null){
+            var ele = document.getElementsByName('dbtype');
+            for (i = 0; i < ele.length; i++) {
+                if (ele[i].value == dbParams.db_type)
+                    ele[i].checked;
+            }
+            document.getElementById('ip').value = dbParams.hostname;
+            document.getElementById('port').value = dbParams.port;
+            document.getElementById('database').value = dbParams.database_name;
+            document.getElementById('username').value = dbParams.username;
+            document.getElementById('password').value = dbParams.password;
+        }    
+    });
+}
+
+function changePayerMappingValue(){
+    var provider_id = localStorage.getItem('provider_id');
+    var payer = document.getElementById('payerSelect').value;
+    let payerSql = `SELECT * FROM payer_mapping WHERE provider_id = ? AND payer_id = ?`;
+    sqlLiteConnection.getDb().all(payerSql, [provider_id, payer], (err, rows) => {
+        if(rows.length == 1) {
+            document.getElementById('payer').value = rows[0].mapping_value;
+        }
+        else {
+            document.getElementById('payer').value = '';
+        }
+    });
+}
+
+function changeClaimMappingValue(){
+    var provider_id = localStorage.getItem('provider_id');
+    var claim = document.getElementById('claim_name').value;
+    let claimSql = `SELECT * FROM claim_mapping WHERE provider_id = ? AND claim_name = ?`;
+    sqlLiteConnection.getDb().all(claimSql, [provider_id, claim], (err, rows) => {
+        if(rows.length == 1) {
+            document.getElementById('claimtype').value = rows[0].mapping_value;
+        }
+        else {
+            document.getElementById('claimtype').value = '';
+        }
+    });
+}
 
 function databaseConfiguration() {
-
+    var saveButton = document.getElementById('save-config-button');
+    saveButton.disabled = true;
     var ele = document.getElementsByName('dbtype');
     var dbType;
     for (i = 0; i < ele.length; i++) {
@@ -42,6 +88,7 @@ function databaseConfiguration() {
             saveClaimMapping(provider_id, claim, claim_value);
             window.location.href = "../extraction/extractionui.html";
         }else{
+            saveButton.disabled = false;
             alert("Failed to connect to database");
         }
     });
