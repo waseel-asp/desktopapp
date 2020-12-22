@@ -1,5 +1,5 @@
-const sqlLiteConnection = require('../sqlLiteConnection.js');
-const wslConnection = require('../wslConnection.js');
+const sqlLiteConnection = require('../dbConnection/sqlLiteConnection.js');
+const wslConnection = require('../dbConnection/wslConnection.js');
 sqlLiteConnection.initSqllite();
 
 function getExistingDatabaseValue() {
@@ -9,7 +9,7 @@ function getExistingDatabaseValue() {
             var ele = document.getElementsByName('dbtype');
             for (i = 0; i < ele.length; i++) {
                 if (ele[i].value == dbParams.db_type)
-                    ele[i].checked;
+                    ele[i].checked = "true";
             }
             document.getElementById('ip').value = dbParams.hostname;
             document.getElementById('port').value = dbParams.port;

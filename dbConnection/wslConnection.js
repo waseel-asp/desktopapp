@@ -1,4 +1,4 @@
-const sqlLiteConnection = require('./sqlLiteConnection')
+const sqlLiteConnection = require('./sqlLiteConnection.js')
 sqlLiteConnection.initSqllite();
 
 let connection, dbParams;
