@@ -17,9 +17,9 @@ $(function () {
     }
     openConnection();
 });
-const wslConnection = require('../wslConnection.js')
+const wslConnection = require('../dbConnection/wslConnection.js')
 const sendClaim = require('./sendClaim.js');
-const sqlLiteConnection = require('../sqlLiteConnection.js')
+const sqlLiteConnection = require('../dbConnection/sqlLiteConnection.js')
 sqlLiteConnection.initSqllite();
 let database_type;
 function openConnection() {

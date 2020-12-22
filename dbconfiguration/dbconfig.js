@@ -1,5 +1,5 @@
-const sqlLiteConnection = require('../sqlLiteConnection.js');
-const wslConnection = require('../wslConnection.js');
+const sqlLiteConnection = require('../dbConnection/sqlLiteConnection.js');
+const wslConnection = require('../dbConnection/wslConnection.js');
 sqlLiteConnection.initSqllite();
 
 function getExistingDatabaseValue() {
@@ -9,7 +9,7 @@ function getExistingDatabaseValue() {
             var ele = document.getElementsByName('dbtype');
             for (i = 0; i < ele.length; i++) {
                 if (ele[i].value == dbParams.db_type)
-                    ele[i].checked;
+                    ele[i].checked = "true";
             }
             document.getElementById('ip').value = dbParams.hostname;
             document.getElementById('port').value = dbParams.port;
@@ -26,6 +26,7 @@ function changePayerMappingValue(){
     let payerSql = `SELECT * FROM payer_mapping WHERE provider_id = ? AND payer_id = ?`;
     sqlLiteConnection.getDb().all(payerSql, [provider_id, payer], (err, rows) => {
         if(rows.length == 1) {
+            document.getElementById('payer').click();
             document.getElementById('payer').value = rows[0].mapping_value;
         }
         else {
@@ -40,6 +41,7 @@ function changeClaimMappingValue(){
     let claimSql = `SELECT * FROM claim_mapping WHERE provider_id = ? AND claim_name = ?`;
     sqlLiteConnection.getDb().all(claimSql, [provider_id, claim], (err, rows) => {
         if(rows.length == 1) {
+            document.getElementById('claimtype').click();
             document.getElementById('claimtype').value = rows[0].mapping_value;
         }
         else {
