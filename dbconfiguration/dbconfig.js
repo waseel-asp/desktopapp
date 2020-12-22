@@ -26,6 +26,7 @@ function changePayerMappingValue(){
     let payerSql = `SELECT * FROM payer_mapping WHERE provider_id = ? AND payer_id = ?`;
     sqlLiteConnection.getDb().all(payerSql, [provider_id, payer], (err, rows) => {
         if(rows.length == 1) {
+            document.getElementById('payer').click();
             document.getElementById('payer').value = rows[0].mapping_value;
         }
         else {
@@ -40,6 +41,7 @@ function changeClaimMappingValue(){
     let claimSql = `SELECT * FROM claim_mapping WHERE provider_id = ? AND claim_name = ?`;
     sqlLiteConnection.getDb().all(claimSql, [provider_id, claim], (err, rows) => {
         if(rows.length == 1) {
+            document.getElementById('claimtype').click();
             document.getElementById('claimtype').value = rows[0].mapping_value;
         }
         else {
