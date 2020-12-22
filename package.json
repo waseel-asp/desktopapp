@@ -1,6 +1,6 @@
 {
     "name": "waseele_desktop",
-    "version": "1.0.23",
+    "version": "1.0.24",
     "description": "waseele desktop",
     "main": "autoupdater/autoupdater.js",
     "scripts": {
