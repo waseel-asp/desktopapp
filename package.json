@@ -8,6 +8,8 @@
         "build": "electron-builder build --win --publish never",
         "deploy": "electron-builder build --win --publish always"
     },
+    "files": ["images/desktop_app_icon.ico"],
+    "icon": "images/desktop_app_icon.ico",
     "repository": {
         "type": "git",
         "url": "https://github.com/waseel-asp/desktopapp.git"

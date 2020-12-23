@@ -11,7 +11,7 @@ function getProviderId() {
 exports.sendClaim = function (claims) {
     var responseData;
     var body = JSON.stringify(claims);
-    localStorage.setItem('hello',body);
+    // localStorage.setItem('hello',body);
     var url = environment.selectURL(localStorage.getItem('environment'));
     var urlPath = '/upload/providers/'+ getProviderId() +'/json';
     var authorizationToken = 'Bearer '+ localStorage.getItem('access_token');
@@ -28,40 +28,22 @@ exports.sendClaim = function (claims) {
 
     const req = httpRequest.request(options, (res) => {
         // console.log(res);
+        let chunks_of_data = [];
         res.on('data', (chunk) => {
-            responseData = JSON.parse(`${chunk}`);
+            chunks_of_data.push(chunk);
+        });
+        res.on('end', () => {
+            let response_body = Buffer.concat(chunks_of_data);
+            responseData = JSON.parse(response_body.toString());
             console.log(responseData);
             if (res.statusCode == 200 || res.statusCode == 201) {
                 document.getElementById("summary-container").style.display = "block";
-                var table = document.getElementById('summary-table');
-                while (table.firstChild) {
-                    table.removeChild(table.lastChild);
-                }
-                var lengthOfResponse = Object.keys(responseData).length;
-                var j = 0;
-                var len = Math.floor(lengthOfResponse/3);
-                for (var i = 0; i<len; i++) {
-                    var row = document.createElement("div");
-                    row.setAttribute('class','row');
-                    var div1 = document.createElement("div");
-                    var div2 = document.createElement("div");
-                    var div3 = document.createElement("div");
-                    div1.setAttribute('class','col-sm-4');
-                    div1.style.margin = '0.5% -2% 0.5% 2%';
-                    div2.setAttribute('class','col-sm-4');
-                    div2.style.margin = '0.5% 0 0.5% 0';
-                    div3.setAttribute('class','col-sm-4');
-                    div3.style.margin = '0.5% 0 0.5% 0';
-                    div1.innerHTML = Object.keys(responseData)[j] + "  :  " + Object.values(responseData)[j]+"";
-                    j++;
-                    div2.innerHTML = Object.keys(responseData)[j] + "  :  " + Object.values(responseData)[j]+"";
-                    j++;
-                    div3.innerHTML = Object.keys(responseData)[j] + "  :  " + Object.values(responseData)[j]+"";
-                    j++;
-                    row.appendChild(div1);
-                    row.appendChild(div2);
-                    row.appendChild(div3);
-                    table.appendChild(row);
+                for(x in responseData) {
+                    var field = document.getElementById(x);
+                    if(responseData[x] != null) {
+                        var data = field.innerHTML + '' + responseData[x];
+                        field.innerHTML = data;
+                    }
                 }
             } 
             else {
