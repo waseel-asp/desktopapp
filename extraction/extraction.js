@@ -33,12 +33,11 @@ function openConnection() {
         } else {
             database_type = dbParams.db_type;
 
-            wslConnection.checkConnection(dbParams, function (isConnectionAvailabe) {
-                if (isConnectionAvailabe) {
-                    console.log("Connection succesful.")
-                } else {
-                    alert("Failed to connect to database");
-                }
+            wslConnection.checkConnection(dbParams).then(data => {
+                console.log("Connection succesful.")
+
+            }, err => {
+                console.log(err.message);
             });
         }
     });
@@ -72,33 +71,30 @@ function connect() {
             claimName = rows[0].mapping_value;
         }
     });
-    wslConnection.connect(function (isConnectionAvailable) {
-        if (!isConnectionAvailable) {
-            alert("No Connection available");
+    wslConnection.connect().then(data => {
+        var query = "";
+        var database = database_type;
+        var provider_code = localStorage.getItem('provider_code');
+        if (database.toLowerCase() == "oracle") {
+            query = "select * from WSL_GENINFO where PROVIDERID='" + provider_code + "' AND CLAIMTYPE='" + claimName + "' AND PAYERID='" + payer + "' AND CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd') AND TO_DATE('" + endDate + "','yyyy-mm-dd') ";
         } else {
-
-            var query = "";
-            var database = database_type;
-            var provider_code = localStorage.getItem('provider_code');
-            if (database.toLowerCase() == "oracle") {
-                query = "select * from WSL_GENINFO where PROVIDERID='" + provider_code + "' AND CLAIMTYPE='" + claimName + "' AND PAYERID='" + payer + "' AND CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd') AND TO_DATE('" + endDate + "','yyyy-mm-dd') ";
-            } else {
-                query = "select * from WSL_GENINFO where PROVIDERID='" + provider_code + "' AND CLAIMTYPE='" + claimName + "' AND PAYERID='" + payer + "' AND CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "' ";
-            }
-            console.log(query);
-            setClaims(query, function (claimList) {
-                console.log(claimList);
-                console.log('sendClaim(claimList)');
-                // sendClaim.sendClaim(claimList);
-                if(claimList.length > 0)
-                    sendClaim.sendClaim(claimList);
-                else {
-                    document.getElementById('summary-error').style.display = 'block';
-                    document.getElementById('summary-error').innerHTML = 
-                        "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
-                }
-            });
+            query = "select * from WSL_GENINFO where PROVIDERID='" + provider_code + "' AND CLAIMTYPE='" + claimName + "' AND PAYERID='" + payer + "' AND CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "' ";
         }
+        console.log(query);
+        setClaims(query, function (claimList) {
+            console.log(claimList);
+            console.log('sendClaim(claimList)');
+            // sendClaim.sendClaim(claimList);
+            if (claimList.length > 0)
+                sendClaim.sendClaim(claimList);
+            else {
+                document.getElementById('summary-error').style.display = 'block';
+                document.getElementById('summary-error').innerHTML =
+                    "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
+            }
+        });
+    }, err => {
+        alert(err.message);
     });
 }
 

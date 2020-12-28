@@ -8,7 +8,9 @@
         "build": "electron-builder build --win --publish never",
         "deploy": "electron-builder build --win --publish always"
     },
-    "files": ["images/desktop_app_icon.ico"],
+    "files": [
+        "images/desktop_app_icon.ico"
+    ],
     "icon": "images/desktop_app_icon.ico",
     "repository": {
         "type": "git",
@@ -30,6 +32,7 @@
         "http-server": "^0.12.3",
         "jwt-decode": "^3.1.2",
         "mssql": "^6.2.3",
+        "mysql": "^2.18.1",
         "nodejs-websocket": "^1.7.2",
         "oracledb": "^5.1.0",
         "sqlite3": "^5.0.0",
