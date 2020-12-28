@@ -17,6 +17,38 @@ function createWindow() {
     mainWindow.once('ready-to-show', () => {
         autoUpdater.checkForUpdatesAndNotify();
     });
+    mainWindow.webContents.on('did-finish-load', function() {
+        mainWindow.webContents.executeJavaScript(`isLoggedIn();
+        
+        function isLoggedIn(){
+            const token = localStorage.getItem('access_token');
+            if(token != null){
+            const expire_time = new Date(localStorage.getItem('expire_time'));
+            if((expire_time.getTime() < new Date().getTime())){
+                alert("Token is expired. Please again sign in.")
+                window.location.href = "../login/loginui.html";
+            }else{
+                console.log("valid");
+            }
+            }
+        }
+        `);
+    });
+    mainWindow.on('close', function(e){        
+        const choice = require('electron').dialog.showMessageBoxSync(this,
+            {
+              type: 'question',
+              buttons: ['Yes', 'No'],
+              title: 'Confirm',
+              message: 'Are you sure you want to quit?',
+            });
+            console.log(choice);
+          if (choice === 1) {
+            e.preventDefault();
+          }
+    });
+    
+    
 }
 
 app.allowRendererProcessReuse = false;
@@ -52,3 +84,4 @@ autoUpdater.on('update-available', () => {
 autoUpdater.on('update-downloaded', () => {
     mainWindow.webContents.send('update_downloaded');
 });
+

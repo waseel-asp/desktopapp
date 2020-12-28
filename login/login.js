@@ -2,7 +2,9 @@ const { electron, BrowserWindow } = require('electron');
 const httpRequest = require('https');
 const environment = require('../environment.js');
 const jwt_decode = require('jwt-decode');
-
+$(function () {
+    localStorage.clear();
+});
 function callLogin() {
     var body = JSON.stringify({
         username: document.getElementById('username').value,
@@ -41,11 +43,12 @@ function callLogin() {
 
             if (res.statusCode == 200) {
                 localStorage.setItem('access_token', responseData.access_token);
+                localStorage.setItem('expire_time', responseData.expires_in);
                 // window.location.href = "../home/page.html"
                 var jwt_decode = require('jwt-decode')
                 var token = localStorage.getItem('access_token');
                 var decoded = jwt_decode(token);
-
+                
                 localStorage.setItem("provider_id", decoded.prov_id)
                 localStorage.setItem("provider_code", decoded.prov_code);
                 window.location.href = "../dbconfiguration/dbconfigui.html";

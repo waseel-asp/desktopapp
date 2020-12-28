@@ -25,18 +25,18 @@
                         </div>
                     </div>
                     <div class="form-group row col-sm-12">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="urlOption" value="STAG">
+                        <div class="form-check col-sm-4 form-check-inline">
+                            <input class="form-check-input" type="radio" name="urlOption" value="STAG" checked="checked">
                             <label class="form-check-label" for="staging">Staging</label>
                         </div>
-                        <div class="form-check form-check-inline">
+                        <div class="form-check col-sm-4 form-check-inline">
                             <input class="form-check-input" type="radio" name="urlOption" value="PROD">
                             <label class="form-check-label" for="production">Production</label>
                         </div>
-                        <div class="form-check form-check-inline">
+                        <!-- <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="urlOption" value="QA" checked="checked">
                             <label class="form-check-label" for="qa">QA</label>
-                        </div>
+                        </div> -->
                     </div>
                     <div style="display: none;" id="errorArea" class="errorArea">
                         <p id="errorMessage"></p>
@@ -56,7 +56,7 @@
             </div>
         </div>
     </div>
-
+    <script>window.$ = window.jQuery = require('../webjars/jquery.min.js');</script>
     <script src="login.js"></script>
     <script src="../autoupdater/autoupdater_frontend.js"></script>
 </body>

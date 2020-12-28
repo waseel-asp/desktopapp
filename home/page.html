@@ -32,8 +32,9 @@
     function logout(){
     localStorage.removeItem('access_token');
     localStorage.removeItem('provider_id');
-    
+    localStorage.removeItem('expire_time');
     window.location.href = "../login/loginui.html";
-}
+    }
+    
 </script>
 </html>
