@@ -91,9 +91,8 @@ body {
 }
 
 #upnotification {
+    position: absolute;
     box-sizing: border-box;
-    margin: 0;
-    padding: 20px;
     font-family: sans-serif;
     background-color: #eaeaea;
     text-align: center;
@@ -101,9 +100,12 @@ body {
 
 #notification {
     position: fixed;
-    bottom: 20px;
-    left: 20px;
-    width: 400px;
+    /* top: 250px;
+    left: 200px; */
+    top: 35%;
+    left: 24%;
+    max-width: 400px;
+    z-index: 999;
     padding: 20px;
     border-radius: 5px;
     background-color: white;
@@ -112,4 +114,9 @@ body {
 
 .hidden {
     display: none;
+}
+
+.login-card-disable {
+    opacity: 0.5;
+    z-index: 1;
 }
