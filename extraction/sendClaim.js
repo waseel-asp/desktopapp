@@ -38,13 +38,12 @@ exports.sendClaim = function (claims) {
             console.log(responseData);
             if (res.statusCode == 200 || res.statusCode == 201) {
                 document.getElementById("summary-container").style.display = "block";
-                for(x in responseData) {
-                    var field = document.getElementById(x);
-                    if(responseData[x] != null) {
-                        var data = field.innerHTML + '' + responseData[x];
-                        field.innerHTML = data;
-                    }
-                }
+                document.getElementById("uploadName").innerHTML = responseData['uploadName'];
+                document.getElementById("uploadSummaryID").innerHTML = responseData['uploadSummaryID'];
+                document.getElementById("noOfUploadedClaims").innerHTML = responseData['noOfUploadedClaims'];
+                document.getElementById("netAmountOfUploadedClaims").innerHTML = responseData['netAmountOfUploadedClaims'];
+                document.getElementById("netVATAmountOfUploadedClaims").innerHTML = responseData['netVATAmountOfUploadedClaims'];
+                document.getElementById("noOfNotUploadedClaims").innerHTML = responseData['noOfNotUploadedClaims'];
             } 
             else {
                 if (res.statusCode <= 500 && res.statusCode >= 400) {

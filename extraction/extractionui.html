@@ -52,73 +52,59 @@
                     </div>
                 </div>
             </form>
-            <div style="display: none;" id="summary-container">
+            <div style="display: none;" class="container" id="summary-container">
                 <hr>
-                <div>
+                <div class="summary-card">
                     <div class="row">
-                        <div class="col-sm-4" id="uploadSummaryID" style="margin: 0.5% -2% 0.5% 2%;">
-                            Upload Summary Id  :  
+                        <div class="col-sm-8" style="font-size: 15px; font-weight: 500;">
+                            Upload Name : <label style="font-weight: bold" id="uploadName"></label>
                         </div>
-                        <div class="col-sm-4" id="noOfUploadedClaims" style="margin: 0.5% 0px;">
-                            No of Uploaded Claims  :  
-                        </div>
-                        <div class="col-sm-4" id="noOfNotUploadedClaims" style="margin: 0.5% 0px;">
-                            No of not Uploaded Claims  :  
+                        <div class="col-sm-4 text-right" style="font-size: 15px;font-weight: 500;">
+                            Upload Summary ID : <label style="font-weight: bold" id="uploadSummaryID"></label>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-4" id="noOfAcceptedClaims" style="margin: 0.5% -2% 0.5% 2%;">
-                            No of Accepted Claims  :  
+                    <hr style="margin-top: 0; margin-bottom: 0">
+                    <div class="p-2">
+                        <div class="uploaded-claim">
+                            <div class="p-2 row">
+                                <div class="col-sm-7">
+                                    <div class="uploaded-claim-header" style="font-weight: 500">
+                                        Number Of Claims
+                                    </div>
+                                    <div class="uploaded-claim-body" id="noOfUploadedClaims" style="font-weight: bold">
+                                        
+                                    </div>
+                                </div>
+                                <span class="vertical-line"></span>
+                                <div class="col-sm-4">
+                                    <div style="display: inline-block">
+                                        <div class="uploaded-claim-header" style="font-weight: 500">
+                                            Amount
+                                        </div>
+                                        <div class="uploaded-claim-body" id="netAmountOfUploadedClaims" style="font-weight: bold">
+                                            
+                                        </div>
+                                    </div>
+                                    <div style="float: right;">
+                                        <div class="uploaded-claim-header" style="font-weight: 500">
+                                            VAT
+                                        </div>
+                                        <div class="uploaded-claim-body" id="netVATAmountOfUploadedClaims" style="font-weight: bold">
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-sm-4" id="noOfNotAcceptedClaims" style="margin: 0.5% 0px;">
-                            No of Not Accepted Claims  :  
-                        </div>
-                        <div class="col-sm-4" id="noOfDownloadableClaims" style="margin: 0.5% 0px;">
-                            No of Downloadable Claims  :  
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4" id="netAmountOfUploadedClaims" style="margin: 0.5% -2% 0.5% 2%;">
-                            Net Amount of Uploaded Claims  :  
-                        </div>
-                        <div class="col-sm-4" id="netVATAmountOfUploadedClaims" style="margin: 0.5% 0px;">
-                            Net VAT Amount of Uploaded Claims  :  
-                        </div>
-                        <div class="col-sm-4" id="netAmountOfAcceptedClaims" style="margin: 0.5% 0px;">
-                            Net Amount of Accepted Claims  :  
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4" id="netVATAmountOfAcceptedClaims" style="margin: 0.5% -2% 0.5% 2%;">
-                            Net VAT Amount of Accepted Claims  :  
-                        </div>
-                        <div class="col-sm-4" id="netAmountOfNotAcceptedClaims" style="margin: 0.5% 0px;">
-                            Net Amount of Not Accepted Claims  :  
-                        </div>
-                        <div class="col-sm-4" id="netVATAmountOfNotAcceptedClaims" style="margin: 0.5% 0px;">
-                            Net VAT Amount of Not Accepted Claims  :  
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4" id="netAmountOfDownloadableClaims" style="margin: 0.5% -2% 0.5% 2%;">
-                            Net Amount of Downloadable Claims  :  
-                        </div>
-                        <div class="col-sm-4" id="netVATAmountOfDownloadableClaims" style="margin: 0.5% 0px;">
-                            Net VAT Amount of Downloadable Claims  :  
-                        </div>
-                        <div class="col-sm-4" id="message" style="margin: 0.5% 0px;">
-                            Message  :  
-                        </div>    
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4" id="uploadName" style="margin: 0.5% -2% 0.5% 2%;">
-                            Upload Name  :  
-                        </div>
-                        <div class="col-sm-4" id="uploadDate" style="margin: 0.5% 0px;">
-                            Upload Date  :  
-                        </div>
-                        <div class="col-sm-4" id="" style="margin: 0.5% 0px;">
-                            
+                        <div class="not-uploaded-claim mt-3">
+                            <div class="p-2">
+                                <div class="not-uploaded-claim-header" style="font-weight: 500">
+                                    Number Of Not Upload Claims
+                                </div>
+                                <div class="not-uploaded-claim-body" id="noOfNotUploadedClaims" style="font-weight: bold">
+                                    
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
