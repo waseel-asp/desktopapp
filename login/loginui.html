@@ -8,49 +8,55 @@
 
 <body>
     <div class="container">
-        <div class="card card-container">
-            <!-- Icon -->
-            <p id="version"></p>
-            <img src="../images/waseel_logo_Dark_Blue.png" class="profile-img-card" id="icon" alt="Logo" />
-            <div class="card-body" id="login-card">
-                <form class="form-signin" onsubmit="callLogin();return false">
-                    <div class="form-group row">
-                        <div class="col-sm-12">
-                            <input class="form-control" id="username" placeholder="Username" type="text" required oninvalid="this.setCustomValidity('Please provide a username')" oninput="setCustomValidity('')" />
+        <div class="card-wrap">
+            <div class="card-container">
+                <div class="card">
+                    <!-- Icon -->
+                    <p id="version"></p>
+                    <img src="../images/waseel_logo_Dark_Blue.png" class="profile-img-card" id="icon" alt="Logo" />
+                    <div class="card-body" id="login-card">
+                        <form class="form-signin" onsubmit="callLogin();return false">
+                            <div class="form-group row">
+                                <div class="col-sm-12">
+                                    <input class="form-control" id="username" placeholder="Username" type="text" required oninvalid="this.setCustomValidity('Please provide a username')" oninput="setCustomValidity('')" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-12">
+                                    <input class="form-control" id="password" placeholder="Password" type="password" required oninvalid="this.setCustomValidity('Please provide a password')" oninput="setCustomValidity('')" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-check form-check-inline custom-checkbox">
+                                    <input class="form-check-input" type="radio" name="urlOption" value="STAG" checked="checked">
+                                    <label class="form-check-label" for="staging">Staging</label>
+                                    <span class="checkmark"></span>
+                                </div>
+                                <div class="form-check form-check-inline custom-checkbox">
+                                    <input class="form-check-input" type="radio" name="urlOption" value="PROD">
+                                    <label class="form-check-label" for="production">Production</label>
+                                    <span class="checkmark"></span>
+                                </div>
+                                <!-- <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="urlOption" value="QA" checked="checked">
+                                    <label class="form-check-label" for="qa">QA</label>
+                                </div> -->
+                            </div>
+                            <div style="display: none;" id="errorArea" class="errorArea">
+                                <p id="errorMessage"></p>
+                            </div>
+                            <br/>
+                            <div class="form-group">
+                                <button type="submit" id="login-button" class="btn btn-lg btn-primary btn-block btn-signin">Sign In</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="upnotification">
+                        <div id="notification" class="hidden">
+                            <p id="message"></p>
+                            <button id="restart-button" onClick="restartApp()" class="btn btn-signin hidden">Restart</button>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <div class="col-sm-12">
-                            <input class="form-control" id="password" placeholder="Password" type="password" required oninvalid="this.setCustomValidity('Please provide a password')" oninput="setCustomValidity('')" />
-                        </div>
-                    </div>
-                    <div class="form-group row col-sm-12">
-                        <div class="form-check col-sm-4 form-check-inline">
-                            <input class="form-check-input" type="radio" name="urlOption" value="STAG" checked="checked">
-                            <label class="form-check-label" for="staging">Staging</label>
-                        </div>
-                        <div class="form-check col-sm-4 form-check-inline">
-                            <input class="form-check-input" type="radio" name="urlOption" value="PROD">
-                            <label class="form-check-label" for="production">Production</label>
-                        </div>
-                        <!-- <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="urlOption" value="QA" checked="checked">
-                            <label class="form-check-label" for="qa">QA</label>
-                        </div> -->
-                    </div>
-                    <div style="display: none;" id="errorArea" class="errorArea">
-                        <p id="errorMessage"></p>
-                    </div>
-                    <br/>
-                    <div class="form-group row">
-                        <button type="submit" id="login-button" class="btn btn-lg btn-primary btn-block btn-signin">Sign In</button>
-                    </div>
-                </form>
-            </div>
-            <div id="upnotification">
-                <div id="notification" class="hidden">
-                    <p id="message"></p>
-                    <button id="restart-button" onClick="restartApp()" class="btn btn-signin hidden">Restart</button>
                 </div>
             </div>
         </div>

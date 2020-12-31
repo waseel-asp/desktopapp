@@ -12,97 +12,108 @@
     <div id="nav-placeholder">
     </div>
     <div class="container">
-        <div class="card">
-            <div>
-                <h5 style="color: #3060aa; text-align: center; padding: 10px">Extract Claims</h5>
+        <div class="card extract_page">
+            <div class="inner-container">
+                <h5>Extract Claims</h5>
             </div>
             <hr>
-            <form onsubmit="connect();return false;">
-                <div>
-                    <div class="form-group row">
-                        <div class="col-sm-6">
-                            <label style="font-weight: bold">Start Date:</label>
-                            <input type="date" id="startDate" class="form-control select-bg" name="startDate" placeholder="startDate" required oninvalid="this.setCustomValidity('Please provide a start date')"
-                            oninput="setCustomValidity('')">
+            <div class="inner-container">
+                <form onsubmit="connect();return false;">
+                    <div>
+                        <div class="form-group row date-row">
+                            <div class="col-sm-6">
+                                <select id="selectedPayer" class="form-control select-bg" required oninvalid="this.setCustomValidity('Please select a payer')"
+                                    oninput="setCustomValidity('')">
+                                    <option name="Select Payer" value="">Select Payer</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <select id="selectedClaim" class="form-control select-bg" required oninvalid="this.setCustomValidity('Please select a claim type')"
+                                    oninput="setCustomValidity('')">
+                                    <option name="Claim Type" value="">Claim Type</option>
+                                    <option value="INPATIENT">INPATIENT</option>
+                                    <option value="OUTPATIENT">OUTPATIENT</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="col-sm-6">
-                            <label style="font-weight: bold">End Date:</label>
-                            <input type="date" id="endDate" class="form-control select-bg" name="endDate" placeholder="endDate" required oninvalid="this.setCustomValidity('Please provide an end date')"
-                            oninput="setCustomValidity('')">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-6">
-                            <select id="selectedPayer" class="form-control select-bg" required oninvalid="this.setCustomValidity('Please select a payer')"
-                            oninput="setCustomValidity('')">
-                                <option name="Select Payer" value="">Select Payer</option>
-                            </select>
-                        </div>
-                        <div class="col-sm-6">
-                            <select id="selectedClaim" class="form-control select-bg" required oninvalid="this.setCustomValidity('Please select a claim type')"
-                            oninput="setCustomValidity('')">
-                                <option name="Claim Type" value="">Claim Type</option>
-                                <option value="INPATIENT">INPATIENT</option>
-                                <option value="OUTPATIENT">OUTPATIENT</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group text-right" style="padding-top: 1.5rem">
-                        <button type="submit" class="btn btn-primary btn-signin">Extract Claims</button>
-                    </div>
-                </div>
-            </form>
-            <div style="display: none;" class="container" id="summary-container">
-                <hr>
-                <div class="summary-card">
-                    <div class="row">
-                        <div class="col-sm-8" style="font-size: 15px; font-weight: 500;">
-                            Upload Name : <label style="font-weight: bold" id="uploadName"></label>
-                        </div>
-                        <div class="col-sm-4 text-right" style="font-size: 15px;font-weight: 500;">
-                            Upload Summary ID : <label style="font-weight: bold" id="uploadSummaryID"></label>
+                        <div class="form-group row date-row">
+                            <div class="col-sm-5">
+                                <input type="text" id="startDate" class="form-control select-bg select-date" name="startDate" placeholder="startDate" required
+                                    oninvalid="this.setCustomValidity('Please provide a start date')" oninput="setCustomValidity('')"
+                                    value="Start Date" onfocus="(this.type='date')">
+                                <i class="cal_icon">
+                                    <img src="../images/calendar_icon.svg" alt="Calendar Icon" />
+                                </i>
+                            </div>
+                            <div class="col-sm-5">
+                                <input type="text" id="endDate" class="form-control select-bg select-date" name="endDate" placeholder="endDate" required
+                                    oninvalid="this.setCustomValidity('Please provide an end date')" oninput="setCustomValidity('')"
+                                    value="End Date" onfocus="(this.type='date')">
+                                <i class="cal_icon">
+                                    <img src="../images/calendar_icon.svg" alt="Calendar Icon" />
+                                </i>
+                            </div>
+                            <div class="col extract-btn">
+                                <button type="submit" class="btn btn-primary btn-signin">Extract Claims</button>
+                            </div>
                         </div>
                     </div>
-                    <hr style="margin-top: 0; margin-bottom: 0">
-                    <div class="p-2">
-                        <div class="uploaded-claim">
-                            <div class="p-2 row">
-                                <div class="col-sm-7">
-                                    <div class="uploaded-claim-header" style="font-weight: 500">
-                                        Number Of Claims
-                                    </div>
-                                    <div class="uploaded-claim-body" id="noOfUploadedClaims" style="font-weight: bold">
-                                        
-                                    </div>
-                                </div>
-                                <span class="vertical-line"></span>
-                                <div class="col-sm-4">
-                                    <div style="display: inline-block">
+                </form>
+
+                <div style="display: none;" id="summary-container">
+                    <hr>
+                    <div class="summary-card">
+                        <div class="row px-2">
+                            <div class="col-sm-8" style="font-size: 15px; font-weight: 500;">
+                                Upload Name :
+                                <label style="font-weight: bold" id="uploadName"></label>
+                            </div>
+                            <div class="col-sm-4 text-right" style="font-size: 15px;font-weight: 500;">
+                                Upload Summary ID :
+                                <label style="font-weight: bold" id="uploadSummaryID"></label>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="px-2">
+                            <div class="uploaded-claim">
+                                <div class="p-2 row">
+                                    <div class="col-sm-7">
                                         <div class="uploaded-claim-header" style="font-weight: 500">
-                                            Amount
+                                            Number Of Claims
                                         </div>
-                                        <div class="uploaded-claim-body" id="netAmountOfUploadedClaims" style="font-weight: bold">
-                                            
+                                        <div class="uploaded-claim-body" id="noOfUploadedClaims" style="font-weight: bold">
+
                                         </div>
                                     </div>
-                                    <div style="float: right;">
-                                        <div class="uploaded-claim-header" style="font-weight: 500">
-                                            VAT
+                                    <span class="vertical-line"></span>
+                                    <div class="col-sm-4">
+                                        <div style="display: inline-block">
+                                            <div class="uploaded-claim-header" style="font-weight: 500">
+                                                Amount
+                                            </div>
+                                            <div class="uploaded-claim-body" id="netAmountOfUploadedClaims" style="font-weight: bold">
+
+                                            </div>
                                         </div>
-                                        <div class="uploaded-claim-body" id="netVATAmountOfUploadedClaims" style="font-weight: bold">
-                                            
+                                        <div style="float: right;">
+                                            <div class="uploaded-claim-header" style="font-weight: 500">
+                                                VAT
+                                            </div>
+                                            <div class="uploaded-claim-body" id="netVATAmountOfUploadedClaims" style="font-weight: bold">
+
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="not-uploaded-claim mt-3">
-                            <div class="p-2">
-                                <div class="not-uploaded-claim-header" style="font-weight: 500">
-                                    Number Of Not Upload Claims
-                                </div>
-                                <div class="not-uploaded-claim-body" id="noOfNotUploadedClaims" style="font-weight: bold">
-                                    
+                            <div class="not-uploaded-claim mt-3">
+                                <div class="p-2">
+                                    <div class="not-uploaded-claim-header" style="font-weight: 500">
+                                        Number Of Not Upload Claims
+                                    </div>
+                                    <div class="not-uploaded-claim-body" id="noOfNotUploadedClaims" style="font-weight: bold">
+
+                                    </div>
                                 </div>
                             </div>
                         </div>

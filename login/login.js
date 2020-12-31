@@ -55,6 +55,7 @@ function callLogin() {
                 wslConnection.fetchDatabase(function(isConnectionAvailable, dbParams, message){
                     localStorage.setItem("provider_id", decoded.prov_id)
                     localStorage.setItem("provider_code", decoded.prov_code);
+                    localStorage.setItem("provider_name", decoded.prov);
                     if(isConnectionAvailable){
                         window.location.href = "../extraction/extractionui.html";
                     }else{
