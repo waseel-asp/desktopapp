@@ -2,9 +2,12 @@ const { electron, BrowserWindow } = require('electron');
 const httpRequest = require('https');
 const environment = require('../environment.js');
 const jwt_decode = require('jwt-decode');
+const wslConnection = require('../dbConnection/wslConnection.js');
+
 $(function () {
     localStorage.clear();
 });
+
 function callLogin() {
     var body = JSON.stringify({
         username: document.getElementById('username').value,
@@ -48,10 +51,17 @@ function callLogin() {
                 var jwt_decode = require('jwt-decode')
                 var token = localStorage.getItem('access_token');
                 var decoded = jwt_decode(token);
-                
-                localStorage.setItem("provider_id", decoded.prov_id)
-                localStorage.setItem("provider_code", decoded.prov_code);
-                window.location.href = "../dbconfiguration/dbconfigui.html";
+
+                wslConnection.fetchDatabase(function(isConnectionAvailable, dbParams, message){
+                    localStorage.setItem("provider_id", decoded.prov_id)
+                    localStorage.setItem("provider_code", decoded.prov_code);
+                    if(isConnectionAvailable){
+                        window.location.href = "../extraction/extractionui.html";
+                    }else{
+                        window.location.href = "../dbconfiguration/dbconfigui.html";
+                    }
+                });
+
 
             } else {
                 if (res.statusCode <= 500 && res.statusCode >= 400) {

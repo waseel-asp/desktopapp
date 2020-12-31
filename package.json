@@ -35,7 +35,6 @@
         "mysql": "^2.18.1",
         "nodejs-websocket": "^1.7.2",
         "oracledb": "^5.1.0",
-        "sqlite3": "^5.0.0",
         "tedious": "^9.2.1"
     },
     "resolutions": {

@@ -1,17 +1,21 @@
-const sqlLiteConnection = require('./sqlLiteConnection.js')
-sqlLiteConnection.initSqllite();
+const httpRequest = require('https');
+var jwt_decode = require('jwt-decode')
+const environment = require('../environment.js');
 
-let connection, dbParams;
+let connection, dbParams = localStorage.getItem("dbParams");
+
+function getProviderId() {
+    const token = localStorage.getItem('access_token');
+    var decoded = jwt_decode(token);
+    return decoded.prov_id;
+}
 
 module.exports = {
-    checkConnection: function (params) {
+    checkConnection: function () {
 
         return new Promise(function (resolve, reject) {
-
-            dbParams = params;
-            console.log(dbParams);
             if (dbParams) {
-                if (dbParams.db_type == "Oracle") {
+                if (dbParams.db_type.toUpperCase() == "ORACLE") {
 
                     oracle().then(data => {
                         console.log("Successfully connected to Oracle!");
@@ -22,7 +26,7 @@ module.exports = {
                         reject(err);
                     });
 
-                } else if (dbParams.db_type == "SqlServer") {
+                } else if (dbParams.db_type.toUpperCase() == "SQLSERVER") {
 
                     mssql().then(data => {
                         this.connection = data;
@@ -32,7 +36,7 @@ module.exports = {
                         console.log(err);
                         reject(err);
                     });
-                } else if (dbParams.db_type == "MySql") {
+                } else if (dbParams.db_type.toUpperCase() == "MYSQL") {
                     mysql().then(data => {
                         console.log("Successfully connected to MYSQL!");
                         resolve(data);
@@ -52,10 +56,11 @@ module.exports = {
     connect: function () {
 
         return new Promise(function (resolve, reject) {
-            fetchDbConfig(function (isConnectionAvailable, error) {
+            fetchDbConfig(function (isConnectionAvailable, data, message) {
 
                 if (isConnectionAvailable) {
-                    if (dbParams.db_type == "Oracle") {
+                    dbParams = data;
+                    if (dbParams.db_type.toUpperCase() == "ORACLE") {
 
                         oracle().then(data => {
                             console.log("Successfully connected to Oracle!");
@@ -66,7 +71,7 @@ module.exports = {
                             reject(err);
                         });
 
-                    } else if (dbParams.db_type == "SqlServer") {
+                    } else if (dbParams.db_type.toUpperCase() == "SQLSERVER") {
 
                         mssql().then(data => {
                             console.log("Successfully connected to MSSQL!");
@@ -76,7 +81,7 @@ module.exports = {
                             console.log(err);
                             reject(err);
                         });
-                    } else if (dbParams.db_type == "MySql") {
+                    } else if (dbParams.db_type.toUpperCase() == "MYSQL") {
                         mysql().then(data => {
                             console.log("Successfully connected to MYSQL!");
                             resolve(data);
@@ -88,93 +93,103 @@ module.exports = {
                         reject("Invalid DB Configuration")
                     }
                 } else {
-                    reject("No DB Configuration")
+                    reject(message);
                 }
             });
         });
     },
     query: async function (queryString) {
         if (dbParams) {
-            if (dbParams.db_type == "Oracle") {
-                try {
-                    return oracleQuery(queryString).then(data => {
-                        return data.rows
+            if (dbParams.db_type.toUpperCase() == "ORACLE") {
+                return new Promise(function (resolve, reject) {
+                    oracleQuery(queryString).then(data => {
+                        resolve(data.rows);
                     }, error => {
-                        console.log(error);
+                        reject(error);
                     });
-
-                } catch (error) {
-                    console.error(error);
-                }
-            } else if (dbParams.db_type == "SqlServer") {
-                return mssqlQuery(queryString).then(data => {
-                    return data.recordset
-                }, error => {
-                    console.log(error);
                 });
-            } else if (dbParams.db_type == "MySql") {
-                return mysqlQuery(queryString).then(data => {
-                    return data;
-                }, error => {
-                    console.log(error);
-                })
+
+            } else if (dbParams.db_type.toUpperCase() == "SQLSERVER") {
+                return new Promise(function (resolve, reject) {
+                    mssqlQuery(queryString).then(data => {
+                        resolve(data.recordset);
+                    }, error => {
+                        reject(error);
+                    });
+                });
+
+            } else if (dbParams.db_type.toUpperCase() == "MYSQL") {
+                return new Promise(function (resolve, reject) {
+                    mysqlQuery(queryString).then(data => {
+                        resolve(data);
+                    }, error => {
+                        reject(error);
+                    });
+                });
             }
         }
     },
     fetchDatabase: function (callback) {
-        fetchDatabaseData(function (dbParams) {
-            callback(dbParams);
+        fetchDbConfig(function (isConnectionAvailable, params, message) {
+            dbParams = params;
+            localStorage.getItem("dbParams");
+            callback(isConnectionAvailable, dbParams, message);
         });
     },
 
 }
 
 function fetchDbConfig(callback) {
-    let sql = `SELECT * FROM dbconfig where provider_id = ?`;
-    try {
-        sqlLiteConnection.getDb().all(sql, [localStorage.getItem("provider_id")], (err, rows) => {
-            if (err) {
-                throw err;
-            }
-            if (rows.length == 1) {
-                dbParams = rows[0];
-                callback(true, "");
-            } else if (rows.length == 0) {
-                console.log("No Connection...");
-                callback(false, "No DB connection");
-            } else if (rows.length > 1) {
-                console.log("Multiple dataconnections...");
-                callback("false", "Multiple DB connnections");
-            }
+    var url = environment.selectURL(localStorage.getItem('environment'));
+    var path = '/settings/providers/' + getProviderId() + '/db-config';
+    var authorizationToken = 'Bearer ' + localStorage.getItem('access_token');;
+
+    const reqOptions = {
+        hostname: url,
+        path: path,
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': authorizationToken
+        }
+    };
+
+    const dbReq = httpRequest.request(reqOptions, (res) => {
+
+        let chunksOfData = [];
+
+        res.on('data', (chunk) => {
+            chunksOfData.push(chunk);
         });
 
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-function fetchDatabaseData(callback) {
-    let sql = `SELECT * FROM dbconfig where provider_id = ?`;
-    try {
-        sqlLiteConnection.getDb().all(sql, [localStorage.getItem("provider_id")], (err, rows) => {
-            if (err) {
-                throw err;
-            }
-            if (rows.length == 1) {
-                dbParams = rows[0];
-                callback(dbParams);
-            } else if (rows.length == 0) {
-                console.log("No Connection...");
-                callback(null);
-            } else if (rows.length > 1) {
-                console.log("Multiple dataconnections...");
+        res.on('end', () => {
+            let responseBody = Buffer.concat(chunksOfData);
+            responseData = JSON.parse(responseBody.toString());
+            console.log(responseData);
+            if (res.statusCode == 200 || res.statusCode == 201) {
+                if (responseData.dbObject) {
+                    let dbParams = {
+                        "db_type": responseData.dbObject.dbType,
+                        "hostname": responseData.dbObject.hostName,
+                        "port": responseData.dbObject.port,
+                        "database_name": responseData.dbObject.databaseName,
+                        "username": responseData.dbObject.dbUserName,
+                        "password": responseData.dbObject.dbPassword
+                    };
+                    callback(true, dbParams, "Db configurations available");
+                }else{
+                    callback(false, undefined, "No DB connection");
+                }
+            } else {
+                if (res.statusCode <= 500 && res.statusCode >= 400) {
+                    callback(false, undefined, "No DB connection");
+                }
             }
         });
-
-    } catch (error) {
-        console.error(error);
-    }
+    });
+    dbReq.end();
 }
+
 async function mssql() {
 
     const sql = require('mssql');
@@ -187,7 +202,7 @@ async function mssql() {
                 password: dbParams.password
             }
         },
-        database: dbParams.database_name
+        database: dbParams.database_name,
     };
     return new Promise(function (resolve, reject) {
         sql.connect(dbConfig, function (err) {
@@ -264,7 +279,7 @@ async function mysqlQuery(queryString) {
             // Call reject on error states,
             // call resolve with results
             if (err) {
-                return reject(err);
+                reject(err);
             }
             resolve(rows);
         });

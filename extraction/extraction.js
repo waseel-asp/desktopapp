@@ -19,14 +19,13 @@ $(function () {
 });
 const wslConnection = require('../dbConnection/wslConnection.js')
 const sendClaim = require('./sendClaim.js');
-const sqlLiteConnection = require('../dbConnection/sqlLiteConnection.js')
-sqlLiteConnection.initSqllite();
+
 let database_type;
 function openConnection() {
     //add logic to check the database data exist in database.
-    wslConnection.fetchDatabase(function (dbParams) {
+    wslConnection.fetchDatabase(function (isConnectionAvailable, dbParams, message) {
         console.log("dddd", dbParams);
-        if (dbParams == null) {
+        if (!isConnectionAvailable) {
             if (window.confirm("You have not added database configuration yet. Do you want to add new one?")) {
                 window.location.href = "../dbconfiguration/dbconfigui.html";
             }
@@ -35,7 +34,6 @@ function openConnection() {
 
             wslConnection.checkConnection(dbParams).then(data => {
                 console.log("Connection succesful.")
-
             }, err => {
                 console.log(err.message);
             });
@@ -59,18 +57,18 @@ function connect() {
     var provider_id = localStorage.getItem('provider_id');
     // var prov_code = decoded.prov_code;
     var payer, claimName;
-    let payerSql = `SELECT * FROM payer_mapping WHERE provider_id = ? AND payer_id = ?`;
-    sqlLiteConnection.getDb().all(payerSql, [provider_id, selectedPayer], (err, rows) => {
-        if (rows.length == 1) {
-            payer = rows[0].mapping_value;
-        }
-    });
-    let claimSql = `SELECT * FROM claim_mapping WHERE provider_id = ? AND claim_name = ?`;
-    sqlLiteConnection.getDb().all(claimSql, [provider_id, selectedClaim], (err, rows) => {
-        if (rows.length == 1) {
-            claimName = rows[0].mapping_value;
-        }
-    });
+    // let payerSql = `SELECT * FROM payer_mapping WHERE provider_id = ? AND payer_id = ?`;
+    // sqlLiteConnection.getDb().all(payerSql, [provider_id, selectedPayer], (err, rows) => {
+    //     if (rows.length == 1) {
+    //         payer = rows[0].mapping_value;
+    //     }
+    // });
+    // let claimSql = `SELECT * FROM claim_mapping WHERE provider_id = ? AND claim_name = ?`;
+    // sqlLiteConnection.getDb().all(claimSql, [provider_id, selectedClaim], (err, rows) => {
+    //     if (rows.length == 1) {
+    //         claimName = rows[0].mapping_value;
+    //     }
+    // });
     wslConnection.connect().then(data => {
         var query = "";
         var database = database_type;
