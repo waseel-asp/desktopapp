@@ -1,4 +1,4 @@
-var stagURL = "api.stg-eclaims.waseel.com";
+var stagURL = "api.qa-eclaims.waseel.com";
 var prodURL = "api.eclaims.waseel.com";
 var qaURL = "api.qa-eclaims.waseel.com";
 var serviceURL = "";

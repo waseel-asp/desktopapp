@@ -114,22 +114,8 @@ form .errorArea p{margin-bottom: 0;}
     background: #3060aa;
     color: #fff;
 }
-
-.radio-bg {
-    background-color: #eff5ff;
-    color: #3060aa;
-    position: relative;
-}
-
-.select-bg,
-.select-bg:focus {
-    background-color: #eff5ff;
-    color: #3060aa;
-}
-
-.radio-right {
-    position: absolute;
-    right: 5%;
+.form-group .form-control::placeholder{
+    color: #C6CAC6;
 }
 .navbar-brand{margin-right: 0;}
 #upnotification {
@@ -255,6 +241,7 @@ form .form-group .custom-checkbox input {
     outline: none;
     margin: 0;
 }
+form .form-group .custom-checkbox input[disabled]{cursor: not-allowed;}
 form .form-group .custom-checkbox .checkmark {
     position: absolute;
     top: 50%;
@@ -337,10 +324,65 @@ form .form-group .custom-checkbox input:checked ~ .form-check-label {
 .user-action .btn-logout:hover{background-color: #FFFFFF;}
 .normal-img{display: block;}
 .hover-img{display: none;}
-.card.database-config_page{ margin-top: 43px; padding: 30px;}
-.database-config { background: #FFFFFF; border-radius: 5px;}
 .inner-container{ padding: 0 13px;}
+
+/* Database Config CSS START */
+.card.database-config_page{ margin-top: 43px; padding: 30px;}
+.database-config { background: #FFFFFF; border-radius: 5px;padding-bottom: 10px;}
 .database-config_page form .form-group .custom-checkbox input{left: auto;}
+.database-config_page h5{
+    text-align: left;
+    font: normal normal normal 19px/23px Helvetica Neue;
+    letter-spacing: 0px;
+    color: #3060AA;
+    margin: 0;
+    padding: 11px 0 0;
+}
+.database-config_page h6, .database-config_page .form-label{
+    text-align: left;
+    font: normal normal normal 12px/16px Roboto;
+    letter-spacing: 0px;
+    color: #3C3C3C;
+    padding: 0;
+    margin: 0 0 8px;
+}
+.database-config_page .form-group .form-control {
+    padding: 6px 12px;
+    font: normal normal normal 11px/16px Roboto;
+    letter-spacing: 0px;
+    color: #C6CAC6;
+    border: 0;
+    background: #FAF7F7;
+}
+.database-config_page .row{ margin-right: -5px; margin-left: -5px;}
+.database-config_page .col-sm-2, .database-config_page .col-sm-4,.database-config_page .col-sm-6, .database-config_page .col-sm-8{ padding-right: 5px; padding-left: 5px;}
+.database-config_page .form-group{margin-bottom: 11px;}
+.database-config_page form .form-group .custom-checkbox{ display: block;}
+.database-config_page form .form-group .custom-checkbox .form-check-label{
+    padding: 7px 12px;
+    border: 0;
+    background: #FAF7F7;
+    font: normal normal normal 11px/14px Roboto;
+    display: block;
+}
+.database-config_page form .form-group .custom-checkbox input:checked ~ .form-check-label{border: 0;background: #EAF1FD}
+.database-config_page select.form-control:not([size]):not([multiple]){height: 28px;}
+.database-config_page .form-group .form-control::placeholder{ color: #C6CAC6;}
+.database-config_page .top-section{margin-bottom: 10px;}
+.database-config_page .errorArea{ margin: 15px 0 10px; border: 0;font: normal normal normal 11px/12px Helvetica Neue;letter-spacing: 0px; color: #BA1111;}
+.database-config_page .errorArea ul{ margin: 0; padding-left: 17px;}
+.database-config_page .errorArea.warningError{ background-color: #fff7aa; color: #bc7102;}
+.database-config_page .btn-primary{padding: 8px 10px; font: normal normal normal 16px/21px Roboto;}
+.database-config_page .test-btn{margin: 25px 0 20px;}
+.database-config_page .form-group select.select-bg{
+    background: url('./images/down-arrow_icon-gray.svg') no-repeat right center #FAF7F7;
+    background-size: 8px;
+    background-position: 96%;
+    -webkit-appearance: none;
+}
+/* Database Config CSS END */
+
+/* Extract Page CSS START */
 .extract_page{margin-top: 43px; padding: 0;}
 .extract_page .inner-container{padding: 0 19px;}
 .extract_page h5{
@@ -376,18 +418,16 @@ form .form-group .custom-checkbox input:checked ~ .form-check-label {
 .extract_page .form-group .extract-btn{display: flex;align-items: flex-end;}
 .extract_page form{margin-bottom: 20px; margin-top: 10px;}
 .extract_page .form-group .form-control.select-date{ height: 38px; position: relative;z-index: 1; background: transparent;}
-.extract_page .form-group input.select-date + .cal_icon{
-    width: 16px;
-    height: 16px;
-    position: absolute;
-    right: 17px;
-    bottom: 12px;
-    line-height: 0;
-}
-.extract_page .form-group input[type="text"] + .cal_icon{display: block;}
-.extract_page .form-group input.select-date + .cal_icon img{max-width: 100%;}
-.extract_page .form-group input[type="date"] + .cal_icon{display: none;}
+.extract_page .form-group .form-control.select-date{ background: url('./images/calendar_icon.svg')  96% 50% no-repeat ; background-size: 16px;}
+.extract_page .form-group .form-control.select-date::-webkit-inner-spin-button { -webkit-appearance: none; display: none;}
+.extract_page .form-group .form-control.select-date::-webkit-calendar-picker-indicator { -webkit-appearance: none; opacity: 0;}
 .extract_page .form-group .extract-btn .btn-primary{font-size: 16px; line-height: 21px; padding: 7.5px 10px;width: 100%;}
+.extract_page .form-group select.select-bg{
+    background: url(./images/down-arrow_icon.svg) no-repeat right center #EAF1FD;
+    -webkit-appearance: none;
+    background-position: 96% 10px;
+    background-size: 15px;
+}
 .date-row .col-sm-5{
     -ms-flex: 0 0 37.666667%;
     flex: 0 0 37.666667%;
@@ -401,3 +441,4 @@ form .form-group .custom-checkbox input:checked ~ .form-check-label {
 }
 .extract_page form  .row.date-row{margin-left: 0; margin-right: 0;}
 .extract_page .date-row .col-sm-5, .extract_page .date-row .col-sm-6, .extract_page .date-row .col{ margin: 0 5px;  padding: 0;}
+/* Extract Page CSS END */

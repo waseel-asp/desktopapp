@@ -142,8 +142,9 @@ module.exports = {
 function fetchDbConfig(callback) {
     var url = environment.selectURL(localStorage.getItem('environment'));
     var path = '/settings/providers/' + getProviderId() + '/db-config';
+    
     var authorizationToken = 'Bearer ' + localStorage.getItem('access_token');;
-
+    console.log(url+path);
     const reqOptions = {
         hostname: url,
         path: path,
@@ -165,7 +166,7 @@ function fetchDbConfig(callback) {
         res.on('end', () => {
             let responseBody = Buffer.concat(chunksOfData);
             responseData = JSON.parse(responseBody.toString());
-            console.log(responseData);
+            
             if (res.statusCode == 200 || res.statusCode == 201) {
                 if (responseData.dbObject) {
                     let dbParams = {
@@ -177,7 +178,7 @@ function fetchDbConfig(callback) {
                         "password": responseData.dbObject.dbPassword
                     };
                     callback(true, dbParams, "Db configurations available");
-                }else{
+                } else {
                     callback(false, undefined, "No DB connection");
                 }
             } else {

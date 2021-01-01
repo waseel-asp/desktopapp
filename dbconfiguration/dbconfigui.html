@@ -2,6 +2,7 @@
 
 <head>
     <title>Database Configuration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="../webjars/bootstrap.min.css" rel="stylesheet">
     <link href="../style.css" rel="stylesheet">
     <script>window.$ = window.jQuery = require('../webjars/jquery.min.js');</script>
@@ -13,85 +14,79 @@
     </div>
     <div class="container">
         <div class="card database-config_page">
-
-
-            <div>
-                <div class="database-config">
-                    <div class="inner-container">
-                        <h5 style="color: #3060aa; text-align: center; padding: 10px">Midtables Configuration</h5>
-                    </div>
-                    <hr>
-                    <div style="background-color: rgb(248,213,212);padding-top: 15px;margin-bottom: 10px;border-radius: 5px;color: rgb(188,75,71);font-size: 13px;font-weight: 500;overflow: auto;max-height: 100px;display: none;"
-                        id="error-block">
-                        <ul id="db-errors">
-                        </ul>
-                    </div>
-                    <div style="background-color: peachpuff;padding-top: 15px;margin-bottom: 10px;border-radius: 5px;color: rgb(188,75,71);font-size: 13px;font-weight: 500;overflow: auto;max-height: 100px;display: none;"
-                        id="warning-block">
-                        <ul id="db-warnings">
-                        </ul>
-                    </div>
-                    <div class="inner-container">
-                        <div>
-                            <h6 style="color: grey">Database Configuration</h6>
-                            <form>
-                                <div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-4">
-                                            <div class="form-control radio-bg">
-                                                <label class="form-check-label" for="oracle">Oracle</label>
-                                                <input class="form-check-input text-right radio-right" id="oracle" type="radio" name="dbtype" value="ORACLE" required checked="checked"
-                                                    disabled>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <div class="form-control radio-bg">
-                                                <label class="form-check-label" for="sqlserver">SqlServer</label>
-                                                <input class="form-check-input text-right radio-right" id="sqlserver" type="radio" name="dbtype" value="SQLSERVER" required
-                                                    disabled>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <div class="form-control radio-bg">
-                                                <label class="form-check-label" for="sqlserver">MySql</label>
-                                                <input class="form-check-input text-right radio-right" id="mysql" type="radio" name="dbtype" value="MYSQL" required disabled>
-                                            </div>
-                                        </div>
-                                        <!-- <div class="form-control col-sm-4 input-color relative">
-                                                        <label class="form-check-label" for="mysql">MySql</label>
-                                                        <input class="form-check-input text-right radio-right" id="mysql" type="radio" name="dbtype" value="mysql" required>
-                                                    </div> -->
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-6">
-                                            <input class="form-control" type="text" id="ip" placeholder="HostName/IP *" required disabled />
-                                        </div>
-                                        <div class="col-sm-2">
-                                            <input class="form-control" type="text" id="port" placeholder="port *" required disabled />
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <input class="form-control" type="text" id="database" placeholder="DatabaseName/SID *" required disabled />
+            <div class="database-config">
+                <div class="inner-container">
+                    <h5>Midtables Configuration</h5>
+                </div>
+                <hr>
+                <div class="inner-container">
+                    <div>
+                        <form onsubmit="databaseConfiguration();return false;">
+                            <div class="errorArea" style="display: none;" id="error-block">
+                                <ul id="db-errors"></ul>
+                            </div>
+                            <div style="display: none;" class="errorArea warningError" id="warning-block">
+                                <ul id="db-warnings"></ul>
+                            </div>
+                            <div class="top-section">
+                                <h6>Database</h6>
+                                <div class="form-group row">
+                                    <div class="col-sm-4">
+                                        <div class="form-check form-check-inline custom-checkbox">
+                                            <input class="form-check-input text-right radio-right" id="oracle" type="radio" name="dbtype" value="ORACLE" required checked="checked" disabled>
+                                            <label class="form-check-label" for="oracle">Oracle</label>
                                         </div>
                                     </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-6">
-                                            <input class="form-control" id="username" type="text" placeholder="Username *" required disabled />
+                                    <div class="col-sm-4">
+                                        <div class="form-check form-check-inline custom-checkbox">
+                                            <input class="form-check-input text-right radio-right" id="sqlserver" type="radio" name="dbtype" value="SQLSERVER" required disabled>
+                                            <label class="form-check-label" for="sqlserver">SqlServer</label>
                                         </div>
-                                        <div class="col-sm-6">
-                                            <input class="form-control" id="password" type="password" placeholder="Password *" disabled />
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-check form-check-inline custom-checkbox">
+                                            <input class="form-check-input text-right radio-right" id="mysql" type="radio" name="dbtype" value="MYSQL" required disabled>
+                                            <label class="form-check-label" for="sqlserver">MySql</label>
                                         </div>
+                                    </div>
+                                    <!-- <div class="form-control col-sm-4 input-color relative">
+                                <label class="form-check-label" for="mysql">MySql</label>
+                                <input class="form-check-input text-right radio-right" id="mysql" type="radio" name="dbtype" value="mysql" required>
+                            </div> -->
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-6">
+                                        <label for="HostName/IP" class="col-sm-12 form-label">HostName/IP</label>
+                                        <input class="form-control" type="text" id="ip" placeholder="HostName/IP *" required disabled />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <label for="Port" class="col-sm-12 form-label">Port</label>
+                                        <input class="form-control" type="text" id="port" placeholder="port *" required disabled />
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label for="DatabaseName/SID" class="col-sm-12 form-label">Database Name/SID</label>
+                                        <input class="form-control" type="text" id="database" placeholder="DatabaseName/SID *" required disabled />
                                     </div>
                                 </div>
-                            </form>
-                            <div class="text-right" style="padding-top: 0.5rem">
-                                <button onclick="refresh()" class="btn btn-primary btn-signin" id="save-config-button">Refresh & Test
-                                </button>
+                                <div class="form-group row">
+                                    <div class="col-sm-6">
+                                        <label for="Username" class="col-sm-12 form-label">Username</label>
+                                        <input class="form-control" id="username" type="text" placeholder="Username *" required disabled />
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="Password" class="col-sm-12 form-label">Password</label>
+                                        <input class="form-control" id="password" type="password" placeholder="Password *" required disabled />
+                                    </div>
+                                </div>
+                                <div class="form-group row test-btn">
+                                    <div class="col-sm-12 text-right">
+                                        <button onclick="refresh()" type="submit" class="btn btn-primary" id="test">Refresh & Test</button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
-
-
             </div>
         </div>
     </div>
