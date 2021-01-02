@@ -11,9 +11,9 @@
 }
 @font-face {
     font-family: 'Helvetica Neue';
-    src: url('fonts/Helvetica-R/HelveticaNeue-Bold.woff') format('woff'),
-        url('fonts/Helvetica-R/HelveticaNeue-Bold.ttf') format('truetype'),
-        url('fonts/Helvetica-R/HelveticaNeue-Bold.svg#HelveticaNeue-Bold') format('svg');
+    src: url('fonts/HelveticaBold/HelveticaNeue-Bold.woff') format('woff'),
+        url('fonts/HelveticaBold/HelveticaNeue-Bold.ttf') format('truetype'),
+        url('fonts/HelveticaBold/HelveticaNeue-Bold.svg#HelveticaNeue-Bold') format('svg');
     font-weight: bold;
     font-style: normal;
     font-display: swap;
