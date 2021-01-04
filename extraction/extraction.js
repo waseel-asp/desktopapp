@@ -1,20 +1,117 @@
+var claimTypeMap = new Map();
+var providerMappingCode;
 $(function () {
     $("#nav-placeholder").load("../home/page.html");
+    var httpRequest = require('https');
+    const environment = require('../environment.js');
     var jwt_decode = require('jwt-decode')
     var token = localStorage.getItem('access_token');
     var decoded = jwt_decode(token);
-    let decodepayers = decoded.payers;
-    let payers = [];
-    for (let payerid in decodepayers) {
-        payers.push({ id: `${payerid}`, name: `${decodepayers[payerid]}` })
-    }
     var selectList = document.getElementById('selectedPayer');
-    for (var i = 0; i < payers.length; i++) {
-        var option = document.createElement("option");
-        option.value = payers[i].id;
-        option.text = payers[i].name.split(',')[0];
-        selectList.appendChild(option);
-    }
+    var url = environment.selectURL(localStorage.getItem('environment'));
+    var urlPath = '/settings/providers/' + decoded.prov_id + '/payer-mapping';
+    var authorizationToken = 'Bearer '+ token;
+    // EX : https://api.qa-eclaims.waseel.com/settings/providers/601/payer-mapping
+    const payerOptions = {
+        hostname: url,
+        path: urlPath,
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': authorizationToken
+        }
+    };
+    const mappingReq = httpRequest.request(payerOptions, (res) => {
+        let chunksOfData = [];
+        res.on('data', (chunk) => {
+            chunksOfData.push(chunk);
+        });
+        res.on('end', () => {
+            let responseBody = Buffer.concat(chunksOfData);
+            responseData = JSON.parse(responseBody.toString());
+            console.log(responseData);
+            if (res.statusCode == 200 || res.statusCode == 201) {
+                if (responseData.response) {
+                    let arr = responseData.mappingList;
+                    arr.forEach(element => {
+                        var option = document.createElement("option");
+                        option.value = element.mappingName;
+                        option.text = `${element.payerName} (${element.mappingName})`;
+                        selectList.appendChild(option);
+                    });
+                }
+            } else if (res.statusCode == 401) {
+                alert("Token is expired. Please again sign in.")
+                window.location.href = "../login/loginui.html";
+            }
+        });
+    });
+    mappingReq.end();
+    var urlPath = '/settings/providers/' + decoded.prov_id + '/map-values?withCat=true';
+    // EX : https://api.qa-eclaims.waseel.com/settings/providers/601/map-values?withCat=true
+    const claimOptions = {
+        hostname: url,
+        path: urlPath,
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': authorizationToken
+        }
+    };
+    const claimReq = httpRequest.request(claimOptions, (res) => {
+        let chunksOfData = [];
+        res.on('data', (chunk) => {
+            chunksOfData.push(chunk);
+        });
+        res.on('end', () => {
+            let responseBody = Buffer.concat(chunksOfData);
+            responseData = JSON.parse(responseBody.toString());
+            if (res.statusCode == 200 || res.statusCode == 201) {
+                if (responseData != null) {
+                    let arr = responseData.claimType.codes;
+                    for(var i=0; i<Object.keys(arr).length; i++) {
+                        claimTypeMap.set(Object.keys(arr)[i], Object.values(arr)[i].values);
+                    }
+                    console.log(claimTypeMap);
+                }
+            } else if (res.statusCode == 401) {
+                alert("Token is expired. Please again sign in.")
+                window.location.href = "../login/loginui.html";
+            }
+        });
+    });
+    claimReq.end();
+    var urlPath = '/settings/providers/' + decoded.prov_id + '/provider-mapping';
+    // EX : https://api.qa-eclaims.waseel.com/settings/providers/601/provider-mapping
+    var providerOptions = {
+        hostname: url,
+        path: urlPath,
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': authorizationToken
+        }
+    };
+    const providerReq = httpRequest.request(providerOptions, (res) => {
+        let chunksOfData = [];
+        res.on('data', (chunk) => {
+            chunksOfData.push(chunk);
+        });
+        res.on('end', () => {
+            let responseBody = Buffer.concat(chunksOfData);
+            responseData = JSON.parse(responseBody.toString());
+            console.log(responseData);
+            if (res.statusCode == 200 || res.statusCode == 201) {
+                if (responseData.providerMapping != null) {
+                    providerMappingCode = responseData.providerMapping.mappingProviderCode;
+                }
+            } else if (res.statusCode == 401) {
+                alert("Token is expired. Please again sign in.")
+                window.location.href = "../login/loginui.html";
+            }
+        });
+    });
+    providerReq.end();
     openConnection();
 });
 const wslConnection = require('../dbConnection/wslConnection.js')
@@ -54,35 +151,43 @@ function connect() {
         alert("Please ensure that the End Date is greater than or equal to the Start Date.");
         return false;
     }
-    var provider_id = localStorage.getItem('provider_id');
-    // var prov_code = decoded.prov_code;
-    var payer, claimName;
-    // let payerSql = `SELECT * FROM payer_mapping WHERE provider_id = ? AND payer_id = ?`;
-    // sqlLiteConnection.getDb().all(payerSql, [provider_id, selectedPayer], (err, rows) => {
-    //     if (rows.length == 1) {
-    //         payer = rows[0].mapping_value;
-    //     }
-    // });
-    // let claimSql = `SELECT * FROM claim_mapping WHERE provider_id = ? AND claim_name = ?`;
-    // sqlLiteConnection.getDb().all(claimSql, [provider_id, selectedClaim], (err, rows) => {
-    //     if (rows.length == 1) {
-    //         claimName = rows[0].mapping_value;
-    //     }
-    // });
     wslConnection.connect().then(data => {
         var query = "";
         var database = database_type;
-        var provider_code = localStorage.getItem('provider_code');
-        if (database.toLowerCase() == "oracle") {
-            query = "select * from WSL_GENINFO where PROVIDERID='" + provider_code + "' AND CLAIMTYPE='" + claimName + "' AND PAYERID='" + payer + "' AND CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd') AND TO_DATE('" + endDate + "','yyyy-mm-dd') ";
+        var claimType = "' '";
+        if (selectedClaim.toLowerCase() != 'all') {
+            claimTypeMap.get(selectedClaim).forEach(element => {
+                if(element == claimTypeMap.get(selectedClaim)[0])
+                    claimType = "'" + element + "'";
+                else
+                    claimType += ", '" + element + "'";
+            });
         } else {
-            query = "select * from WSL_GENINFO where PROVIDERID='" + provider_code + "' AND CLAIMTYPE='" + claimName + "' AND PAYERID='" + payer + "' AND CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "' ";
+            var temp = document.getElementById('selectedClaim').childNodes;
+            var zero = 0;
+            temp.forEach(element => {
+                if(element.value != undefined && element.value != '') {
+                    if(claimTypeMap.get(element.value) != undefined) {
+                        claimTypeMap.get(element.value).forEach(ele => {
+                            if(zero == 0 && ele == claimTypeMap.get(element.value)[0]) {
+                                zero = 1;
+                                claimType = "'" + ele + "'";
+                            }
+                            else
+                                claimType += ", '" + ele + "'";
+                        });
+                    }
+                }
+            });
+        }
+        if (database.toLowerCase() == "oracle") {
+            query = "select * from WSL_GENINFO where PROVIDERID='" + providerMappingCode + "' AND CLAIMTYPE IN(" + claimType + ") AND PAYERID='" + selectedPayer + "' AND CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd') AND TO_DATE('" + endDate + "','yyyy-mm-dd') ";
+        } else {
+            query = "select * from WSL_GENINFO where PROVIDERID='" + providerMappingCode + "' AND CLAIMTYPE IN(" + claimType + ") AND PAYERID='" + selectedPayer + "' AND CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "' ";
         }
         console.log(query);
         setClaims(query, function (claimList) {
             console.log(claimList);
-            console.log('sendClaim(claimList)');
-            // sendClaim.sendClaim(claimList);
             if (claimList.length > 0)
                 sendClaim.sendClaim(claimList);
             else {

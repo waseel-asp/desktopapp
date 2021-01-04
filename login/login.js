@@ -85,6 +85,8 @@ function callLogin() {
 
     req.on('error', (e) => {
         console.error(`problem with request: ${e.message}`);
+        alert(`Error : URL is not Valid.\nCurrent URL is : ${e.message.split(' ')[2]}` + 
+        `\n\nPlease contact to waseel.`);
     });
     req.write(body);
     req.end();
