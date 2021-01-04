@@ -33,22 +33,22 @@
                                 <div class="form-group row">
                                     <div class="col-sm-4">
                                         <div class="form-check form-check-inline custom-checkbox">
-                                            <input class="form-check-input text-right radio-right" id="oracle" type="radio" name="dbtype" value="ORACLE" required checked="checked" disabled>
-                                            <label class="form-check-label" for="oracle">Oracle</label>
+                                            <input class="form-check-input text-right radio-right"  type="radio" value="ORACLE" required checked="checked" readonly>
+                                            <label class="form-check-label"  id="dbtype" for="db">DBNAME</label>
                                         </div>
                                     </div>
-                                    <div class="col-sm-4">
+                                    <!-- <div class="col-sm-4">
                                         <div class="form-check form-check-inline custom-checkbox">
-                                            <input class="form-check-input text-right radio-right" id="sqlserver" type="radio" name="dbtype" value="SQLSERVER" required disabled>
+                                            <input class="form-check-input text-right radio-right" id="dbtype" type="radio" value="SQLSERVER" required readonly>
                                             <label class="form-check-label" for="sqlserver">SqlServer</label>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="form-check form-check-inline custom-checkbox">
-                                            <input class="form-check-input text-right radio-right" id="mysql" type="radio" name="dbtype" value="MYSQL" required disabled>
+                                            <input class="form-check-input text-right radio-right" id="dbtype" type="radio" value="MYSQL" required readonly>
                                             <label class="form-check-label" for="sqlserver">MySql</label>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <!-- <div class="form-control col-sm-4 input-color relative">
                                 <label class="form-check-label" for="mysql">MySql</label>
                                 <input class="form-check-input text-right radio-right" id="mysql" type="radio" name="dbtype" value="mysql" required>
@@ -57,25 +57,25 @@
                                 <div class="form-group row">
                                     <div class="col-sm-6">
                                         <label for="HostName/IP" class="col-sm-12 form-label">HostName/IP</label>
-                                        <input class="form-control" type="text" id="ip" placeholder="HostName/IP *" required disabled />
+                                        <input class="form-control" type="text" id="ip" placeholder="HostName/IP *" required/>
                                     </div>
                                     <div class="col-sm-2">
                                         <label for="Port" class="col-sm-12 form-label">Port</label>
-                                        <input class="form-control" type="text" id="port" placeholder="port *" required disabled />
+                                        <input class="form-control" type="text" id="port" placeholder="port *" required readonly />
                                     </div>
                                     <div class="col-sm-4">
                                         <label for="DatabaseName/SID" class="col-sm-12 form-label">Database Name/SID</label>
-                                        <input class="form-control" type="text" id="database" placeholder="DatabaseName/SID *" required disabled />
+                                        <input class="form-control" type="text" id="database" placeholder="DatabaseName/SID *" required readonly />
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-6">
                                         <label for="Username" class="col-sm-12 form-label">Username</label>
-                                        <input class="form-control" id="username" type="text" placeholder="Username *" required disabled />
+                                        <input class="form-control" id="username" type="text" placeholder="Username *" required readonly />
                                     </div>
                                     <div class="col-sm-6">
                                         <label for="Password" class="col-sm-12 form-label">Password</label>
-                                        <input class="form-control" id="password" type="password" placeholder="Password *" required disabled />
+                                        <input class="form-control" id="password" type="password" placeholder="Password *" required readonly />
                                     </div>
                                 </div>
                                 <div class="form-group row test-btn">
