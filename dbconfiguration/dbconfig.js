@@ -21,6 +21,9 @@ function getExistingDatabaseValue() {
             document.getElementById('password').value = dbParams.password;
 
             validateDatabase(wslConnection, dbParams);
+        }else{
+            document.getElementById("error-block").style.display = "block";
+            document.getElementById("db-errors").innerHTML += "<li>"+message+"</li>"
         }
     });
 }

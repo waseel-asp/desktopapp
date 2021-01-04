@@ -12,7 +12,9 @@ var schema = {
 };
 
 async function validateDatabase(wslConnection, dbParams) {
-
+    document.getElementById("warning-block").style.display = "none";
+    document.getElementById("error-block").style.display = "none";
+    
     wslConnection.checkConnection(dbParams).then(async data => {
         console.log("Connection succesful.")
 

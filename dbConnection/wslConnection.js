@@ -131,8 +131,11 @@ module.exports = {
     },
     fetchDatabase: function (callback) {
         fetchDbConfig(function (isConnectionAvailable, params, message) {
-            dbParams = params;
-            localStorage.getItem("dbParams");
+            
+            if(isConnectionAvailable){
+                dbParams = params;
+                localStorage.getItem("dbParams");
+            }
             callback(isConnectionAvailable, dbParams, message);
         });
     },
@@ -144,7 +147,7 @@ function fetchDbConfig(callback) {
     var path = '/settings/providers/' + getProviderId() + '/db-config';
     
     var authorizationToken = 'Bearer ' + localStorage.getItem('access_token');;
-    console.log(url+path);
+    
     const reqOptions = {
         hostname: url,
         path: path,
@@ -168,7 +171,7 @@ function fetchDbConfig(callback) {
             responseData = JSON.parse(responseBody.toString());
             
             if (res.statusCode == 200 || res.statusCode == 201) {
-                if (responseData.dbObject) {
+                if (responseData.dbObject != null) {
                     let dbParams = {
                         "db_type": responseData.dbObject.dbType,
                         "hostname": responseData.dbObject.hostName,
@@ -179,11 +182,11 @@ function fetchDbConfig(callback) {
                     };
                     callback(true, dbParams, "Db configurations available");
                 } else {
-                    callback(false, undefined, "No DB connection");
+                    callback(false, undefined, "No DB Configuration!");
                 }
             } else {
                 if (res.statusCode <= 500 && res.statusCode >= 400) {
-                    callback(false, undefined, "No DB connection");
+                    callback(false, undefined, "Failed to connect to server!");
                 }
             }
         });

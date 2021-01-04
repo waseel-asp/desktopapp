@@ -73,7 +73,7 @@ function callLogin() {
 
             } else {
                 if (res.statusCode <= 500 && res.statusCode >= 400) {
-                    console.log("In eroror");
+                    console.log("In error");
                     document.getElementById("errorArea").style.display = "block";
                     document.getElementById("errorMessage").innerHTML = "username/password is invaild!";
                 }
