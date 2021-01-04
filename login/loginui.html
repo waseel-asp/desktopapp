@@ -13,7 +13,7 @@
                 <div class="card">
                     <!-- Icon -->
                     <p id="version"></p>
-                    <img src="../images/waseel_logo_Dark_Blue.png" class="profile-img-card" id="icon" alt="Logo" />
+                    <img src="../images/log_in_logo.svg" class="profile-img-card" id="icon" alt="Logo" />
                     <div class="card-body" id="login-card">
                         <form class="form-signin" onsubmit="callLogin();return false">
                             <div class="form-group row">
@@ -51,10 +51,14 @@
                             </div>
                         </form>
                     </div>
-                    <div id="upnotification">
-                        <div id="notification" class="hidden">
+                    <div id="upnotification" class="hidden">
+                        <div id="notification">
                             <p id="message"></p>
-                            <button id="restart-button" onClick="restartApp()" class="btn btn-signin hidden">Restart</button>
+                            <p id="inner-message" class="label-text"></p>
+                            <!-- <div id="myProgress">
+                                <div id="myBar"></div>
+                            </div> -->
+                            <button id="restart-button" onClick="restartApp()" class="btn btn-primary">Restart</button>
                         </div>
                     </div>
                 </div>

@@ -114,6 +114,11 @@ $(function () {
     providerReq.end();
     openConnection();
 });
+
+function refresh(){
+    location.reload();
+}
+
 const wslConnection = require('../dbConnection/wslConnection.js')
 const sendClaim = require('./sendClaim.js');
 

@@ -14,13 +14,16 @@
    const password = document.getElementById('password');
    const radioButton = document.getElementsByName('urlOption');
    const loginButton = document.getElementById('login-button');
-   const notification = document.getElementById('notification');
+   const upnotification = document.getElementById('upnotification');
    const message = document.getElementById('message');
+   const innerMessage = document.getElementById('inner-message');
    const restartButton = document.getElementById('restart-button');
    ipcRenderer.on('update_available', () => {
        ipcRenderer.removeAllListeners('update_available');
-       message.innerText = 'A new update is available. Downloading now...';
-       notification.classList.remove('hidden');
+       message.innerText = 'New Update Available';
+       innerMessage.innerText = 'Downloading Now…';
+       restartButton.disabled = true;
+       upnotification.classList.remove('hidden');
        loginCard.classList.add('login-card-disable');
        username.disabled = true;
        password.disabled = true;
@@ -31,9 +34,10 @@
    });
    ipcRenderer.on('update_downloaded', () => {
        ipcRenderer.removeAllListeners('update_downloaded');
-       message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
-       restartButton.classList.remove('hidden');
-       notification.classList.remove('hidden');
+       message.innerText = 'New Update Available';
+       innerMessage.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
+       restartButton.disabled = false;
+       upnotification.classList.remove('hidden');
        loginCard.classList.add('login-card-disable');
        username.disabled = true;
        password.disabled = true;
@@ -44,7 +48,7 @@
    });
 
 //    function closeNotification() {
-//        notification.classList.add('hidden');
+//        upnotification.classList.add('hidden');
 //        loginCard.classList.remove('login-card-disable');
 //        username.disabled = false;
 //        password.disabled = false;
