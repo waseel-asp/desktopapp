@@ -1,5 +1,4 @@
 var claimTypeMap = new Map();
-var providerMappingCode;
 $(function () {
     $("#nav-placeholder").load("../home/page.html");
     var httpRequest = require('https');
@@ -47,6 +46,7 @@ $(function () {
         });
     });
     mappingReq.end();
+    var selectClaimList = document.getElementById('selectedClaim').childNodes;
     var urlPath = '/settings/providers/' + decoded.prov_id + '/map-values?withCat=true';
     // EX : https://api.qa-eclaims.waseel.com/settings/providers/601/map-values?withCat=true
     const claimOptions = {
@@ -71,6 +71,12 @@ $(function () {
                     let arr = responseData.claimType.codes;
                     for(var i=0; i<Object.keys(arr).length; i++) {
                         claimTypeMap.set(Object.keys(arr)[i], Object.values(arr)[i].values);
+                        selectClaimList.forEach(ele => {
+                            if(ele.value == Object.keys(arr)[i]) {
+                                var len = Object.values(arr)[i].values.length;
+                                ele.innerHTML += ' ('+ Object.values(arr)[i].values[len - 1] + ')';
+                            }
+                        });
                     }
                     console.log(claimTypeMap);
                 }
@@ -81,37 +87,6 @@ $(function () {
         });
     });
     claimReq.end();
-    var urlPath = '/settings/providers/' + decoded.prov_id + '/provider-mapping';
-    // EX : https://api.qa-eclaims.waseel.com/settings/providers/601/provider-mapping
-    var providerOptions = {
-        hostname: url,
-        path: urlPath,
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': authorizationToken
-        }
-    };
-    const providerReq = httpRequest.request(providerOptions, (res) => {
-        let chunksOfData = [];
-        res.on('data', (chunk) => {
-            chunksOfData.push(chunk);
-        });
-        res.on('end', () => {
-            let responseBody = Buffer.concat(chunksOfData);
-            responseData = JSON.parse(responseBody.toString());
-            console.log(responseData);
-            if (res.statusCode == 200 || res.statusCode == 201) {
-                if (responseData.providerMapping != null) {
-                    providerMappingCode = responseData.providerMapping.mappingProviderCode;
-                }
-            } else if (res.statusCode == 401) {
-                alert("Token is expired. Please again sign in.")
-                window.location.href = "../login/loginui.html";
-            }
-        });
-    });
-    providerReq.end();
     openConnection();
 });
 
@@ -185,6 +160,7 @@ function connect() {
                 }
             });
         }
+        var providerMappingCode = localStorage.getItem('provider_mapping_code');
         if (database.toLowerCase() == "oracle") {
             query = "select * from WSL_GENINFO where PROVIDERID='" + providerMappingCode + "' AND CLAIMTYPE IN(" + claimType + ") AND PAYERID='" + selectedPayer + "' AND CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd') AND TO_DATE('" + endDate + "','yyyy-mm-dd') ";
         } else {

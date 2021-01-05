@@ -30,7 +30,7 @@
     <div class="user-action">
         <div class="user-info">
             <h3 id="providerName"></h3>
-            <span id="providerId"></span>
+            <span id="providerCode"></span><span id="providerMappingCode"></span>
         </div>
         <div class="navbar-nav ml-auto" onclick="logout()">
             <button class="btn btn-primary btn-block btn-logout" onclick="logout();return false;">
@@ -46,7 +46,44 @@
 <script>
     $(function () {
         document.getElementById("providerName").innerHTML = localStorage.getItem("provider_name");
-        document.getElementById("providerId").innerHTML = localStorage.getItem("provider_id");
+        document.getElementById("providerCode").innerHTML = localStorage.getItem("provider_code");
+        var httpRequest = require('https');
+        var environment = require('../environment.js');
+        var url = environment.selectURL(localStorage.getItem('environment'));
+        var authorizationToken = 'Bearer '+ localStorage.getItem("access_token");
+        var urlPath = '/settings/providers/' + localStorage.getItem("provider_id") + '/provider-mapping';
+        // EX : https://api.qa-eclaims.waseel.com/settings/providers/601/provider-mapping
+        var providerOptions = {
+            hostname: url,
+            path: urlPath,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': authorizationToken
+            }
+        };
+        const providerReq = httpRequest.request(providerOptions, (res) => {
+            let chunksOfData = [];
+            res.on('data', (chunk) => {
+                chunksOfData.push(chunk);
+            });
+            res.on('end', () => {
+                let responseBody = Buffer.concat(chunksOfData);
+                responseData = JSON.parse(responseBody.toString());
+                console.log(responseData);
+                if (res.statusCode == 200 || res.statusCode == 201) {
+                    if (responseData.providerMapping != null) {
+                        var providerMappingCode = responseData.providerMapping.mappingProviderCode;
+                        localStorage.setItem('provider_mapping_code', providerMappingCode);
+                        document.getElementById("providerMappingCode").innerHTML = ' ('+providerMappingCode+')';
+                    }
+                } else if (res.statusCode == 401) {
+                    alert("Token is expired. Please again sign in.")
+                    window.location.href = "../login/loginui.html";
+                }
+            });
+        });
+        providerReq.end();
     })
     function logout(){
     localStorage.removeItem('access_token');
