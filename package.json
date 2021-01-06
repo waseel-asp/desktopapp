@@ -1,6 +1,6 @@
 {
     "name": "waseele_desktop",
-    "version": "1.0.27",
+    "version": "1.0.28",
     "description": "waseele desktop",
     "main": "autoupdater/autoupdater.js",
     "scripts": {
@@ -8,8 +8,16 @@
         "build": "electron-builder build --win --publish never",
         "deploy": "electron-builder build --win --publish always"
     },
+    "build": {
+        "productName": "Waseel",
+        "appId": "com.example.ElectronAutoUpdate",
+        "directories": {
+            "buildResources": "images",
+            "output": "release"
+        }
+    },
     "files": [
-        "images/desktop_app_icon.ico"
+        "images/**/*"
     ],
     "icon": "images/desktop_app_icon.ico",
     "repository": {
