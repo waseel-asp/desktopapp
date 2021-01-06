@@ -36,7 +36,14 @@ async function validateDatabase(wslConnection, dbParams) {
                     if (data.length > 0) {
 
                         var tableColumns = "('" + schema[tableName].join("','") + "')";
-                        var que = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + tableName + "' AND UPPER(COLUMN_NAME) IN " + tableColumns + ";";
+                        var que;
+
+                        if (dbParams.db_type.toUpperCase() == "MYSQL") {
+                            que = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + tableName + "' and TABLE_SCHEMA='" + dbParams.database_name + "' AND UPPER(COLUMN_NAME) IN " + tableColumns + ";";
+                        } else if (dbParams.db_type.toUpperCase() == "SQLSERVER") {
+                            que = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + tableName + "' and  TABLE_CATALOG='" + dbParams.database_name + "' AND UPPER(COLUMN_NAME) IN " + tableColumns + ";";
+                        }
+
 
                         await wslConnection.query(que).then(async result => {
                             if (result.length > 0) {
@@ -52,7 +59,7 @@ async function validateDatabase(wslConnection, dbParams) {
                             console.log(err);
                         });
                     } else {
-                        warningTables.push("<li>Table" + tableName + " not present in database</li>");
+                        warningTables.push("<li>Table " + tableName + " not present in database</li>");
                     }
                 }, err => {
                     console.log(err);
