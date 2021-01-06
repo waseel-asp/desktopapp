@@ -1,6 +1,6 @@
 {
     "name": "waseele_desktop",
-    "version": "1.0.37",
+    "version": "1.0.38",
     "description": "waseele desktop",
     "main": "autoupdater/autoupdater.js",
     "scripts": {
@@ -9,7 +9,7 @@
         "deploy": "electron-builder build --win --publish always"
     },
     "files": [
-        "images/desktop_app_icon.ico"
+        "images/**/*"
     ],
     "icon": "images/desktop_app_icon.ico",
     "repository": {
