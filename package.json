@@ -1,6 +1,6 @@
 {
     "name": "waseele_desktop",
-    "version": "1.0.30",
+    "version": "1.0.31",
     "description": "waseele desktop",
     "main": "autoupdater/autoupdater.js",
     "scripts": {
@@ -33,9 +33,7 @@
         "jwt-decode": "^3.1.2",
         "mssql": "^6.2.3",
         "mysql": "^2.18.1",
-        "nodejs-websocket": "^1.7.2",
-        "oracledb": "^5.1.0",
-        "tedious": "^9.2.1"
+        "oracledb": "^5.1.0"
     },
     "resolutions": {
         "fs-extra": "9.0.1",
