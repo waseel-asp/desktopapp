@@ -14,7 +14,7 @@ var schema = {
 async function validateDatabase(wslConnection, dbParams) {
     document.getElementById("warning-block").style.display = "none";
     document.getElementById("error-block").style.display = "none";
-    
+
     wslConnection.checkConnection(dbParams).then(async data => {
         console.log("Connection succesful.")
 
@@ -23,28 +23,41 @@ async function validateDatabase(wslConnection, dbParams) {
             var warningsColumns = new Array();
             var warningTables = new Array();
             for (var tableName in schema) {
+                var query;
 
-                await wslConnection.query("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" + tableName + "';").then(async data => {
+                if (dbParams.db_type.toUpperCase() == "MYSQL") {
+                    query = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" + tableName + "' and TABLE_SCHEMA='" + dbParams.database_name + "';"
+                } else if (dbParams.db_type.toUpperCase() == "SQLSERVER") {
+                    query = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" + tableName + "' and TABLE_CATALOG='" + dbParams.database_name + "';"
+                }
 
-                    var tableColumns = "('" + schema[tableName].join("','") + "')";
-                    var que = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + tableName + "' AND UPPER(COLUMN_NAME) IN " + tableColumns + ";";
+                await wslConnection.query(query).then(async data => {
 
-                    await wslConnection.query(que).then(async result => {
-                        if (result.length > 0) {
-                            await validateColumns(result, schema[tableName], function (unavailabeColumns) {
-                                if (unavailabeColumns.length > 0) {
-                                    warningsColumns.push("<li>Column " + unavailabeColumns.join(", ") + " not present in table " + tableName + "</li>");
-                                }
-                            });
-                        } else {
-                            warningsColumns.push("<li>No columns are not present in " + tableName + "</li>");
-                        }
-                    }, err => {
-                        console.log(err);
-                    });
+                    if (data.length > 0) {
+
+                        var tableColumns = "('" + schema[tableName].join("','") + "')";
+                        var que = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + tableName + "' AND UPPER(COLUMN_NAME) IN " + tableColumns + ";";
+
+                        await wslConnection.query(que).then(async result => {
+                            if (result.length > 0) {
+                                await validateColumns(result, schema[tableName], function (unavailabeColumns) {
+                                    if (unavailabeColumns.length > 0) {
+                                        warningsColumns.push("<li>Column " + unavailabeColumns.join(", ") + " not present in table " + tableName + "</li>");
+                                    }
+                                });
+                            } else {
+                                warningsColumns.push("<li>No columns are not present in " + tableName + "</li>");
+                            }
+                        }, err => {
+                            console.log(err);
+                        });
+                    } else {
+                        warningTables.push("<li>Table" + tableName + " not present in database</li>");
+                    }
                 }, err => {
                     console.log(err);
-                    warningTables.push("<li>" + tableName+" not present in database</li>");
+                    document.getElementById("error-block").style.display = "block";
+                    document.getElementById("db-errors").innerHTML += "<li>Unable to connect to database!</li><li>" + err + "</li>"
                 });
             }
 
@@ -72,24 +85,30 @@ async function validateDatabase(wslConnection, dbParams) {
 
                 await wslConnection.query("SELECT TABLE_NAME from USER_TABLES where TABLE_NAME='" + tableName + "'").then(async data => {
 
-                    var tableColumns = "('" + schema[tableName].join("','") + "')";
-                    await wslConnection.query("SELECT COLUMN_NAME from USER_TAB_COLS where TABLE_NAME = '" + tableName + "' AND UPPER(COLUMN_NAME) IN " + tableColumns).then(async result => {
+                    if (data.length > 0) {
+                        var tableColumns = "('" + schema[tableName].join("','") + "')";
+                        await wslConnection.query("SELECT COLUMN_NAME from USER_TAB_COLS where TABLE_NAME = '" + tableName + "' AND UPPER(COLUMN_NAME) IN " + tableColumns).then(async result => {
 
-                        if (result.length > 0) {
-                            await validateColumns(result, schema[tableName], function (unavailabeColumns) {
-                                if (unavailabeColumns.length > 0) {
-                                    warningsColumns.push("<li>Column " + unavailabeColumns.join(", ") + " not present in table " + tableName + "</li>");
-                                }
-                            });
-                        } else {
-                            warningsColumns.push("<li>No columns are not present in " + tableName + "</li>");
-                        }
-                    }, err => {
-                        console.log(err);
-                    });
+                            if (result.length > 0) {
+                                await validateColumns(result, schema[tableName], function (unavailabeColumns) {
+                                    if (unavailabeColumns.length > 0) {
+                                        warningsColumns.push("<li>Column " + unavailabeColumns.join(", ") + " not present in table " + tableName + "</li>");
+                                    }
+                                });
+                            } else {
+                                warningsColumns.push("<li>No columns are not present in " + tableName + "</li>");
+                            }
+                        }, err => {
+                            console.log(err);
+                        });
+                    } else {
+                        warningTables.push("<li>Table " + tableName + " not present in database</li>");
+
+                    }
 
                 }, err => {
-                    warningTables.push("<li>" + tableName+" not present in database</li>");
+                    document.getElementById("error-block").style.display = "block";
+                    document.getElementById("db-errors").innerHTML += "<li>Unable to connect to database!</li><li>" + err + "</li>"
                 });
 
             }

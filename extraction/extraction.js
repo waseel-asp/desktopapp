@@ -113,6 +113,7 @@ function openConnection() {
                 console.log("Connection succesful.")
             }, err => {
                 console.log(err.message);
+                window.location.href = "../dbconfiguration/dbconfigui.html";
             });
         }
     });
