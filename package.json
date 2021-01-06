@@ -9,7 +9,7 @@
         "deploy": "electron-builder build --win --publish always"
     },
     "files": [
-        "images/**/*"
+        "images/desktop_app_icon.ico"
     ],
     "icon": "images/desktop_app_icon.ico",
     "repository": {
