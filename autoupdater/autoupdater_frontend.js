@@ -21,7 +21,7 @@
    ipcRenderer.on('update_available', () => {
        ipcRenderer.removeAllListeners('update_available');
        message.innerText = 'New Update Available';
-       innerMessage.innerText = 'Downloading Now…';
+       innerMessage.innerText = 'Downloading Now';
        restartButton.disabled = true;
        upnotification.classList.remove('hidden');
        loginCard.classList.add('login-card-disable');
