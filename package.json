@@ -8,14 +8,6 @@
         "build": "electron-builder build --win --publish never",
         "deploy": "electron-builder build --win --publish always"
     },
-    "build": {
-        "productName": "Waseel",
-        "appId": "com.example.ElectronAutoUpdate",
-        "directories": {
-            "buildResources": "images",
-            "output": "release"
-        }
-    },
     "files": [
         "images/**/*"
     ],
