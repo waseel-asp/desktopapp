@@ -131,6 +131,7 @@ function connect() {
 
     if (new Date(startDate) > new Date(endDate)) {
         alert("Please ensure that the End Date is greater than or equal to the Start Date.");
+        document.getElementById("extract-button").disabled = false;
         return false;
     }
     wslConnection.connect().then(data => {
@@ -177,10 +178,12 @@ function connect() {
                 document.getElementById('summary-error').style.display = 'block';
                 document.getElementById('summary-error').innerHTML =
                     "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
+                document.getElementById("extract-button").disabled = false;
             }
         });
     }, err => {
         alert(err.message);
+        document.getElementById("extract-button").disabled = false;
     });
 }
 
