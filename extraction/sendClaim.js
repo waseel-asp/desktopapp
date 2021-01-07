@@ -53,6 +53,7 @@ exports.sendClaim = function (claims) {
                         "<p>Error Message : " + responseData.error + "</p>";
                 }
             }
+            document.getElementById("extract-button").disabled = false;
         });
     });
     req.write(body);

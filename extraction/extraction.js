@@ -121,6 +121,7 @@ function openConnection() {
 
 function connect() {
     console.log("test connect");
+    document.getElementById("extract-button").disabled = true;
     document.getElementById("summary-container").style.display = "none";
     document.getElementById("summary-error").style.display = "none";
     var startDate = document.getElementById('startDate').value;
