@@ -128,9 +128,16 @@ function connect() {
     var endDate = document.getElementById('endDate').value;
     var selectedPayer = document.getElementById('selectedPayer').value;
     var selectedClaim = document.getElementById('selectedClaim').value;
+    var progressStatus = document.getElementById("claim-progress-status");
+    var progressBar = document.getElementById("progress-bar");
+    document.getElementById("claim-progress-bar").style.display = "block";
+    progressBar.style.width = "25%";
+    progressStatus.innerHTML = "Extracting ...";
 
     if (new Date(startDate) > new Date(endDate)) {
         alert("Please ensure that the End Date is greater than or equal to the Start Date.");
+        document.getElementById("claim-progress-bar").style.display = "none";
+        progressBar.style.width = "0%";
         document.getElementById("extract-button").disabled = false;
         return false;
     }
@@ -172,9 +179,14 @@ function connect() {
         console.log(query);
         setClaims(query, function (claimList) {
             console.log(claimList);
-            if (claimList.length > 0)
+            if (claimList.length > 0) {
+                progressBar.style.width = "50%";
+                progressStatus.innerHTML = "Extracting ..."
                 sendClaim.sendClaim(claimList);
+            }
             else {
+                document.getElementById("claim-progress-bar").style.display = "none";
+                progressBar.style.width = "0%";
                 document.getElementById('summary-error').style.display = 'block';
                 document.getElementById('summary-error').innerHTML =
                     "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
@@ -183,6 +195,8 @@ function connect() {
         });
     }, err => {
         alert(err.message);
+        document.getElementById("claim-progress-bar").style.display = "none";
+        progressBar.style.width = "0%";
         document.getElementById("extract-button").disabled = false;
     });
 }
@@ -306,6 +320,8 @@ async function setClaims(query, callback) {
         }
         callback(claimList);
     }, err => {
+        document.getElementById("claim-progress-bar").style.display = "none";
+        progressBar.style.width = "0%";
         document.getElementById('summary-error').style.display = 'block';
         document.getElementById('summary-error').innerHTML = err;
         console.log(err);

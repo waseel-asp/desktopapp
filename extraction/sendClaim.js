@@ -25,8 +25,13 @@ exports.sendClaim = function (claims) {
             'Authorization': authorizationToken
         }
     };
-
+    var progressStatus = document.getElementById("claim-progress-status");
+    var progressBar = document.getElementById("progress-bar");
+    progressBar.style.width = "75%";
+    progressStatus.innerHTML = "Sending Claims ...";
     const req = httpRequest.request(options, (res) => {
+        progressBar.style.width = "100%";
+        progressStatus.innerHTML = "Sending Claims ...";
         // console.log(res);
         let chunks_of_data = [];
         res.on('data', (chunk) => {
@@ -50,12 +55,21 @@ exports.sendClaim = function (claims) {
                     console.log("In eroror");
                     document.getElementById("summary-error").style.display = "block";
                     document.getElementById("summary-error").innerHTML = 
-                        "<p>Error Message : " + responseData.error + "</p>";
+                    "<p>Error Message : " + responseData.error + "</p>";
                 }
             }
+            document.getElementById("claim-progress-bar").style.display = "none";
+            progressBar.style.width = "0%";
         });
         document.getElementById("extract-button").disabled = false;
     });
     req.write(body);
+    req.on('error', (e) => {
+        document.getElementById("claim-progress-bar").style.display = "none";
+        progressBar.style.width = "0%";
+        document.getElementById('summary-error').style.display = 'block';
+        document.getElementById('summary-error').innerHTML = `${e.message}`;
+        console.error(`problem with request: ${e.message}`);
+    });
     req.end();
 }
