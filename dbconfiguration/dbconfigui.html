@@ -21,7 +21,10 @@
                 <hr>
                 <div class="inner-container">
                     <div>
-                        <form>
+                        <form id="dbConfig">
+                            <div style="display: none;" class="errorArea successMessage" id="success-block">
+                                <ul id="db-success">Successfully connected to Database!</ul>
+                            </div>
                             <div class="errorArea" style="display: none;" id="error-block">
                                 <ul id="db-errors"></ul>
                             </div>

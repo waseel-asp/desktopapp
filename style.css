@@ -408,6 +408,7 @@ form .form-group .custom-checkbox input:checked ~ .form-check-label {
 .database-config_page .errorArea{ margin: 15px 0 10px; border: 0;font: normal normal normal 11px/12px Helvetica Neue;letter-spacing: 0px; color: #BA1111;}
 .database-config_page .errorArea ul{ margin: 0; padding-left: 17px;}
 .database-config_page .errorArea.warningError{ background-color: #fff7aa; color: #bc7102;}
+.database-config_page .errorArea.successMessage{ background-color: #e6f4e7; color: #6cab6e;}
 .database-config_page .btn-primary{padding: 8px 10px; font: normal normal normal 16px/21px Roboto;}
 .database-config_page .test-btn{margin: 25px 0 20px;}
 .database-config_page .form-group select.select-bg{

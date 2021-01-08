@@ -61,6 +61,7 @@ async function validateDatabase(wslConnection, dbParams) {
                     } else {
                         warningTables.push("<li>Table " + tableName + " not present in database</li>");
                     }
+                    
                 }, err => {
                     console.log(err);
                     document.getElementById("error-block").style.display = "block";
@@ -83,6 +84,8 @@ async function validateDatabase(wslConnection, dbParams) {
                     dbWarnings.innerHTML += warning;
                 });
             }
+            document.getElementById('test').disabled = false;
+            
 
         } else if (dbParams.db_type.toUpperCase() == "ORACLE") {
 
@@ -110,7 +113,6 @@ async function validateDatabase(wslConnection, dbParams) {
                         });
                     } else {
                         warningTables.push("<li>Table " + tableName + " not present in database</li>");
-
                     }
 
                 }, err => {
@@ -135,13 +137,17 @@ async function validateDatabase(wslConnection, dbParams) {
                     dbWarnings.innerHTML += warning;
                 });
             }
+            document.getElementById('test').disabled = false;
         }
 
+        document.getElementById("success-block").style.display = "block";
+        
     }, err => {
         console.log(err);
 
         document.getElementById("error-block").style.display = "block";
         document.getElementById("db-errors").innerHTML += "<li>Unable to connect to database!</li><li>" + err + "</li>"
+        document.getElementById('test').disabled = false;
     });
 }
 

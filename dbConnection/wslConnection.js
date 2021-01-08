@@ -14,6 +14,7 @@ module.exports = {
     checkConnection: function () {
 
         return new Promise(function (resolve, reject) {
+            
             if (dbParams) {
                 if (dbParams.db_type.toUpperCase() == "ORACLE") {
 
@@ -48,7 +49,7 @@ module.exports = {
                     reject("Invalid DB Configuration")
                 }
             } else {
-                callback("No DB Configuration");
+                reject("No DB Configuration");
             }
         });
 
@@ -169,7 +170,8 @@ function fetchDbConfig(callback) {
         res.on('end', () => {
             let responseBody = Buffer.concat(chunksOfData);
             responseData = JSON.parse(responseBody.toString());
-            
+            console.log(res.statusCode);
+            console.log(responseData);
             if (res.statusCode == 200 || res.statusCode == 201) {
                 if (responseData.dbObject != null) {
                     let dbParams = {
