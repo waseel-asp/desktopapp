@@ -8,7 +8,7 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: true,
         },
-        icon: 'images/desktop_app_icon.ico'
+        icon: 'images/favicon.ico'
     });
     mainWindow.loadFile('login/loginui.html');
     mainWindow.on('closed', function() {
