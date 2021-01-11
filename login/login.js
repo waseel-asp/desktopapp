@@ -9,6 +9,13 @@ $(function () {
 });
 
 function callLogin() {
+    var loginButton = document.getElementById('login-button');
+    loginButton.disabled = true;
+    var spinnerSpan = document.createElement("span");
+    spinnerSpan.classList.add('spinner-border');
+    spinnerSpan.classList.add('spinner-border-sm');
+    loginButton.innerHTML = ' Loading';
+    loginButton.firstChild.before(spinnerSpan);
     var body = JSON.stringify({
         username: document.getElementById('username').value,
         password: document.getElementById('password').value
@@ -78,13 +85,19 @@ function callLogin() {
 
             }
             
+            loginButton.disabled = false;
+            loginButton.removeChild(spinnerSpan);
+            loginButton.innerHTML = 'Sign In';
         });
     });
 
     req.on('error', (e) => {
         console.error(`problem with request: ${e.message}`);
-        alert(`Error : URL is not Valid.\nCurrent URL is : ${e.message.split(' ')[2]}` + 
-        `\n\nPlease contact to waseel.`);
+        alert(`No Internet Connection!!\nPlease check your internet connection.`);
+        window.location.href = "../login/loginui.html";
+        loginButton.disabled = false;
+        loginButton.removeChild(spinnerSpan);
+        loginButton.innerHTML = 'Sign In';
     });
     req.write(body);
     req.end();
