@@ -11,12 +11,16 @@ var schema = {
     WSL_OPTICAL_DIAGNOSIS: new Array('PROVCLAIMNO', 'RIGHTEYESPHEREDIST', 'RIGHTEYECYLDIST', 'RIGHTEYESPHERENEAR', 'RIGHTEYECYLNEAR', 'LEFTEYESPHEREDIST', 'LEFTEYECYLDIST', 'LEFTEYESPHERENEAR', 'LEFTEYECYLNEAR'),
 };
 
-async function validateDatabase(wslConnection, dbParams) {
+async function validateDatabase(wslConnection, dbParams, callback) {
     document.getElementById("warning-block").style.display = "none";
     document.getElementById("error-block").style.display = "none";
 
     wslConnection.checkConnection(dbParams).then(async data => {
-        console.log("Connection succesful.")
+        console.log("Connection succesful.");
+        if(localStorage.getItem("loggedIn")){
+            localStorage.removeItem("loggedIn");
+            window.location.href = "../extraction/extractionui.html";
+        }
 
         if (dbParams.db_type.toUpperCase() == "MYSQL" || dbParams.db_type.toUpperCase() == "SQLSERVER") {
 
@@ -49,43 +53,43 @@ async function validateDatabase(wslConnection, dbParams) {
                             if (result.length > 0) {
                                 await validateColumns(result, schema[tableName], function (unavailabeColumns) {
                                     if (unavailabeColumns.length > 0) {
-                                        warningsColumns.push("<li>Column " + unavailabeColumns.join(", ") + " not present in table " + tableName + "</li>");
+                                        warningsColumns.push("<p>Column " + unavailabeColumns.join(", ") + " not present in table " + tableName + "</p>");
                                     }
                                 });
                             } else {
-                                warningsColumns.push("<li>No columns are not present in " + tableName + "</li>");
+                                warningsColumns.push("<p>No columns are not present in " + tableName + "</p>");
                             }
                         }, err => {
                             console.log(err);
+                            localStorage.removeItem("loggedIn");
+                            callback(false);
                         });
                     } else {
-                        warningTables.push("<li>Table " + tableName + " not present in database</li>");
+                        warningTables.push(tableName);
                     }
-                    
+
                 }, err => {
                     console.log(err);
-                    document.getElementById("error-block").style.display = "block";
-                    document.getElementById("db-errors").innerHTML += "<li>Unable to connect to database!</li><li>" + err + "</li>"
+                    localStorage.removeItem("loggedIn");
+                    document.getElementById("error-block").style.display = "flex";
+                    document.getElementById("db-errors").innerHTML += "<p>Unable to connect to database!</p><p>" + err + "</p>"
+                    callback(false);
                 });
             }
 
             if (warningTables.length > 0) {
-                document.getElementById("warning-block").style.display = "block";
+                document.getElementById("warning-block").style.display = "flex";
                 var dbWarnings = document.getElementById("db-warnings");
-                warningTables.forEach(function (warning) {
-                    dbWarnings.innerHTML += warning;
-                });
+                dbWarnings.innerHTML += "<p>Table " + warningTables.join(", ") + " not present in database";
             }
 
             if (warningsColumns.length > 0) {
-                document.getElementById("warning-block").style.display = "block";
+                document.getElementById("warning-block").style.display = "flex";
                 var dbWarnings = document.getElementById("db-warnings");
                 warningsColumns.forEach(function (warning) {
                     dbWarnings.innerHTML += warning;
                 });
             }
-            document.getElementById('test').disabled = false;
-            
 
         } else if (dbParams.db_type.toUpperCase() == "ORACLE") {
 
@@ -102,52 +106,51 @@ async function validateDatabase(wslConnection, dbParams) {
                             if (result.length > 0) {
                                 await validateColumns(result, schema[tableName], function (unavailabeColumns) {
                                     if (unavailabeColumns.length > 0) {
-                                        warningsColumns.push("<li>Column " + unavailabeColumns.join(", ") + " not present in table " + tableName + "</li>");
+                                        warningsColumns.push("<p>Column " + unavailabeColumns.join(", ") + " not present in table " + tableName + "</p>");
                                     }
                                 });
                             } else {
-                                warningsColumns.push("<li>No columns are not present in " + tableName + "</li>");
+                                warningsColumns.push("<p>No columns are not present in " + tableName + "</p>");
                             }
                         }, err => {
                             console.log(err);
+                            localStorage.removeItem("loggedIn");
+                            callback(false);
                         });
                     } else {
-                        warningTables.push("<li>Table " + tableName + " not present in database</li>");
+                        warningTables.push(tableName);
                     }
 
                 }, err => {
-                    document.getElementById("error-block").style.display = "block";
-                    document.getElementById("db-errors").innerHTML += "<li>Unable to connect to database!</li><li>" + err + "</li>"
+                    document.getElementById("error-block").style.display = "flex";
+                    document.getElementById("db-errors").innerHTML += "<p>Unable to connect to database!</p><p>" + err + "</p>"
+                    localStorage.removeItem("loggedIn");
+                    callback(false);
                 });
 
             }
 
             if (warningTables.length > 0) {
-                document.getElementById("warning-block").style.display = "block";
+                document.getElementById("warning-block").style.display = "flex";
                 var dbWarnings = document.getElementById("db-warnings");
-                warningTables.forEach(function (warning) {
-                    dbWarnings.innerHTML += warning;
-                });
+                dbWarnings.innerHTML += "<p>Table " + warningTables.join(", ") + " not present in database";
             }
 
             if (warningsColumns.length > 0) {
-                document.getElementById("warning-block").style.display = "block";
+                document.getElementById("warning-block").style.display = "flex";
                 var dbWarnings = document.getElementById("db-warnings");
                 warningsColumns.forEach(function (warning) {
                     dbWarnings.innerHTML += warning;
                 });
             }
-            document.getElementById('test').disabled = false;
         }
-
-        document.getElementById("success-block").style.display = "block";
-        
+        callback(true);
     }, err => {
         console.log(err);
-
-        document.getElementById("error-block").style.display = "block";
-        document.getElementById("db-errors").innerHTML += "<li>Unable to connect to database!</li><li>" + err + "</li>"
-        document.getElementById('test').disabled = false;
+        localStorage.removeItem("loggedIn");
+        document.getElementById("error-block").style.display = "flex";
+        document.getElementById("db-errors").innerHTML += "<p>Unable to connect to database!</p><p>" + err + "</p>"
+        callback(false);
     });
 }
 

@@ -59,32 +59,35 @@ function callLogin() {
                 var token = localStorage.getItem('access_token');
                 var decoded = jwt_decode(token);
 
-                wslConnection.fetchDatabase(function (isConnectionAvailable, dbParams, message) {
-                    localStorage.setItem("provider_id", decoded.prov_id)
-                    localStorage.setItem("provider_code", decoded.prov_code);
-                    localStorage.setItem("provider_name", decoded.prov);
-                    if (isConnectionAvailable) {
-                        wslConnection.checkConnection().then(data => {
-                            window.location.href = "../extraction/extractionui.html";
-                        }, err => {
-                            console.log(err);
-                            window.location.href = "../dbconfiguration/dbconfigui.html";
-                        })
-                    } else {
-                        window.location.href = "../dbconfiguration/dbconfigui.html";
-                    }
-                });
+                localStorage.setItem("provider_id", decoded.prov_id)
+                localStorage.setItem("provider_code", decoded.prov_code);
+                localStorage.setItem("provider_name", decoded.prov);
+                localStorage.setItem("loggedIn", true);
+                // wslConnection.fetchDatabase(function (isConnectionAvailable, dbParams, message) {
+                //     if (isConnectionAvailable) {
+                //         wslConnection.checkConnection().then(data => {
+                //             window.location.href = "../extraction/extractionui.html";
+                //         }, err => {
+                //             console.log(err);
+                //             window.location.href = "../dbconfiguration/dbconfigui.html";
+                //         })
+                //     } else {
+                //         window.location.href = "../dbconfiguration/dbconfigui.html";
+                //     }
+                // });
+
+                window.location.href = "../dbconfiguration/dbconfigui.html";
 
 
             } else {
                 if (res.statusCode <= 500 && res.statusCode >= 400) {
-                    console.log("In error "+res.statusCode);
+                    console.log("In error " + res.statusCode);
                     document.getElementById("errorArea").style.display = "block";
                     document.getElementById("errorMessage").innerHTML = "username/password is invaild!";
                 }
 
             }
-            
+
             loginButton.disabled = false;
             loginButton.removeChild(spinnerSpan);
             loginButton.innerHTML = 'Sign In';

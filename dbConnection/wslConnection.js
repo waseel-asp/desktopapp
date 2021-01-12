@@ -26,6 +26,7 @@ module.exports = {
                         console.log(err);
                         reject(err);
                     });
+                    setTimeout(function(){ reject("Connection Timed out!"); }, 60000);
 
                 } else if (dbParams.db_type.toUpperCase() == "SQLSERVER") {
 
@@ -37,6 +38,7 @@ module.exports = {
                         console.log(err);
                         reject(err);
                     });
+                    setTimeout(function(){ reject("Connection Timed out!"); }, 60000);
                 } else if (dbParams.db_type.toUpperCase() == "MYSQL") {
                     mysql().then(data => {
                         console.log("Successfully connected to MYSQL!");
@@ -45,6 +47,7 @@ module.exports = {
                         console.log(err);
                         reject(err);
                     });
+                    setTimeout(function(){ reject("Connection Timed out!"); }, 60000);
                 } else {
                     reject("Invalid DB Configuration")
                 }
@@ -234,9 +237,10 @@ async function oracle() {
         }, function (error, connection) {
             if (error)
                 reject(error)
-
+            
             resolve(connection);
         });
+        
     });
 }
 
@@ -254,7 +258,6 @@ async function mysql() {
                 reject(err);
             resolve(this.connection);
         });
-
     });
 }
 

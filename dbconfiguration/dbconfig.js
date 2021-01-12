@@ -11,24 +11,42 @@ function refresh() {
 }
 
 
-function getExistingDatabaseValue() {
+async function getExistingDatabaseValue() {
+    var refreshTest = document.getElementById('test');
+    refreshTest.disabled = true;
+    var spinnerSpan = document.createElement("span");
+    spinnerSpan.classList.add('spinner-border');
+    spinnerSpan.classList.add('spinner-border-sm');
+    refreshTest.innerHTML = ' Loading....';
+    refreshTest.firstChild.before(spinnerSpan);
 
-    document.getElementById('test').disabled = true;
-
-    wslConnection.fetchDatabase(function (isConnectionAvailable, dbParams, message) {
+    await wslConnection.fetchDatabase(async function (isConnectionAvailable, dbParams, message) {
         if (isConnectionAvailable) {
+
             document.getElementById('dbtype').innerHTML = dbParams.db_type;
             document.getElementById('ip').value = dbParams.hostname;
             document.getElementById('port').value = dbParams.port;
             document.getElementById('database').value = dbParams.database_name;
             document.getElementById('username').value = dbParams.username;
             document.getElementById('password').value = dbParams.password;
-            
-            validateDatabase(wslConnection, dbParams);
+
+            validateDatabase(wslConnection, dbParams, function (connected) {
+                if (connected)
+                    document.getElementById("success-block").style.display = "flex";
+                refreshTest.disabled = false;
+                refreshTest.removeChild(spinnerSpan);
+                refreshTest.innerHTML = 'Refresh & Test';
+
+            });
         } else {
             document.getElementById("error-block").style.display = "block";
-            document.getElementById("db-errors").innerHTML += "<li>" + message + "</li>"
+            document.getElementById("db-errors").innerHTML += "<p>" + message + "</p>"
             document.getElementById('test').disabled = false;
+            refreshTest.disabled = false;
+            refreshTest.removeChild(spinnerSpan);
+            refreshTest.innerHTML = 'Refresh & Test';
         }
     });
+
+
 }

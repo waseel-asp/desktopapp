@@ -22,22 +22,55 @@
                 <div class="inner-container">
                     <div>
                         <form id="dbConfig">
-                            <div style="display: none;" class="errorArea successMessage" id="success-block">
-                                <ul id="db-success">Successfully connected to Database!</ul>
+                            <div class="alert alert-success alert-dismissible fade show " id="success-block"
+                                role="alert" style="display: none;">
+                                <div class="icon"></div>
+                                <div class="middle-block">
+                                    <h6>Success</h6>
+                                    <ul id="db-success">Successfully connected to Database!</ul>
+                                </div>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
                             </div>
-                            <div class="errorArea" style="display: none;" id="error-block">
+                            <div class="alert alert-danger alert-dismissible fade show" id="error-block" role="alert"
+                                style="display: none;">
+                                <div class="icon"></div>
+                                <div class="middle-block">
+                                    <h6>Error</h6>
+                                    <span id="db-errors">
+                                        <!-- <p>Error message.</p> -->
+                                    </span>
+                                </div>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert"
+                                id="warning-block" style="display: none;">
+                                <div class="icon"></div>
+                                <div class="middle-block">
+                                    <h6>Warning</h6>
+                                    <span id="db-warnings">
+                                        <!-- <p>Warning message.</p> -->
+                                    </span>
+                                </div>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+                            </div>
+
+                            <!-- <div style="display: none;" class="errorArea successMessage" id="success-block">
+                                <ul id="db-success">Successfully connected to Database!</ul>
+                            </div> -->
+                            <!-- <div class="errorArea" style="display: none;" id="error-block">
                                 <ul id="db-errors"></ul>
                             </div>
                             <div style="display: none;" class="errorArea warningError" id="warning-block">
                                 <ul id="db-warnings"></ul>
-                            </div>
+                            </div> -->
                             <div class="top-section">
                                 <h6>Database</h6>
                                 <div class="form-group row">
                                     <div class="col-sm-4">
                                         <div class="form-check form-check-inline custom-checkbox">
-                                            <input class="form-check-input text-right radio-right"  type="radio" value="ORACLE" required checked="checked" readonly>
-                                            <label class="form-check-label"  id="dbtype" for="db">DBNAME</label>
+                                            <input class="form-check-input text-right radio-right" type="radio"
+                                                value="ORACLE" required checked="checked" readonly>
+                                            <label class="form-check-label" id="dbtype" for="db">DBNAME</label>
                                         </div>
                                     </div>
                                     <!-- <div class="col-sm-4">
@@ -60,30 +93,37 @@
                                 <div class="form-group row">
                                     <div class="col-sm-6">
                                         <label for="HostName/IP" class="col-sm-12 form-label">HostName/IP</label>
-                                        <input class="form-control" type="text" id="ip" placeholder="HostName/IP *" required readonly/>
+                                        <input class="form-control" type="text" id="ip" placeholder="HostName/IP *"
+                                            required readonly />
                                     </div>
                                     <div class="col-sm-2">
                                         <label for="Port" class="col-sm-12 form-label">Port</label>
-                                        <input class="form-control" type="text" id="port" placeholder="port *" required readonly />
+                                        <input class="form-control" type="text" id="port" placeholder="port *" required
+                                            readonly />
                                     </div>
                                     <div class="col-sm-4">
-                                        <label for="DatabaseName/SID" class="col-sm-12 form-label">Database Name/SID</label>
-                                        <input class="form-control" type="text" id="database" placeholder="DatabaseName/SID *" required readonly />
+                                        <label for="DatabaseName/SID" class="col-sm-12 form-label">Database
+                                            Name/SID</label>
+                                        <input class="form-control" type="text" id="database"
+                                            placeholder="DatabaseName/SID *" required readonly />
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-6">
                                         <label for="Username" class="col-sm-12 form-label">Username</label>
-                                        <input class="form-control" id="username" type="text" placeholder="Username *" required readonly />
+                                        <input class="form-control" id="username" type="text" placeholder="Username *"
+                                            required readonly />
                                     </div>
                                     <div class="col-sm-6">
                                         <label for="Password" class="col-sm-12 form-label">Password</label>
-                                        <input class="form-control" id="password" type="password" placeholder="Password *" required readonly />
+                                        <input class="form-control" id="password" type="password"
+                                            placeholder="Password *" required readonly />
                                     </div>
                                 </div>
                                 <div class="form-group row test-btn">
                                     <div class="col-sm-12 text-right">
-                                        <button onclick="refresh()" type="submit" class="btn btn-primary" id="test">Refresh & Test</button>
+                                        <button onclick="refresh()" type="submit" class="btn btn-primary"
+                                            id="test">Refresh & Test</button>
                                     </div>
                                 </div>
                             </div>
