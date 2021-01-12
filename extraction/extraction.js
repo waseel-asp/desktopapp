@@ -1,15 +1,15 @@
+const httpRequest = require('https');
+const environment = require('../environment.js');
 var claimTypeMap = new Map();
 $(function () {
     $("#nav-placeholder").load("../home/page.html");
-    var httpRequest = require('https');
-    const environment = require('../environment.js');
     var jwt_decode = require('jwt-decode')
     var token = localStorage.getItem('access_token');
     var decoded = jwt_decode(token);
     var selectList = document.getElementById('selectedPayer');
     var url = environment.selectURL(localStorage.getItem('environment'));
     var urlPath = '/settings/providers/' + decoded.prov_id + '/payer-mapping';
-    var authorizationToken = 'Bearer '+ token;
+    var authorizationToken = 'Bearer ' + token;
     // EX : https://api.qa-eclaims.waseel.com/settings/providers/601/payer-mapping
     const payerOptions = {
         hostname: url,
@@ -40,7 +40,7 @@ $(function () {
                     });
                 }
             } else if (res.statusCode == 401) {
-                alert("Token is expired. Please again sign in.")
+                alert("Invalid Token. Please again sign in.")
                 window.location.href = "../login/loginui.html";
             }
         });
@@ -69,19 +69,19 @@ $(function () {
             if (res.statusCode == 200 || res.statusCode == 201) {
                 if (responseData != null) {
                     let arr = responseData.claimType.codes;
-                    for(var i=0; i<Object.keys(arr).length; i++) {
+                    for (var i = 0; i < Object.keys(arr).length; i++) {
                         claimTypeMap.set(Object.keys(arr)[i], Object.values(arr)[i].values);
                         selectClaimList.forEach(ele => {
-                            if(ele.value == Object.keys(arr)[i]) {
+                            if (ele.value == Object.keys(arr)[i]) {
                                 var len = Object.values(arr)[i].values.length;
-                                ele.innerHTML += ' ('+ Object.values(arr)[i].values[len - 1] + ')';
+                                ele.innerHTML += ' (' + Object.values(arr)[i].values[len - 1] + ')';
                             }
                         });
                     }
                     console.log(claimTypeMap);
                 }
             } else if (res.statusCode == 401) {
-                alert("Token is expired. Please again sign in.")
+                alert("Invalid Token. Please again sign in.")
                 window.location.href = "../login/loginui.html";
             }
         });
@@ -90,7 +90,7 @@ $(function () {
     openConnection();
 });
 
-function refresh(){
+function refresh() {
     location.reload();
 }
 
@@ -120,14 +120,31 @@ function openConnection() {
 }
 
 function connect() {
+    environment.refreshCurrentToken();
+    var startDate = document.getElementById('startDate').value;
+    var endDate = document.getElementById('endDate').value;
+    if (startDate == "Start Date") {
+        var startDateInput = document.getElementById('startDate');
+        startDateInput.focus();
+        startDateInput.setCustomValidity('Please provide a start date');
+        startDateInput.reportValidity();
+        return false;
+    }
+    if (endDate == "End Date") {
+        var endDateInput = document.getElementById('endDate');
+        endDateInput.focus();
+        endDateInput.setCustomValidity('Please provide an end date');
+        endDateInput.reportValidity();
+        return false;
+    }
     console.log("test connect");
+    var selectedPayer = document.getElementById('selectedPayer').value;
+    var selectedClaim = document.getElementById('selectedClaim').value;
+    startDate = startDate + ' 00:00';
+    endDate = endDate + ' 23:59';
     document.getElementById("extract-button").disabled = true;
     document.getElementById("summary-container").style.display = "none";
     document.getElementById("summary-error").style.display = "none";
-    var startDate = document.getElementById('startDate').value;
-    var endDate = document.getElementById('endDate').value;
-    var selectedPayer = document.getElementById('selectedPayer').value;
-    var selectedClaim = document.getElementById('selectedClaim').value;
     var progressStatus = document.getElementById("claim-progress-status");
     var progressBar = document.getElementById("progress-bar");
     document.getElementById("claim-progress-bar").style.display = "block";
@@ -147,7 +164,7 @@ function connect() {
         var claimType = "' '";
         if (selectedClaim.toLowerCase() != 'all') {
             claimTypeMap.get(selectedClaim).forEach(element => {
-                if(element == claimTypeMap.get(selectedClaim)[0])
+                if (element == claimTypeMap.get(selectedClaim)[0])
                     claimType = "'" + element + "'";
                 else
                     claimType += ", '" + element + "'";
@@ -156,10 +173,10 @@ function connect() {
             var temp = document.getElementById('selectedClaim').childNodes;
             var zero = 0;
             temp.forEach(element => {
-                if(element.value != undefined && element.value != '') {
-                    if(claimTypeMap.get(element.value) != undefined) {
+                if (element.value != undefined && element.value != '') {
+                    if (claimTypeMap.get(element.value) != undefined) {
                         claimTypeMap.get(element.value).forEach(ele => {
-                            if(zero == 0 && ele == claimTypeMap.get(element.value)[0]) {
+                            if (zero == 0 && ele == claimTypeMap.get(element.value)[0]) {
                                 zero = 1;
                                 claimType = "'" + ele + "'";
                             }
@@ -172,7 +189,7 @@ function connect() {
         }
         var providerMappingCode = localStorage.getItem('provider_mapping_code');
         if (database.toLowerCase() == "oracle") {
-            query = "select * from WSL_GENINFO where PROVIDERID='" + providerMappingCode + "' AND CLAIMTYPE IN(" + claimType + ") AND PAYERID='" + selectedPayer + "' AND CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd') AND TO_DATE('" + endDate + "','yyyy-mm-dd') ";
+            query = "select * from WSL_GENINFO where PROVIDERID='" + providerMappingCode + "' AND CLAIMTYPE IN(" + claimType + ") AND PAYERID='" + selectedPayer + "' AND CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd HH24:MI') AND TO_DATE('" + endDate + "','yyyy-mm-dd HH24:MI') ";
         } else {
             query = "select * from WSL_GENINFO where PROVIDERID='" + providerMappingCode + "' AND CLAIMTYPE IN(" + claimType + ") AND PAYERID='" + selectedPayer + "' AND CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "' ";
         }
@@ -320,8 +337,9 @@ async function setClaims(query, callback) {
         }
         callback(claimList);
     }, err => {
+        document.getElementById("extract-button").disabled = false;
         document.getElementById("claim-progress-bar").style.display = "none";
-        progressBar.style.width = "0%";
+        document.getElementById("progress-bar").style.width = "0%";
         document.getElementById('summary-error').style.display = 'block';
         document.getElementById('summary-error').innerHTML = err;
         console.log(err);

@@ -51,7 +51,10 @@ exports.sendClaim = function (claims) {
                 document.getElementById("noOfNotUploadedClaims").innerHTML = responseData['noOfNotUploadedClaims'];
             } 
             else {
-                if (res.statusCode <= 500 && res.statusCode >= 400) {
+                if (res.statusCode == 401) {
+                    alert("Invalid Token. Please again sign in.")
+                    window.location.href = "../login/loginui.html";
+                } else if (res.statusCode <= 500 && res.statusCode >= 400) {
                     console.log("In eroror");
                     document.getElementById("summary-error").style.display = "block";
                     document.getElementById("summary-error").innerHTML = 

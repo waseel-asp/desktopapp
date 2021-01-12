@@ -45,10 +45,11 @@
 
 <script>
     $(function () {
+        const environment = require('../environment.js');
+        environment.refreshCurrentToken();
         document.getElementById("providerName").innerHTML = localStorage.getItem("provider_name");
         document.getElementById("providerCode").innerHTML = localStorage.getItem("provider_code");
-        var httpRequest = require('https');
-        var environment = require('../environment.js');
+        const httpRequest = require('https');
         var url = environment.selectURL(localStorage.getItem('environment'));
         var authorizationToken = 'Bearer '+ localStorage.getItem("access_token");
         var urlPath = '/settings/providers/' + localStorage.getItem("provider_id") + '/provider-mapping';
@@ -78,7 +79,7 @@
                         document.getElementById("providerMappingCode").innerHTML = ' ('+providerMappingCode+')';
                     }
                 } else if (res.statusCode == 401) {
-                    alert("Token is expired. Please again sign in.")
+                    alert("Invalid Token. Please again sign in.")
                     window.location.href = "../login/loginui.html";
                 }
             });

@@ -6,6 +6,12 @@ const wslConnection = require('../dbConnection/wslConnection.js');
 
 $(function () {
     localStorage.clear();
+    const updateOnlineStatus = () => {
+        if(!navigator.onLine) {
+            alert('No Internet Connection!!\nPlease check your internet connection.');
+        }
+    }
+    updateOnlineStatus();
 });
 
 function callLogin() {
@@ -53,6 +59,7 @@ function callLogin() {
 
             if (res.statusCode == 200) {
                 localStorage.setItem('access_token', responseData.access_token);
+                localStorage.setItem('refresh_token', responseData.refresh_token);
                 localStorage.setItem('expire_time', responseData.expires_in);
                 // window.location.href = "../home/page.html"
                 var jwt_decode = require('jwt-decode')
