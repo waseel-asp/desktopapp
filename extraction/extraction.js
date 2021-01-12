@@ -34,7 +34,7 @@ $(function () {
                     let arr = responseData.mappingList;
                     arr.forEach(element => {
                         var option = document.createElement("option");
-                        option.value = element.mappingName;
+                        option.value = element.payerId;
                         option.text = `${element.payerName} (${element.mappingName})`;
                         selectList.appendChild(option);
                     });
@@ -142,6 +142,10 @@ function connect() {
     var selectedClaim = document.getElementById('selectedClaim').value;
     startDate = startDate + ' 00:00';
     endDate = endDate + ' 23:59';
+    var payerEle = document.getElementById("selectedPayer");
+    var selectedText = payerEle.options[payerEle.selectedIndex].text;
+    selectedPayer = selectedText.match(/\(([^)]+)\)/)[1];
+    var payerId = document.getElementById('selectedPayer').value;
     document.getElementById("extract-button").disabled = true;
     document.getElementById("summary-container").style.display = "none";
     document.getElementById("summary-error").style.display = "none";
@@ -199,7 +203,13 @@ function connect() {
             if (claimList.length > 0) {
                 progressBar.style.width = "50%";
                 progressStatus.innerHTML = "Extracting ..."
-                sendClaim.sendClaim(claimList);
+                var claimBody = {
+                    startDate: startDate,
+                    endDate: endDate,
+                    payerId: payerId,
+                    claimList: claimList
+                };
+                sendClaim.sendClaim(claimBody);
             }
             else {
                 document.getElementById("claim-progress-bar").style.display = "none";

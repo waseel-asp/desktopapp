@@ -11,11 +11,9 @@ function getProviderId() {
 exports.sendClaim = function (claims) {
     var responseData;
     var body = JSON.stringify(claims);
-    // localStorage.setItem('hello',body);
     var url = environment.selectURL(localStorage.getItem('environment'));
-    var urlPath = '/upload/providers/'+ getProviderId() +'/json';
+    var urlPath = '/upload/providers/'+ getProviderId() +'/json/filter';
     var authorizationToken = 'Bearer '+ localStorage.getItem('access_token');
-    // EX : https://api.qa-eclaims.waseel.com/upload/providers/601/json
     const options = {
         hostname: url,
         path: urlPath,
