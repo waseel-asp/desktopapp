@@ -2,7 +2,6 @@ const { electron, BrowserWindow } = require('electron');
 const httpRequest = require('https');
 const environment = require('../environment.js');
 const jwt_decode = require('jwt-decode');
-const wslConnection = require('../dbConnection/wslConnection.js');
 
 $(function () {
     localStorage.clear();

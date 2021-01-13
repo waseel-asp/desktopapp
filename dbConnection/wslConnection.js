@@ -212,6 +212,7 @@ async function mssql() {
             }
         },
         database: dbParams.database_name,
+        encrypt: false
     };
     return new Promise(function (resolve, reject) {
         sql.connect(dbConfig, function (err) {
