@@ -22,7 +22,7 @@ async function validateDatabase(wslConnection, dbParams, callback) {
             window.location.href = "../extraction/extractionui.html";
         }
 
-        if (dbParams.db_type.toUpperCase() == "MYSQL" || dbParams.db_type.toUpperCase() == "SQLSERVER") {
+        if (dbParams.db_type.toUpperCase() == "MYSQL" || dbParams.db_type.toUpperCase() == "SQLSERVER" || dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY") {
 
             var warningsColumns = new Array();
             var warningTables = new Array();
@@ -31,7 +31,7 @@ async function validateDatabase(wslConnection, dbParams, callback) {
 
                 if (dbParams.db_type.toUpperCase() == "MYSQL") {
                     query = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" + tableName + "' and TABLE_SCHEMA='" + dbParams.database_name + "';"
-                } else if (dbParams.db_type.toUpperCase() == "SQLSERVER") {
+                } else if (dbParams.db_type.toUpperCase() == "SQLSERVER" || dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY") {
                     query = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" + tableName + "' and TABLE_CATALOG='" + dbParams.database_name + "';"
                 }
 
@@ -44,7 +44,7 @@ async function validateDatabase(wslConnection, dbParams, callback) {
 
                         if (dbParams.db_type.toUpperCase() == "MYSQL") {
                             que = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + tableName + "' and TABLE_SCHEMA='" + dbParams.database_name + "' AND UPPER(COLUMN_NAME) IN " + tableColumns + ";";
-                        } else if (dbParams.db_type.toUpperCase() == "SQLSERVER") {
+                        } else if (dbParams.db_type.toUpperCase() == "SQLSERVER" || dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY") {
                             que = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + tableName + "' and  TABLE_CATALOG='" + dbParams.database_name + "' AND UPPER(COLUMN_NAME) IN " + tableColumns + ";";
                         }
 

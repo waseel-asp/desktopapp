@@ -3,6 +3,7 @@ var jwt_decode = require('jwt-decode')
 const environment = require('../environment.js');
 
 let connection, dbParams = localStorage.getItem("dbParams");
+var encrypt = true;
 
 function getProviderId() {
     const token = localStorage.getItem('access_token');
@@ -28,7 +29,11 @@ module.exports = {
                     });
                     setTimeout(function(){ reject("Connection Timed out!"); }, 60000);
 
-                } else if (dbParams.db_type.toUpperCase() == "SQLSERVER") {
+                } else if (dbParams.db_type.toUpperCase() == "SQLSERVER" || dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY") {
+
+                    if(dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY"){
+                        this.encrypt = false;
+                    }
 
                     mssql().then(data => {
                         this.connection = data;
@@ -75,8 +80,10 @@ module.exports = {
                             reject(err);
                         });
 
-                    } else if (dbParams.db_type.toUpperCase() == "SQLSERVER") {
-
+                    } else if (dbParams.db_type.toUpperCase() == "SQLSERVER" || dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY") {
+                        if(dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY"){
+                            this.encrypt = false;
+                        }
                         mssql().then(data => {
                             console.log("Successfully connected to MSSQL!");
                             this.connection = data;
@@ -113,7 +120,7 @@ module.exports = {
                     });
                 });
 
-            } else if (dbParams.db_type.toUpperCase() == "SQLSERVER") {
+            } else if (dbParams.db_type.toUpperCase() == "SQLSERVER" || dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY") {
                 return new Promise(function (resolve, reject) {
                     mssqlQuery(queryString).then(data => {
                         resolve(data.recordset);
@@ -212,7 +219,7 @@ async function mssql() {
             }
         },
         database: dbParams.database_name,
-        encrypt: false
+        encrypt: this.encrypt
     };
     return new Promise(function (resolve, reject) {
         sql.connect(dbConfig, function (err) {
