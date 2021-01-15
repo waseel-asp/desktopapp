@@ -1,6 +1,7 @@
 const httpRequest = require('https');
 const environment = require('../environment.js');
 var claimTypeMap = new Map();
+var sendpayerId;
 $(function () {
     $("#nav-placeholder").load("../home/page.html");
     var jwt_decode = require('jwt-decode')
@@ -145,7 +146,7 @@ function connect() {
     var payerEle = document.getElementById("selectedPayer");
     var selectedText = payerEle.options[payerEle.selectedIndex].text;
     selectedPayer = selectedText.match(/\(([^)]+)\)/)[1];
-    var payerId = document.getElementById('selectedPayer').value;
+    sendpayerId = document.getElementById('selectedPayer').value;
     document.getElementById("extract-button").disabled = true;
     document.getElementById("summary-container").style.display = "none";
     document.getElementById("summary-error").style.display = "none";
@@ -206,7 +207,7 @@ function connect() {
                 var claimBody = {
                     startDate: startDate,
                     endDate: endDate,
-                    payerId: payerId,
+                    payerId: sendpayerId,
                     claimList: claimList
                 };
                 sendClaim.sendClaim(claimBody);
@@ -317,7 +318,7 @@ async function setClaims(query, callback) {
             claimIdentifier.setEligibilityNumber(genInfoData.ELIGREFNO);
             claimIdentifier.setPayerBatchID(null);
             claimIdentifier.setPayerClaimNumber(null);
-            claimIdentifier.setPayerID(genInfoData.PAYERID);
+            claimIdentifier.setPayerID(sendpayerId);
             claimIdentifier.setPortalTransactionID(null);
             claimIdentifier.setProviderBatchID(null);
             claimIdentifier.setProviderClaimNumber(genInfoData.PROVCLAIMNO);
