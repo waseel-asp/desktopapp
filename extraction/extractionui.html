@@ -27,6 +27,17 @@
             <hr>
             <div class="inner-container">
                 <form onsubmit="connect();return false;">
+                    <div class="alert alert-danger alert-dismissible fade show" id="error-extraction-block" role="alert"
+                        style="display: none;">
+                        <div class="icon"></div>
+                        <div class="middle-block">
+                            <h6>Error</h6>
+                            <span id="name-errors">
+                                <!-- <p>Error message.</p> -->
+                            </span>
+                        </div>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+                    </div>
                     <div>
                         <div class="form-group row date-row">
                             <div class="col-sm-6">
@@ -46,7 +57,7 @@
                             </div>
                         </div>
                         <div class="form-group row date-row">
-                            <div class="col-sm-5">
+                            <div class="col-sm-6">
                                 <input type="text" id="startDate" class="form-control select-bg select-date" name="startDate" placeholder="startDate" required
                                     oninvalid="this.setCustomValidity('Please provide a start date')" oninput="setCustomValidity('')"
                                     value="Start Date" onfocus="(this.type='date')">
@@ -54,13 +65,20 @@
                                     <img src="../images/calendar_icon.svg" alt="Calendar Icon" />
                                 </i> -->
                             </div>
-                            <div class="col-sm-5">
+                            <div class="col-sm-6">
                                 <input type="text" id="endDate" class="form-control select-bg select-date" name="endDate" placeholder="endDate" required
                                     oninvalid="this.setCustomValidity('Please provide an end date')" oninput="setCustomValidity('')"
                                     value="End Date" onfocus="(this.type='date')">
                                 <!-- <i class="cal_icon">
                                     <img src="../images/calendar_icon.svg" alt="Calendar Icon" />
                                 </i> -->
+                            </div>
+                        </div>
+                        <div class="form-group row date-row">
+                            <div class="col-sm-8">
+                                <input type="text" id="extractionName" class="form-control select-bg" placeholder="Enter Extraction Name here ..." required
+                                oninvalid="this.setCustomValidity('Please enter the extraction name')"
+                                oninput="setCustomValidity('')">
                             </div>
                             <div class="col extract-btn">
                                 <button id="extract-button" type="submit" class="btn btn-primary btn-signin">Extract Claims</button>

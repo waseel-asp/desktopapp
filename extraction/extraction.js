@@ -150,6 +150,7 @@ function connect() {
     document.getElementById("extract-button").disabled = true;
     document.getElementById("summary-container").style.display = "none";
     document.getElementById("summary-error").style.display = "none";
+    document.getElementById("name-errors").innerHTML = "";
     var progressStatus = document.getElementById("claim-progress-status");
     var progressBar = document.getElementById("progress-bar");
     document.getElementById("claim-progress-bar").style.display = "block";
@@ -163,70 +164,96 @@ function connect() {
         document.getElementById("extract-button").disabled = false;
         return false;
     }
-    wslConnection.connect().then(data => {
-        var query = "";
-        var database = database_type;
-        var claimType = "' '";
-        if (selectedClaim.toLowerCase() != 'all') {
-            claimTypeMap.get(selectedClaim).forEach(element => {
-                if (element == claimTypeMap.get(selectedClaim)[0])
-                    claimType = "'" + element + "'";
-                else
-                    claimType += ", '" + element + "'";
-            });
-        } else {
-            var temp = document.getElementById('selectedClaim').childNodes;
-            var zero = 0;
-            temp.forEach(element => {
-                if (element.value != undefined && element.value != '') {
-                    if (claimTypeMap.get(element.value) != undefined) {
-                        claimTypeMap.get(element.value).forEach(ele => {
-                            if (zero == 0 && ele == claimTypeMap.get(element.value)[0]) {
-                                zero = 1;
-                                claimType = "'" + ele + "'";
+    //check extraction name already present or not
+    var extractionName = document.getElementById('extractionName').value;
+    checkExtractionName(extractionName,function(response,statusCode){
+        console.log(statusCode);
+        
+        if(response && statusCode==200){
+            document.getElementById("error-extraction-block").style.display = "flex";
+            document.getElementById("name-errors").innerHTML += "<p>" + "Extraction name already exists. Please enter a different extraction name." + "</p>"
+            $("#error-extraction-block").fadeOut(10000);
+            document.getElementById("claim-progress-bar").style.display = "none";
+            progressBar.style.width = "0%";
+            document.getElementById("extract-button").disabled = false;
+            return false;
+        } else if(statusCode == 401){
+            alert("Invalid Token. Please sign in again.")
+            window.location.href = "../login/loginui.html";
+        } else if(statusCode <= 500 && statusCode >= 400){
+            document.getElementById("error-extraction-block").style.display = "flex";
+            document.getElementById("name-errors").innerHTML += "<p>" + "There is internal server technical issue." + "</p>"
+            $("#error-extraction-block").fadeOut(10000);
+            document.getElementById("claim-progress-bar").style.display = "none";
+            progressBar.style.width = "0%";
+            document.getElementById("extract-button").disabled = false;
+            return false;
+        } else{
+            wslConnection.connect().then(data => {
+                var query = "";
+                var database = database_type;
+                var claimType = "' '";
+                if (selectedClaim.toLowerCase() != 'all') {
+                    claimTypeMap.get(selectedClaim).forEach(element => {
+                        if (element == claimTypeMap.get(selectedClaim)[0])
+                            claimType = "'" + element + "'";
+                        else
+                            claimType += ", '" + element + "'";
+                    });
+                } else {
+                    var temp = document.getElementById('selectedClaim').childNodes;
+                    var zero = 0;
+                    temp.forEach(element => {
+                        if (element.value != undefined && element.value != '') {
+                            if (claimTypeMap.get(element.value) != undefined) {
+                                claimTypeMap.get(element.value).forEach(ele => {
+                                    if (zero == 0 && ele == claimTypeMap.get(element.value)[0]) {
+                                        zero = 1;
+                                        claimType = "'" + ele + "'";
+                                    }
+                                    else
+                                        claimType += ", '" + ele + "'";
+                                });
                             }
-                            else
-                                claimType += ", '" + ele + "'";
-                        });
-                    }
+                        }
+                    });
                 }
-            });
-        }
-        var providerMappingCode = localStorage.getItem('provider_mapping_code');
-        if (database.toLowerCase() == "oracle") {
-            query = "select * from WSL_GENINFO where PROVIDERID='" + providerMappingCode + "' AND CLAIMTYPE IN(" + claimType + ") AND PAYERID='" + selectedPayer + "' AND CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd HH24:MI') AND TO_DATE('" + endDate + "','yyyy-mm-dd HH24:MI') ";
-        } else {
-            query = "select * from WSL_GENINFO where PROVIDERID='" + providerMappingCode + "' AND CLAIMTYPE IN(" + claimType + ") AND PAYERID='" + selectedPayer + "' AND CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "' ";
-        }
-        console.log(query);
-        setClaims(query, function (claimList) {
-            console.log(claimList);
-            if (claimList.length > 0) {
-                progressBar.style.width = "50%";
-                progressStatus.innerHTML = "Extracting ..."
-                var claimBody = {
-                    startDate: startDate,
-                    endDate: endDate,
-                    payerId: sendpayerId,
-                    claimList: claimList
-                };
-                sendClaim.sendClaim(claimBody);
-            }
-            else {
+                var providerMappingCode = localStorage.getItem('provider_mapping_code');
+                if (database.toLowerCase() == "oracle") {
+                    query = "select * from WSL_GENINFO where PROVIDERID='" + providerMappingCode + "' AND CLAIMTYPE IN(" + claimType + ") AND PAYERID='" + selectedPayer + "' AND CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd HH24:MI') AND TO_DATE('" + endDate + "','yyyy-mm-dd HH24:MI') ";
+                } else {
+                    query = "select * from WSL_GENINFO where PROVIDERID='" + providerMappingCode + "' AND CLAIMTYPE IN(" + claimType + ") AND PAYERID='" + selectedPayer + "' AND CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "' ";
+                }
+                console.log(query);
+                setClaims(query, function (claimList) {
+                    console.log(claimList);
+                    if (claimList.length > 0) {
+                        progressBar.style.width = "50%";
+                        progressStatus.innerHTML = "Extracting ..."
+                        var claimBody = {
+                            extractionName: extractionName,
+                            claimList: claimList
+                        };
+                        sendClaim.sendClaim(claimBody);
+                    }
+                    else {
+                        document.getElementById("claim-progress-bar").style.display = "none";
+                        progressBar.style.width = "0%";
+                        document.getElementById('summary-error').style.display = 'block';
+                        document.getElementById('summary-error').innerHTML =
+                            "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
+                        document.getElementById("extract-button").disabled = false;
+                    }
+                });
+            }, err => {
+                alert(err.message);
                 document.getElementById("claim-progress-bar").style.display = "none";
                 progressBar.style.width = "0%";
-                document.getElementById('summary-error').style.display = 'block';
-                document.getElementById('summary-error').innerHTML =
-                    "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
                 document.getElementById("extract-button").disabled = false;
-            }
-        });
-    }, err => {
-        alert(err.message);
-        document.getElementById("claim-progress-bar").style.display = "none";
-        progressBar.style.width = "0%";
-        document.getElementById("extract-button").disabled = false;
-    });
+            });
+        }
+    })
+   
 }
 
 async function setClaims(query, callback) {
@@ -454,4 +481,42 @@ function convertToAgePeriod(value, unit) {
         return "P" + value + periodUnit + "";
     } else
         return null;
+}
+
+async function checkExtractionName(name,callback){
+    var providerId = localStorage.getItem('provider_id');
+    var url = environment.selectURL(localStorage.getItem('environment'));
+    var urlPath = '/upload/providers/' + providerId + '/check/extraction-name';
+    var authorizationToken = 'Bearer '+ localStorage.getItem('access_token');
+   
+    const urlData = {
+        hostname: url,
+        path: urlPath,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': authorizationToken
+        }
+    };
+    var body = {
+        extractionName: name
+    }
+    const req = await httpRequest.request(urlData, (res) => {
+        let chunksOfData = [];
+        res.on('data', (chunk) => {
+            chunksOfData.push(chunk);
+        });
+        res.on('end', () => {
+            let responseBody = Buffer.concat(chunksOfData);
+            if (res.statusCode == 200) {
+                responseData = JSON.parse(responseBody.toString());
+                console.log(responseData);
+                callback(responseData.response,res.statusCode);
+            }else{
+                callback(null,res.statusCode)
+            }
+        });
+    });
+    req.write(JSON.stringify(body));
+    req.end();
 }
