@@ -63,9 +63,12 @@ exports.sendClaim = function (claims) {
             progressBar.style.width = "0%";
         });
         document.getElementById("extract-button").disabled = false;
+        document.getElementById("extraction-refresh-button").disabled = false;
     });
     req.write(body);
     req.on('error', (e) => {
+        document.getElementById("extract-button").disabled = false;
+        document.getElementById("extraction-refresh-button").disabled = false;
         document.getElementById("claim-progress-bar").style.display = "none";
         progressBar.style.width = "0%";
         document.getElementById('summary-error').style.display = 'block';

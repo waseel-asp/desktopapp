@@ -148,6 +148,7 @@ function connect() {
     selectedPayer = selectedText.match(/\(([^)]+)\)/)[1];
     sendpayerId = document.getElementById('selectedPayer').value;
     document.getElementById("extract-button").disabled = true;
+    document.getElementById("extraction-refresh-button").disabled = true;
     document.getElementById("summary-container").style.display = "none";
     document.getElementById("summary-error").style.display = "none";
     document.getElementById("name-errors").innerHTML = "";
@@ -162,6 +163,7 @@ function connect() {
         document.getElementById("claim-progress-bar").style.display = "none";
         progressBar.style.width = "0%";
         document.getElementById("extract-button").disabled = false;
+        document.getElementById("extraction-refresh-button").disabled = false;
         return false;
     }
     //check extraction name already present or not
@@ -176,6 +178,7 @@ function connect() {
             document.getElementById("claim-progress-bar").style.display = "none";
             progressBar.style.width = "0%";
             document.getElementById("extract-button").disabled = false;
+            document.getElementById("extraction-refresh-button").disabled = false;
             return false;
         } else if(statusCode == 401){
             alert("Invalid Token. Please sign in again.")
@@ -187,6 +190,7 @@ function connect() {
             document.getElementById("claim-progress-bar").style.display = "none";
             progressBar.style.width = "0%";
             document.getElementById("extract-button").disabled = false;
+            document.getElementById("extraction-refresh-button").disabled = false;
             return false;
         } else{
             wslConnection.connect().then(data => {
@@ -243,6 +247,7 @@ function connect() {
                         document.getElementById('summary-error').innerHTML =
                             "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
                         document.getElementById("extract-button").disabled = false;
+                        document.getElementById("extraction-refresh-button").disabled = false;
                     }
                 });
             }, err => {
@@ -250,6 +255,7 @@ function connect() {
                 document.getElementById("claim-progress-bar").style.display = "none";
                 progressBar.style.width = "0%";
                 document.getElementById("extract-button").disabled = false;
+                document.getElementById("extraction-refresh-button").disabled = false;
             });
         }
     })
@@ -376,6 +382,7 @@ async function setClaims(query, callback) {
         callback(claimList);
     }, err => {
         document.getElementById("extract-button").disabled = false;
+        document.getElementById("extraction-refresh-button").disabled = false;
         document.getElementById("claim-progress-bar").style.display = "none";
         document.getElementById("progress-bar").style.width = "0%";
         document.getElementById('summary-error').style.display = 'block';

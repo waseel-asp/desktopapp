@@ -77,6 +77,9 @@
                         var providerMappingCode = responseData.providerMapping.mappingProviderCode;
                         localStorage.setItem('provider_mapping_code', providerMappingCode);
                         document.getElementById("providerMappingCode").innerHTML = ' ('+providerMappingCode+')';
+                    } else {
+                        alert("Provider code is not present.")
+                        window.location.href = "../login/loginui.html";
                     }
                 } else if (res.statusCode == 401) {
                     alert("Invalid Token. Please sign in again.")
