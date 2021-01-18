@@ -41,7 +41,7 @@ $(function () {
                     });
                 }
             } else if (res.statusCode == 401) {
-                alert("Invalid Token. Please again sign in.")
+                alert("Invalid Token. Please sign in again.")
                 window.location.href = "../login/loginui.html";
             }
         });
@@ -82,7 +82,7 @@ $(function () {
                     console.log(claimTypeMap);
                 }
             } else if (res.statusCode == 401) {
-                alert("Invalid Token. Please again sign in.")
+                alert("Invalid Token. Please sign in again.")
                 window.location.href = "../login/loginui.html";
             }
         });

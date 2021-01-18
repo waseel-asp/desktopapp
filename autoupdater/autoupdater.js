@@ -25,7 +25,7 @@ function createWindow() {
             if(token != null){
             const expire_time = new Date(localStorage.getItem('expire_time'));
             if((expire_time.getTime() < new Date().getTime())){
-                alert("Invalid Token. Please again sign in.")
+                alert("Invalid Token. Please sign in again.")
                 window.location.href = "../login/loginui.html";
             }else{
                 console.log("valid");

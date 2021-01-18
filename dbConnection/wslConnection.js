@@ -196,6 +196,9 @@ function fetchDbConfig(callback) {
                 } else {
                     callback(false, undefined, "No DB Configuration!");
                 }
+            }else if (res.statusCode == 401) {
+                alert("Invalid Token. Please sign in again.")
+                window.location.href = "../login/loginui.html";
             } else {
                 if (res.statusCode <= 500 && res.statusCode >= 400) {
                     callback(false, undefined, "Failed to connect to server!");

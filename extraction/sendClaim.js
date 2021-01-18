@@ -50,7 +50,7 @@ exports.sendClaim = function (claims) {
             } 
             else {
                 if (res.statusCode == 401) {
-                    alert("Invalid Token. Please again sign in.")
+                    alert("Invalid Token. Please sign in again.")
                     window.location.href = "../login/loginui.html";
                 } else if (res.statusCode <= 500 && res.statusCode >= 400) {
                     console.log("In eroror");
