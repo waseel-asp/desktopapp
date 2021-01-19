@@ -15,7 +15,7 @@ module.exports = {
     checkConnection: function () {
 
         return new Promise(function (resolve, reject) {
-            
+
             if (dbParams) {
                 if (dbParams.db_type.toUpperCase() == "ORACLE") {
 
@@ -27,11 +27,11 @@ module.exports = {
                         console.log(err);
                         reject(err);
                     });
-                    setTimeout(function(){ reject("Connection Timed out!"); }, 60000);
+                    setTimeout(function () { reject("Connection Timed out!"); }, 60000);
 
                 } else if (dbParams.db_type.toUpperCase() == "SQLSERVER" || dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY") {
 
-                    if(dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY"){
+                    if (dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY") {
                         this.encrypt = false;
                     }
 
@@ -43,7 +43,7 @@ module.exports = {
                         console.log(err);
                         reject(err);
                     });
-                    setTimeout(function(){ reject("Connection Timed out!"); }, 60000);
+                    setTimeout(function () { reject("Connection Timed out!"); }, 60000);
                 } else if (dbParams.db_type.toUpperCase() == "MYSQL") {
                     mysql().then(data => {
                         console.log("Successfully connected to MYSQL!");
@@ -52,7 +52,7 @@ module.exports = {
                         console.log(err);
                         reject(err);
                     });
-                    setTimeout(function(){ reject("Connection Timed out!"); }, 60000);
+                    setTimeout(function () { reject("Connection Timed out!"); }, 60000);
                 } else {
                     reject("Invalid DB Configuration")
                 }
@@ -81,7 +81,7 @@ module.exports = {
                         });
 
                     } else if (dbParams.db_type.toUpperCase() == "SQLSERVER" || dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY") {
-                        if(dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY"){
+                        if (dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY") {
                             this.encrypt = false;
                         }
                         mssql().then(data => {
@@ -142,8 +142,8 @@ module.exports = {
     },
     fetchDatabase: function (callback) {
         fetchDbConfig(function (isConnectionAvailable, params, message) {
-            
-            if(isConnectionAvailable){
+
+            if (isConnectionAvailable) {
                 dbParams = params;
                 localStorage.getItem("dbParams");
             }
@@ -156,9 +156,9 @@ module.exports = {
 function fetchDbConfig(callback) {
     var url = environment.selectURL(localStorage.getItem('environment'));
     var path = '/settings/providers/' + getProviderId() + '/db-config';
-    
+
     var authorizationToken = 'Bearer ' + localStorage.getItem('access_token');;
-    
+
     const reqOptions = {
         hostname: url,
         path: path,
@@ -196,7 +196,7 @@ function fetchDbConfig(callback) {
                 } else {
                     callback(false, undefined, "No DB Configuration!");
                 }
-            }else if (res.statusCode == 401) {
+            } else if (res.statusCode == 401) {
                 alert("Invalid Token. Please sign in again.")
                 window.location.href = "../login/loginui.html";
             } else {
@@ -240,18 +240,27 @@ async function oracle() {
     const oracledb = require('oracledb');
     oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
 
+
     return new Promise(function (resolve, reject) {
-        oracledb.getConnection({
-            user: dbParams.username,
-            password: dbParams.password,
-            connectString: dbParams.hostname + "/" + dbParams.database_name
-        }, function (error, connection) {
-            if (error)
-                reject(error)
-            
-            resolve(connection);
-        });
-        
+        try {
+            var tempPath = __dirname.split("dbConnection")[0];
+            var oracleClientPath = tempPath.split("\\").join("\\\\") + "oracle client 19_9";
+
+            oracledb.initOracleClient({ libDir: oracleClientPath });
+            oracledb.getConnection({
+                user: dbParams.username,
+                password: dbParams.password,
+                connectString: dbParams.hostname + "/" + dbParams.database_name
+            }, function (error, connection) {
+                if (error)
+                    reject(error)
+
+                resolve(connection);
+            });
+        } catch (error) {
+            reject(error);
+        }
+
     });
 }
 
