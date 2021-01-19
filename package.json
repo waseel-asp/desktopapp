@@ -1,23 +1,12 @@
 {
     "name": "waseele_desktop",
-    "version": "1.1.6",
+    "version": "1.1.5",
     "description": "waseele desktop app",
     "main": "autoupdater/autoupdater.js",
     "scripts": {
         "start": "electron .",
         "build": "electron-builder build --win --publish never",
         "deploy": "electron-builder build --win --publish always"
-    },
-    "build": {
-        "extraResources": [
-            {
-                "from": "./resources/oracle client 19_9",
-                "to": "oracle client 19_9",
-                "filter": [
-                    "**/*"
-                ]
-            }
-        ]
     },
     "files": [
         "images/**/*"
