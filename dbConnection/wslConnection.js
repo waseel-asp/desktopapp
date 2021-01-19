@@ -243,8 +243,9 @@ async function oracle() {
 
     return new Promise(function (resolve, reject) {
         try {
-            var tempPath = __dirname.split("dbConnection")[0];
-            var oracleClientPath = tempPath.split("\\").join("\\\\") + "oracle client 19_9";
+
+            var tempPath = require('electron-root-path').rootPath;
+            var oracleClientPath = tempPath.split("\\").join("\\\\") + "\\resources\\oracle client 19_9";
 
             oracledb.initOracleClient({ libDir: oracleClientPath });
             oracledb.getConnection({
