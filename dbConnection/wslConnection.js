@@ -1,6 +1,12 @@
 const httpRequest = require('https');
 var jwt_decode = require('jwt-decode')
 const environment = require('../environment.js');
+const oracledb = require('oracledb');
+oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
+var tempPath = require('electron-root-path').rootPath;
+var oracleClientPath = tempPath + "\\resources\\oracle client 18_5";
+console.log(oracleClientPath);
+oracledb.initOracleClient({ libDir: oracleClientPath });
 
 let connection, dbParams = localStorage.getItem("dbParams");
 var encrypt = true;
@@ -236,19 +242,8 @@ async function mssql() {
 }
 
 async function oracle() {
-
-    const oracledb = require('oracledb');
-    oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
-
-
     return new Promise(function (resolve, reject) {
         try {
-
-            var tempPath = require('electron-root-path').rootPath;
-            var oracleClientPath = tempPath + "\\resources\\oracle client 18_5";
-
-            console.log(oracleClientPath);
-            oracledb.initOracleClient({ libDir: oracleClientPath });
             oracledb.getConnection({
                 user: dbParams.username,
                 password: dbParams.password,
