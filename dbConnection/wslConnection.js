@@ -245,7 +245,7 @@ async function oracle() {
         try {
 
             var tempPath = require('electron-root-path').rootPath;
-            var oracleClientPath = tempPath + "\\resources\\oracle client 19_9";
+            var oracleClientPath = tempPath + "\\resources\\oracle client 18_5";
 
             console.log(oracleClientPath);
             oracledb.initOracleClient({ libDir: oracleClientPath });
