@@ -151,7 +151,7 @@ module.exports = {
 
             if (isConnectionAvailable) {
                 dbParams = params;
-                localStorage.getItem("dbParams");
+                localStorage.setItem("dbParams",dbParams);
             }
             callback(isConnectionAvailable, dbParams, message);
         });

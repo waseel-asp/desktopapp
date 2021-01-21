@@ -1,4 +1,3 @@
-const wslConnection = require('../dbConnection/wslConnection.js');
 
 function refresh() {
     document.forms["dbConfig"].reset();
@@ -12,6 +11,7 @@ function refresh() {
 
 
 async function getExistingDatabaseValue() {
+    const wslConnection = require('../dbConnection/wslConnection.js');
     var refreshTest = document.getElementById('test');
     refreshTest.disabled = true;
     var spinnerSpan = document.createElement("span");
@@ -19,7 +19,7 @@ async function getExistingDatabaseValue() {
     spinnerSpan.classList.add('spinner-border-sm');
     refreshTest.innerHTML = ' Loading....';
     refreshTest.firstChild.before(spinnerSpan);
-
+    
     await wslConnection.fetchDatabase(async function (isConnectionAvailable, dbParams, message) {
         if (isConnectionAvailable) {
 
