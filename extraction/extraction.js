@@ -2,7 +2,7 @@ const httpRequest = require('https');
 const environment = require('../environment.js');
 var claimTypeMap = new Map();
 var sendpayerId;
-$(function () {
+$(function() {
     $("#nav-placeholder").load("../home/page.html");
     var jwt_decode = require('jwt-decode')
     var token = localStorage.getItem('access_token');
@@ -99,9 +99,10 @@ const wslConnection = require('../dbConnection/wslConnection.js')
 const sendClaim = require('./sendClaim.js');
 
 let database_type;
+
 function openConnection() {
     //add logic to check the database data exist in database.
-    wslConnection.fetchDatabase(function (isConnectionAvailable, dbParams, message) {
+    wslConnection.fetchDatabase(function(isConnectionAvailable, dbParams, message) {
         console.log("dddd", dbParams);
         if (!isConnectionAvailable) {
             if (window.confirm("You have not added database configuration yet. Do you want to add new one?")) {
@@ -168,10 +169,10 @@ function connect() {
     }
     //check extraction name already present or not
     var extractionName = document.getElementById('extractionName').value;
-    checkExtractionName(extractionName,function(response,statusCode){
+    checkExtractionName(extractionName, function(response, statusCode) {
         console.log(statusCode);
-        
-        if(response && statusCode==200){
+
+        if (response && statusCode == 200) {
             document.getElementById("error-extraction-block").style.display = "flex";
             document.getElementById("name-errors").innerHTML += "<p>" + "Extraction name already exists. Please enter a different extraction name." + "</p>"
             $("#error-extraction-block").fadeOut(10000);
@@ -180,10 +181,10 @@ function connect() {
             document.getElementById("extract-button").disabled = false;
             document.getElementById("extraction-refresh-button").disabled = false;
             return false;
-        } else if(statusCode == 401){
+        } else if (statusCode == 401) {
             alert("Invalid Token. Please sign in again.")
             window.location.href = "../login/loginui.html";
-        } else if(statusCode <= 500 && statusCode >= 400){
+        } else if (statusCode <= 500 && statusCode >= 400) {
             document.getElementById("error-extraction-block").style.display = "flex";
             document.getElementById("name-errors").innerHTML += "<p>" + "There is internal server technical issue." + "</p>"
             $("#error-extraction-block").fadeOut(10000);
@@ -192,7 +193,7 @@ function connect() {
             document.getElementById("extract-button").disabled = false;
             document.getElementById("extraction-refresh-button").disabled = false;
             return false;
-        } else{
+        } else {
             wslConnection.connect().then(data => {
                 var query = "";
                 var database = database_type;
@@ -214,8 +215,7 @@ function connect() {
                                     if (zero == 0 && ele == claimTypeMap.get(element.value)[0]) {
                                         zero = 1;
                                         claimType = "'" + ele + "'";
-                                    }
-                                    else
+                                    } else
                                         claimType += ", '" + ele + "'";
                                 });
                             }
@@ -229,7 +229,7 @@ function connect() {
                     query = "select * from WSL_GENINFO where PROVIDERID='" + providerMappingCode + "' AND CLAIMTYPE IN(" + claimType + ") AND PAYERID='" + selectedPayer + "' AND CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "' ";
                 }
                 console.log(query);
-                setClaims(query, function (claimList) {
+                setClaims(query, function(claimList) {
                     console.log(claimList);
                     if (claimList.length > 0) {
                         progressBar.style.width = "50%";
@@ -239,8 +239,7 @@ function connect() {
                             claimList: claimList
                         };
                         sendClaim.sendClaim(claimBody);
-                    }
-                    else {
+                    } else {
                         document.getElementById("claim-progress-bar").style.display = "none";
                         progressBar.style.width = "0%";
                         document.getElementById('summary-error').style.display = 'block';
@@ -259,7 +258,7 @@ function connect() {
             });
         }
     })
-   
+
 }
 
 async function setClaims(query, callback) {
@@ -329,7 +328,7 @@ async function setClaims(query, callback) {
             physician.setPhysicianCategory(genInfoData.PHYCATEGORY);
             caseInformation.setCaseType(genInfoData.CLAIMTYPE);
             caseInformation.setOtherConditions(genInfoData.OTHERCOND);
-            caseInformation.setRadiologyReport(genInfoData.RADIOREPORT);
+            caseInformation.setRadiologyReport(null);
             caseInformation.setPossibleLineOfTreatment(null);
             caseInformation.setCaseDescription(caseDescription.getCaseDescriptionInfo());
             caseInformation.setPatient(patient.getPatientInfo());
@@ -366,8 +365,8 @@ async function setClaims(query, callback) {
             visitInformation.setVisitDate(genInfoData.CLAIMDATE);
             visitInformation.setVisitType(genInfoData.VISITTYPE);
 
-            claim.setCommreport(genInfoData.COMMREPORT);
-            await setInvoiceData(genInfoData.PROVCLAIMNO, function (invoiceList) {
+            claim.setCommreport(null);
+            await setInvoiceData(genInfoData.PROVCLAIMNO, function(invoiceList) {
                 claim.setAdmission(admission.getAdmissionInfo());
                 claim.setAttachment(new Array());
                 claim.setCaseInformation(caseInformation.getCaseInformation());
@@ -415,7 +414,7 @@ async function setInvoiceData(data, callback) { // genInfoData[i].PROVCLAIMNO
                     amount.getAmountValue(0.0, "SAR"));
                 invoice.setInvoiceGDPN(invoiceGDPN.getGDPNInfo());
 
-                await setServiceData(invoiceData[j].INVOICENO, function (serviceList) {
+                await setServiceData(invoiceData[j].INVOICENO, function(serviceList) {
                     invoice.setService(serviceList);
                     invoiceList.push(invoice.getInvoiceInfo());
                 });
@@ -490,12 +489,12 @@ function convertToAgePeriod(value, unit) {
         return null;
 }
 
-async function checkExtractionName(name,callback){
+async function checkExtractionName(name, callback) {
     var providerId = localStorage.getItem('provider_id');
     var url = environment.selectURL(localStorage.getItem('environment'));
     var urlPath = '/upload/providers/' + providerId + '/check/extraction-name';
-    var authorizationToken = 'Bearer '+ localStorage.getItem('access_token');
-   
+    var authorizationToken = 'Bearer ' + localStorage.getItem('access_token');
+
     const urlData = {
         hostname: url,
         path: urlPath,
@@ -518,9 +517,9 @@ async function checkExtractionName(name,callback){
             if (res.statusCode == 200) {
                 responseData = JSON.parse(responseBody.toString());
                 console.log(responseData);
-                callback(responseData.response,res.statusCode);
-            }else{
-                callback(null,res.statusCode)
+                callback(responseData.response, res.statusCode);
+            } else {
+                callback(null, res.statusCode)
             }
         });
     });
