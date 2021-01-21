@@ -1,12 +1,12 @@
 {
     "name": "waseele_desktop",
-    "version": "1.1.9",
+    "version": "1.1.10",
     "description": "waseele desktop app",
     "main": "autoupdater/autoupdater.js",
     "scripts": {
         "start": "electron .",
-        "build": "electron-builder build --win --publish never",
-        "deploy": "electron-builder build --win --publish always"
+        "build": "electron-builder build --x64 --ia32 --win  --publish never",
+        "deploy": "electron-builder build --x64 --ia32 --win --publish always"
     },
     "files": [
         "images/**/*"
