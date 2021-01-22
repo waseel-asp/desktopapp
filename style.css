@@ -131,44 +131,7 @@ form .errorArea p{margin-bottom: 0;}
     z-index: 1;
 }
 
-#notification {
-    position: relative;
-    top: 50%;
-    left: 50%;
-    max-width: 350px;
-    width: 100%;
-    z-index: 999;
-    padding: 13px 26px;
-    border-radius: 5px;
-    background-color: white;
-    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
-    transform: translate(-50%, -50%);
-}
-#upnotification #message{
-    font: normal normal normal 16px/20px Helvetica Neue;
-    letter-spacing: 0px;
-    color: #707070;
-    text-align: center;
-    margin: 0 0 35px;
-}
-#upnotification .label-text{
-    text-align: left;
-    font: normal normal normal 12px/16px Helvetica Neue;
-    letter-spacing: 0px;
-    color: #3060AA;
-    padding-left: 10px;
-    margin: 0 0 35px;
-}
-#upnotification .btn-primary{
-    font: normal normal normal 12px/14px Helvetica Neue;
-    padding: 8px 13px;
-}
-#myProgress {
-    width: 100%;
-    background-color: rgb(48 96 170 / 31%);
-    margin: 0 0 35px;
-    border-radius: 5px;
-}
+
 #myBar {
     width: 30%;
     height: 6px;
@@ -493,3 +456,13 @@ form .form-group .custom-checkbox input:checked ~ .form-check-label {
 .alert>.middle-block ul,.alert>.middle-block ul>li,.alert>.middle-block p{font-size: 14px;line-height: 20px;color:inherit;padding: 0;margin: 0;list-style: none;}
 .alert .close{height: 32px;width: 32px;background: url('./images/ic-close.svg') center no-repeat;background-size: 20px 20px;opacity: 0.4;transition: all 0.2s ease;border:0;padding: 0;margin: -8px -8px -8px auto;flex-basis: 32px;flex-grow: 0;flex-shrink: 0;max-width: 32px;position: static;}
 .alert .close:hover,.alert .close:focus,.alert .close:active{opacity: 0.72;}
+
+/* update dialog */
+.update-dialog {position: fixed;top: 50%;left: 50%;max-width: 350px;width: 100%;z-index: 999;padding: 20px;border-radius: 8px;background-color: #fff;box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.16);transform: translate(-50%, -50%);}
+.update-dialog .title{font-size: 16px;line-height: 22px;font-family: 'Helvetica Neue',sans-serif;color: #505050;text-align: center;margin: 0 0 32px;}
+.update-dialog .label-text{font-size:14px;line-height: 20px;font-family: 'Helvetica Neue',sans-serif;color: #3060AA;text-align: left;margin: 0 0 8px;}
+.update-dialog #myProgress {width: 100%;background-color: rgba(48,96,170,0.3);margin: 0 0 4px;border-radius: 8px;}
+.update-dialog .progress-stats{display: flex;text-align: left;font-size:14px;line-height: 20px;font-family: 'Helvetica Neue',sans-serif;color:#707070;padding-bottom: 24px;}
+.update-dialog .progress-stats .right{margin-left: auto;text-align: right;}
+.update-dialog .progress-stats p{margin: 0;}
+.update-dialog .btn-primary{font-size:14px;line-height: 20px;font-family: 'Helvetica Neue',sans-serif;padding: 8px 16px;}

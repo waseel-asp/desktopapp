@@ -13,17 +13,22 @@
                 <div class="card">
                     <!-- Icon -->
                     <p id="version"></p>
-                    <img src="../images/log_in_logo.svg" class="profile-img-card" style="max-height: 96px;" id="icon" alt="Logo" />
+                    <img src="../images/log_in_logo.svg" class="profile-img-card" style="max-height: 96px;" id="icon"
+                        alt="Logo" />
                     <div class="card-body" id="login-card">
                         <form class="form-signin" onsubmit="callLogin();return false">
                             <div class="form-group row">
                                 <div class="col-sm-12">
-                                    <input class="form-control" id="username" placeholder="Username" type="text" required oninvalid="this.setCustomValidity('Please provide a username')" oninput="setCustomValidity('')" />
+                                    <input class="form-control" id="username" placeholder="Username" type="text"
+                                        required oninvalid="this.setCustomValidity('Please provide a username')"
+                                        oninput="setCustomValidity('')" />
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <div class="col-sm-12">
-                                    <input class="form-control" id="password" placeholder="Password" type="password" required oninvalid="this.setCustomValidity('Please provide a password')" oninput="setCustomValidity('')" />
+                                    <input class="form-control" id="password" placeholder="Password" type="password"
+                                        required oninvalid="this.setCustomValidity('Please provide a password')"
+                                        oninput="setCustomValidity('')" />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -45,19 +50,29 @@
                             <div style="display: none;" id="errorArea" class="errorArea">
                                 <p id="errorMessage"></p>
                             </div>
-                            <br/>
+                            <br />
                             <div class="form-group">
-                                <button type="submit" id="login-button" class="btn btn-lg btn-primary btn-block btn-signin">Sign In</button>
+                                <button type="submit" id="login-button"
+                                    class="btn btn-lg btn-primary btn-block btn-signin">Sign In</button>
                             </div>
                         </form>
                     </div>
-                    <div id="upnotification" class="hidden">
-                        <div id="notification">
-                            <p id="message"></p>
-                            <p id="inner-message" class="label-text"></p>
-                            <!-- <div id="myProgress">
-                                <div id="myBar"></div>
-                            </div> -->
+                    <div id="upnotification" class="">
+                        <div id="notification" class="update-dialog">
+                            <p id="message" class="title">New Update Available</p>
+                            <p id="inner-message" class="label-text">Downloading Now</p>
+                            <div id="claim-progress-bar">
+                                <div id="myProgress">
+                                    <div class="progress">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                            id="progress-bar" style="width: 0%; background-color: #3060AA"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="progress-stats">
+                                <p class="left" id="progress-percent">0%</p>
+                                <p class="right" id="progress-speed">0 Kbps</p>
+                            </div>
                             <button id="restart-button" onClick="restartApp()" class="btn btn-primary">Restart</button>
                         </div>
                     </div>

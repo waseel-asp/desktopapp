@@ -1,5 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const { autoUpdater } = require('electron-updater');
+const log = require('electron-log');
+autoUpdater.logger = log;
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -67,6 +69,11 @@ ipcMain.on('restart_app', () => {
     autoUpdater.quitAndInstall();
 });
 
+autoUpdater.on('download-progress', (progressObj) => {
+    let speed = Math.round((progressObj.bytesPerSecond)/1024);
+    let percentage = Math.round(progressObj.percent);
+    mainWindow.webContents.send('progress', { speed: speed, percentage: percentage });
+});
 
 autoUpdater.on('update-available', () => {
     mainWindow.webContents.send('update_available');
