@@ -56,7 +56,7 @@ exports.sendClaim = function (claims) {
                     console.log("In eroror");
                     document.getElementById("summary-error").style.display = "block";
                     document.getElementById("summary-error").innerHTML = 
-                    "<p>Error Message : " + responseData.error + "</p>";
+                    "<p>Error Message : " + responseData.message + "</p>";
                 }
             }
             document.getElementById("claim-progress-bar").style.display = "none";

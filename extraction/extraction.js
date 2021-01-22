@@ -328,7 +328,7 @@ async function setClaims(query, callback) {
             physician.setPhysicianCategory(genInfoData.PHYCATEGORY);
             caseInformation.setCaseType(genInfoData.CLAIMTYPE);
             caseInformation.setOtherConditions(genInfoData.OTHERCOND);
-            caseInformation.setRadiologyReport(null);
+            caseInformation.setRadiologyReport(genInfoData.RADIOREPORT);
             caseInformation.setPossibleLineOfTreatment(null);
             caseInformation.setCaseDescription(caseDescription.getCaseDescriptionInfo());
             caseInformation.setPatient(patient.getPatientInfo());
@@ -363,9 +363,9 @@ async function setClaims(query, callback) {
             member.setPolicyNumber(genInfoData.POLICYNO);
             visitInformation.setdepartmentCode(genInfoData.DEPTCODE);
             visitInformation.setVisitDate(genInfoData.CLAIMDATE);
-            visitInformation.setVisitType(genInfoData.VISITTYPE);
-
-            claim.setCommreport(null);
+            visitInformation.setVisitType(genInfoData.VISITTYPE);    
+            
+            claim.setCommreport(genInfoData.COMMREPORT);
             await setInvoiceData(genInfoData.PROVCLAIMNO, function(invoiceList) {
                 claim.setAdmission(admission.getAdmissionInfo());
                 claim.setAttachment(new Array());

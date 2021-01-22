@@ -7,7 +7,7 @@ var tempPath = require('electron-root-path').rootPath;
 var oracleClientPath = tempPath + "\\resources\\oracle client 18_5";
 console.log(oracleClientPath);
 oracledb.initOracleClient({ libDir: oracleClientPath });
-
+oracledb.fetchAsString = [ oracledb.CLOB ];
 let connection, dbParams = localStorage.getItem("dbParams");
 var encrypt = true;
 
