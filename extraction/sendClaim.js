@@ -25,7 +25,7 @@ exports.sendClaim = function (claims) {
     };
     var progressStatus = document.getElementById("claim-progress-status");
     var progressBar = document.getElementById("progress-bar");
-    progressBar.style.width = "75%";
+    progressBar.style.width = "85%";
     progressStatus.innerHTML = "Sending Claims ...";
     const req = httpRequest.request(options, (res) => {
         progressBar.style.width = "100%";

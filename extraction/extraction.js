@@ -170,7 +170,6 @@ function connect() {
     //check extraction name already present or not
     var extractionName = document.getElementById('extractionName').value;
     checkExtractionName(extractionName, function(response, statusCode) {
-        console.log(statusCode);
 
         if (response && statusCode == 200) {
             document.getElementById("error-extraction-block").style.display = "flex";
@@ -229,26 +228,67 @@ function connect() {
                     query = "select * from WSL_GENINFO where PROVIDERID='" + providerMappingCode + "' AND CLAIMTYPE IN(" + claimType + ") AND PAYERID='" + selectedPayer + "' AND CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "' ";
                 }
                 console.log(query);
-                setClaims(query, function(claimList) {
-                    console.log(claimList);
-                    if (claimList.length > 0) {
-                        progressBar.style.width = "50%";
-                        progressStatus.innerHTML = "Extracting ..."
-                        var claimBody = {
-                            extractionName: extractionName,
-                            claimList: claimList
-                        };
-                        sendClaim.sendClaim(claimBody);
-                    } else {
-                        document.getElementById("claim-progress-bar").style.display = "none";
-                        progressBar.style.width = "0%";
-                        document.getElementById('summary-error').style.display = 'block';
-                        document.getElementById('summary-error').innerHTML =
-                            "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
-                        document.getElementById("extract-button").disabled = false;
-                        document.getElementById("extraction-refresh-button").disabled = false;
+                getDataBaseData(query, function(data){
+                    var genInfoList = data;
+                    var invoiceQuery = "select inv.*,sd.*,inv.INVOICENO AS INVOICEID from WSL_INVOICES inv, WSL_SERVICE_DETAILS sd ,WSL_GENINFO gen where "
+                    + "inv.INVOICENO=sd.INVOICENO and inv.PROVCLAIMNO=gen.PROVCLAIMNO and"
+                    + " gen.PROVIDERID='" + providerMappingCode + "' AND gen.CLAIMTYPE IN(" + claimType + ") AND gen.PAYERID='" + selectedPayer + "'";
+                    if (database.toLowerCase() == "oracle") {
+                        invoiceQuery = invoiceQuery + "AND gen.CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd HH24:MI') AND TO_DATE('" + endDate + "','yyyy-mm-dd HH24:MI')";
+                    }else{
+                        invoiceQuery = invoiceQuery + "AND gen.CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "'";
                     }
-                });
+                    
+                    getDataBaseData(invoiceQuery, function(data){
+                        var invoiceList = data;
+                        var diagnosisQuery = "select cd.* from WSL_CLAIM_DIAGNOSIS cd,WSL_GENINFO gen where gen.PROVCLAIMNO=cd.PROVCLAIMNO AND "
+                        +"gen.PROVIDERID='" + providerMappingCode + "' AND gen.CLAIMTYPE IN(" + claimType + ") AND gen.PAYERID='" + selectedPayer + "'";
+                        if(database.toLowerCase() == "oracle"){
+                            diagnosisQuery = diagnosisQuery + "AND gen.CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd HH24:MI') AND TO_DATE('" + endDate + "','yyyy-mm-dd HH24:MI')";
+                        }else{
+                            diagnosisQuery = diagnosisQuery + "AND gen.CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "'";
+                        }
+                        var progressBar = document.getElementById("progress-bar");
+                        progressBar.style.width = "50%";
+                        progressStatus.innerHTML = "Mapping ..."
+                        getDataBaseData(diagnosisQuery, function(diagnosisRes){
+                            var diagnosisList = diagnosisRes;
+                            MapDataToClaim(genInfoList,function(claimMap){
+                                MapDiagnosisData(claimMap,diagnosisList,function(responseClaimMap){
+                                    console.log("diagnosis");
+                                    MapInvoiceData(responseClaimMap,invoiceList,function(updatedClaimMap){
+                                        console.log("invoice");
+                                        //latest list call 
+                                        var claimList = [];
+                                        Array.from(updatedClaimMap.keys()).map(key => {
+                                            claimList.push(updatedClaimMap.get(key));
+                                        });
+                                        console.log("after convert",claimList);
+                                        
+                                        if (claimList.length > 0) {
+                                            var progressBar = document.getElementById("progress-bar");
+                                            progressBar.style.width = "75%";
+                                            progressStatus.innerHTML = "Sending Claims ..."
+                                            var claimBody = {
+                                                extractionName: extractionName,
+                                                claimList: claimList
+                                            };
+                                            sendClaim.sendClaim(claimBody);
+                                        } else {
+                                            document.getElementById("claim-progress-bar").style.display = "none";
+                                            progressBar.style.width = "0%";
+                                            document.getElementById('summary-error').style.display = 'block';
+                                            document.getElementById('summary-error').innerHTML =
+                                                "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
+                                            document.getElementById("extract-button").disabled = false;
+                                            document.getElementById("extraction-refresh-button").disabled = false;
+                                        }
+                                    })
+                                })
+                            })
+                        });
+                    })
+                })
             }, err => {
                 alert(err.message);
                 document.getElementById("claim-progress-bar").style.display = "none";
@@ -259,211 +299,6 @@ function connect() {
         }
     })
 
-}
-
-async function setClaims(query, callback) {
-    await wslConnection.query(query).then(async genInfoDatas => {
-        var claimList = [];
-        for (const genInfoData of genInfoDatas) {
-            const discharge = require('../models/Discharge.js');
-            const admission = require('../models/Admission.js');
-            const caseDescription = require('../models/CaseDescription.js');
-            const patient = require('../models/Patient.js');
-            const physician = require('../models/Physician.js');
-            const caseInformation = require('../models/CaseInformation.js');
-            const claimGDPN = require('../models/GDPN.js');
-            const claimIdentifier = require('../models/ClaimIdentifier.js');
-            const member = require('../models/Member.js');
-            const visitInformation = require('../models/visitInformation.js');
-            const claim = require('../models/Claim.js');
-            const amount = require('../models/Amount.js');
-            const diagnosis = require('../models/Diagnosis.js');
-
-            discharge.setDischargeDate(genInfoData.DISCHARGEDATE);
-            discharge.setActualLengthOfStay(convertToAgePeriod(genInfoData.LENGTHOFSTAY, genInfoData.UNITOFSTAY));
-            admission.setAdmissionDate(genInfoData.ADMISSIONDATE);
-            admission.setAdmissionType(null);
-            admission.setBedNumber(genInfoData.BEDNO);
-            admission.setRoomNumber(genInfoData.ROOMNO);
-            admission.setEstimatedLengthOfStay(null);
-            admission.setDischarge(discharge.getDischargeInfo());
-
-            var diagnosisList = [];
-            await wslConnection.query("select * from WSL_CLAIM_DIAGNOSIS where PROVCLAIMNO='" + genInfoData.PROVCLAIMNO + "'").then(diagnosisData => {
-                for (var x = 0; x < diagnosisData.length; x++) {
-                    diagnosis.setDiagnosisCode(diagnosisData[x].DIAGNOSISCODE);
-                    diagnosis.setDiagnosisDescription(diagnosisData[x].DIAGNOSISDESC);
-                    diagnosis.setDiagnosisNumber(null);
-                    diagnosis.setDiagnosisType(null);
-                    diagnosisList.push(diagnosis.getDiagnosisInfo());
-                }
-            });
-            caseDescription.setBloodPressure(genInfoData.BLOODPRESSURE);
-            caseDescription.setChiefComplaintSymptoms(genInfoData.MAINSYMPTOM);
-            caseDescription.setDiagnosis(diagnosisList);
-            caseDescription.setHeight(null);
-            caseDescription.setIllnessCategory(null);
-            caseDescription.setIllnessDuration(
-                convertToAgePeriod(genInfoData.DURATIONOFILLNESS, genInfoData.UNITOFDURATION));
-            caseDescription.setInvestigation(null);
-            caseDescription.setLmp(genInfoData.LASTMENSTRUATIONPERIOD);
-            caseDescription.setOptics(null);
-            caseDescription.setPulse(genInfoData.PULSE);
-            caseDescription.setRespRate(genInfoData.RESPIRATORYRATE);
-            caseDescription.setSignicantSigns(genInfoData.SIGNIFICANTSIGN);
-            caseDescription.setTemperature(genInfoData.TEMPERATURE == null ? 0 : genInfoData.TEMPERATURE);
-            caseDescription.setWeight(genInfoData.WEIGH);
-            patient.setAge(convertToAgePeriod(genInfoData.MEMBERAGE, genInfoData.UNITAGE));
-            patient.setContactNumber(null);
-            patient.setDob(genInfoData.MEMBERDOB);
-            patient.setFirstName(genInfoData.FIRSTNAME);
-            patient.setFullName(genInfoData.FULLNAME);
-            patient.setGender(genInfoData.GENDER);
-            patient.setLastName(genInfoData.LASTNAME);
-            patient.setMiddleName(genInfoData.MIDDLENAME);
-            patient.setNationality(genInfoData.NATIONALITY);
-            patient.setPatientFileNumber(genInfoData.PATFILENO);
-            physician.setPhysicianID(genInfoData.PHYID);
-            physician.setPhysicianName(genInfoData.PHYNAME);
-            physician.setPhysicianCategory(genInfoData.PHYCATEGORY);
-            caseInformation.setCaseType(genInfoData.CLAIMTYPE);
-            caseInformation.setOtherConditions(genInfoData.OTHERCOND);
-            caseInformation.setRadiologyReport(genInfoData.RADIOREPORT);
-            caseInformation.setPossibleLineOfTreatment(null);
-            caseInformation.setCaseDescription(caseDescription.getCaseDescriptionInfo());
-            caseInformation.setPatient(patient.getPatientInfo());
-            caseInformation.setPhysician(physician.getPhysicianInfo());
-
-            claimGDPN.setGDPNData(
-                amount.getAmountValue(genInfoData.TOTCLAIMNETAMT, "SAR"),
-                amount.getAmountValue(0.0, "SAR"),
-                amount.getAmountValue(genInfoData.TOTCLAIMNETVATAMOUNT, "SAR"),
-                amount.getAmountValue(genInfoData.TOTCLAIMPATSHARE, "SAR"),
-                amount.getAmountValue(0.0, "SAR"),
-                amount.getAmountValue(genInfoData.TOTCLAIMPATSHAREVATAMOUNT, "SAR"),
-                amount.getAmountValue(genInfoData.TOTCLAIMDISC, "SAR"),
-                amount.getAmountValue(genInfoData.TOTCLAIMGRSAMT, "SAR"),
-                amount.getAmountValue(0.0, "SAR"),
-                amount.getAmountValue(0.0, "SAR"));
-
-            claimIdentifier.setApprovalNumber(genInfoData.APPREFNO);
-            claimIdentifier.setEligibilityNumber(genInfoData.ELIGREFNO);
-            claimIdentifier.setPayerBatchID(null);
-            claimIdentifier.setPayerClaimNumber(null);
-            claimIdentifier.setPayerID(sendpayerId);
-            claimIdentifier.setPortalTransactionID(null);
-            claimIdentifier.setProviderBatchID(null);
-            claimIdentifier.setProviderClaimNumber(genInfoData.PROVCLAIMNO);
-            claimIdentifier.setProviderParentClaimNumber(null);
-
-            member.setAccCode(genInfoData.ACCCODE);
-            member.setIdNumber(null);
-            member.setMemberID(genInfoData.MEMBERID);
-            member.setPlanType(genInfoData.PLANTYPE);
-            member.setPolicyNumber(genInfoData.POLICYNO);
-            visitInformation.setdepartmentCode(genInfoData.DEPTCODE);
-            visitInformation.setVisitDate(genInfoData.CLAIMDATE);
-            visitInformation.setVisitType(genInfoData.VISITTYPE);    
-            
-            claim.setCommreport(genInfoData.COMMREPORT);
-            await setInvoiceData(genInfoData.PROVCLAIMNO, function(invoiceList) {
-                claim.setAdmission(admission.getAdmissionInfo());
-                claim.setAttachment(new Array());
-                claim.setCaseInformation(caseInformation.getCaseInformation());
-                claim.setClaimGDPN(claimGDPN.getGDPNInfo());
-                claim.setClaimIdentities(claimIdentifier.getClaimIdentifierInfo());
-                claim.setInvoice(invoiceList);
-                claim.setMember(member.getMemberInfo());
-                claim.setVisitInformation(visitInformation.getVisitInfo());
-                claimList.push(claim.getClaimInfo());
-            });
-        }
-        callback(claimList);
-    }, err => {
-        document.getElementById("extract-button").disabled = false;
-        document.getElementById("extraction-refresh-button").disabled = false;
-        document.getElementById("claim-progress-bar").style.display = "none";
-        document.getElementById("progress-bar").style.width = "0%";
-        document.getElementById('summary-error').style.display = 'block';
-        document.getElementById('summary-error').innerHTML = err;
-        console.log(err);
-    });
-}
-
-async function setInvoiceData(data, callback) { // genInfoData[i].PROVCLAIMNO
-    try {
-        await wslConnection.query("select * from WSL_INVOICES where PROVCLAIMNO='" + data + "'").then(async invoiceData => {
-            var invoiceList = [];
-            for (var j = 0; j < invoiceData.length; j++) {
-                const amount = require('../models/Amount.js');
-                const invoice = require('../models/Invoice.js');
-                const invoiceGDPN = require('../models/GDPN.js');
-                invoice.setInvoiceNumber(invoiceData[j].INVOICENO);
-                invoice.setInvoiceDate(invoiceData[j].INVOICEDATE);
-                invoice.setInvoiceDepartment(invoiceData[j].INVOICEDEPT);
-                invoiceGDPN.setGDPNData(
-                    amount.getAmountValue(invoiceData[j].TOTINVNETAMT, "SAR"),
-                    amount.getAmountValue(0.0, "SAR"),
-                    amount.getAmountValue(invoiceData[j].TOTINVNETVATAMOUNT, "SAR"),
-                    amount.getAmountValue(invoiceData[j].TOTINVPATSHARE, "SAR"),
-                    amount.getAmountValue(0.0, "SAR"),
-                    amount.getAmountValue(invoiceData[j].TOTINVPATSHAREVATAMOUNT, "SAR"),
-                    amount.getAmountValue(invoiceData[j].TOTINVDISC, "SAR"),
-                    amount.getAmountValue(invoiceData[j].TOTINVGRSAMT, "SAR"),
-                    amount.getAmountValue(0.0, "SAR"),
-                    amount.getAmountValue(0.0, "SAR"));
-                invoice.setInvoiceGDPN(invoiceGDPN.getGDPNInfo());
-
-                await setServiceData(invoiceData[j].INVOICENO, function(serviceList) {
-                    invoice.setService(serviceList);
-                    invoiceList.push(invoice.getInvoiceInfo());
-                });
-            }
-            callback(invoiceList);
-        });
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-async function setServiceData(data, callback) { // invoiceData[j].INVOICENO
-    try {
-        await wslConnection.query("select * from WSL_SERVICE_DETAILS where INVOICENO='" + data + "'")
-            .then(async serviceData => {
-                var serviceList = [];
-                for (var k = 0; k < serviceData.length; k++) {
-                    const amount = require('../models/Amount.js');
-                    const service = require('../models/Service.js');
-                    const serviceGDPN = require('../models/GDPN.js');
-                    service.setDrugUse(null);
-                    service.setRequestedQuantity(serviceData[k].QTY);
-                    service.setServiceCode(serviceData[k].SERVICECODE);
-                    service.setServiceComment(null);
-                    service.setServiceDate(serviceData[k].SERVICEDATE);
-                    service.setServiceDescription(serviceData[k].SERVICEDESC);
-                    service.setServiceNumber(null);
-                    service.setServiceType(serviceData[k].UNITSERVICETYPE);
-                    service.setToothNumber(serviceData[k].TOOTHNO);
-                    service.setUnitPrice(amount.getAmountValue(serviceData[k].UNITSERVICEPRICE, "SAR"));
-                    serviceGDPN.setGDPNData(
-                        amount.getAmountValue(serviceData[k].TOTSERVICENETAMT, "SAR"),
-                        amount.getAmountValue(serviceData[k].TOTSERVICENETVATRATE, "SAR"),
-                        amount.getAmountValue(serviceData[k].TOTSERVICENETVATAMOUNT, "SAR"),
-                        amount.getAmountValue(serviceData[k].TOTSERVICEPATSHARE, "SAR"),
-                        amount.getAmountValue(serviceData[k].TOTSERVICEPATSHAREVATRATE, "SAR"),
-                        amount.getAmountValue(serviceData[k].TOTSERVICEPATSHAREVATAMOUNT, "SAR"),
-                        amount.getAmountValue(serviceData[k].TOTSERVICEDISC, "SAR"),
-                        amount.getAmountValue(serviceData[k].TOTSERVICEGRSAMT, "SAR"),
-                        amount.getAmountValue(0.0, "SAR"),
-                        amount.getAmountValue(0.0, "SAR"));
-                    service.setServiceGDPN(serviceGDPN.getGDPNInfo());
-                    serviceList.push(service.getServiceInfo());
-                }
-                callback(serviceList);
-            });
-    } catch (error) {
-        console.error(error);
-    }
 }
 
 function convertToAgePeriod(value, unit) {
@@ -525,4 +360,256 @@ async function checkExtractionName(name, callback) {
     });
     req.write(JSON.stringify(body));
     req.end();
+}
+
+async function getDataBaseData(query, callback) {
+    await wslConnection.query(query).then(async queryResponse => {
+        var test = queryResponse;
+        callback(queryResponse);
+    })
+}
+async function MapDataToClaim(genInfoList,callbackGenInfo){
+   await generateGenInfo(genInfoList, function(claimMap){
+       console.log(claimMap);
+       callbackGenInfo(claimMap);
+   })
+}
+function generateGenInfo(genInfoList,callback){
+    let claimMap = new Map();
+    for (const genInfoData of genInfoList) {
+        const discharge = require('../models/Discharge.js');
+        const admission = require('../models/Admission.js');
+        const caseDescription = require('../models/CaseDescription.js');
+        const patient = require('../models/Patient.js');
+        const physician = require('../models/Physician.js');
+        const caseInformation = require('../models/CaseInformation.js');
+        const claimGDPN = require('../models/GDPN.js');
+        const claimIdentifier = require('../models/ClaimIdentifier.js');
+        const member = require('../models/Member.js');
+        const visitInformation = require('../models/visitInformation.js');
+        const claim = require('../models/Claim.js');
+        const amount = require('../models/Amount.js');
+
+        discharge.setDischargeDate(genInfoData.DISCHARGEDATE);
+        discharge.setActualLengthOfStay(convertToAgePeriod(genInfoData.LENGTHOFSTAY, genInfoData.UNITOFSTAY));
+        admission.setAdmissionDate(genInfoData.ADMISSIONDATE);
+        admission.setAdmissionType(null);
+        admission.setBedNumber(genInfoData.BEDNO);
+        admission.setRoomNumber(genInfoData.ROOMNO);
+        admission.setEstimatedLengthOfStay(null);
+        admission.setDischarge(discharge.getDischargeInfo());
+
+        caseDescription.setBloodPressure(genInfoData.BLOODPRESSURE);
+        caseDescription.setChiefComplaintSymptoms(genInfoData.MAINSYMPTOM);
+        // caseDescription.setDiagnosis(diagnosisList);
+        caseDescription.setHeight(null);
+        caseDescription.setIllnessCategory(null);
+        caseDescription.setIllnessDuration(
+            convertToAgePeriod(genInfoData.DURATIONOFILLNESS, genInfoData.UNITOFDURATION));
+        caseDescription.setInvestigation(null);
+        caseDescription.setLmp(genInfoData.LASTMENSTRUATIONPERIOD);
+        caseDescription.setOptics(null);
+        caseDescription.setPulse(genInfoData.PULSE);
+        caseDescription.setRespRate(genInfoData.RESPIRATORYRATE);
+        caseDescription.setSignicantSigns(genInfoData.SIGNIFICANTSIGN);
+        caseDescription.setTemperature(genInfoData.TEMPERATURE == null ? 0 : genInfoData.TEMPERATURE);
+        caseDescription.setWeight(genInfoData.WEIGH);
+        patient.setAge(convertToAgePeriod(genInfoData.MEMBERAGE, genInfoData.UNITAGE));
+        patient.setContactNumber(null);
+        patient.setDob(genInfoData.MEMBERDOB);
+        patient.setFirstName(genInfoData.FIRSTNAME);
+        patient.setFullName(genInfoData.FULLNAME);
+        patient.setGender(genInfoData.GENDER);
+        patient.setLastName(genInfoData.LASTNAME);
+        patient.setMiddleName(genInfoData.MIDDLENAME);
+        patient.setNationality(genInfoData.NATIONALITY);
+        patient.setPatientFileNumber(genInfoData.PATFILENO);
+        physician.setPhysicianID(genInfoData.PHYID);
+        physician.setPhysicianName(genInfoData.PHYNAME);
+        physician.setPhysicianCategory(genInfoData.PHYCATEGORY);
+        caseInformation.setCaseType(genInfoData.CLAIMTYPE);
+        caseInformation.setOtherConditions(genInfoData.OTHERCOND);
+        caseInformation.setRadiologyReport(genInfoData.RADIOREPORT);
+        caseInformation.setPossibleLineOfTreatment(null);
+        caseInformation.setCaseDescription(caseDescription.getCaseDescriptionInfo());
+        caseInformation.setPatient(patient.getPatientInfo());
+        caseInformation.setPhysician(physician.getPhysicianInfo());
+
+        claimGDPN.setGDPNData(
+            amount.getAmountValue(genInfoData.TOTCLAIMNETAMT, "SAR"),
+            amount.getAmountValue(0.0, "SAR"),
+            amount.getAmountValue(genInfoData.TOTCLAIMNETVATAMOUNT, "SAR"),
+            amount.getAmountValue(genInfoData.TOTCLAIMPATSHARE, "SAR"),
+            amount.getAmountValue(0.0, "SAR"),
+            amount.getAmountValue(genInfoData.TOTCLAIMPATSHAREVATAMOUNT, "SAR"),
+            amount.getAmountValue(genInfoData.TOTCLAIMDISC, "SAR"),
+            amount.getAmountValue(genInfoData.TOTCLAIMGRSAMT, "SAR"),
+            amount.getAmountValue(0.0, "SAR"),
+            amount.getAmountValue(0.0, "SAR"));
+
+        claimIdentifier.setApprovalNumber(genInfoData.APPREFNO);
+        claimIdentifier.setEligibilityNumber(genInfoData.ELIGREFNO);
+        claimIdentifier.setPayerBatchID(null);
+        claimIdentifier.setPayerClaimNumber(null);
+        claimIdentifier.setPayerID(sendpayerId);
+        claimIdentifier.setPortalTransactionID(null);
+        claimIdentifier.setProviderBatchID(null);
+        claimIdentifier.setProviderClaimNumber(genInfoData.PROVCLAIMNO);
+        claimIdentifier.setProviderParentClaimNumber(null);
+
+        member.setAccCode(genInfoData.ACCCODE);
+        member.setIdNumber(genInfoData.NATIONALID);
+        member.setMemberID(genInfoData.MEMBERID);
+        member.setPlanType(genInfoData.PLANTYPE);
+        member.setPolicyNumber(genInfoData.POLICYNO);
+        visitInformation.setdepartmentCode(genInfoData.DEPTCODE);
+        visitInformation.setVisitDate(genInfoData.CLAIMDATE);
+        visitInformation.setVisitType(genInfoData.VISITTYPE);
+
+        claim.setCommreport(genInfoData.COMMREPORT);
+        claim.setAdmission(admission.getAdmissionInfo());
+        claim.setAttachment(new Array());
+        claim.setCaseInformation(caseInformation.getCaseInformation());
+        claim.setClaimGDPN(claimGDPN.getGDPNInfo());
+        claim.setClaimIdentities(claimIdentifier.getClaimIdentifierInfo());
+        // claim.setInvoice(invoiceList);
+        claim.setMember(member.getMemberInfo());
+        claim.setVisitInformation(visitInformation.getVisitInfo());
+        // claimList.push(claim.getClaimInfo());
+        claimMap.set(genInfoData.PROVCLAIMNO,claim.getClaimInfo());
+    }
+    callback(claimMap);
+}
+
+async function MapDiagnosisData(claimMap,diagnosisList,callbackDiagnosis){
+    await updateDiagnosisData(claimMap,diagnosisList,function(claimMap){
+        callbackDiagnosis(claimMap);
+    })
+}
+function updateDiagnosisData(claimMap,diagnosisList,callback){
+    let diagnosisMap = new Map();
+    Array.from(claimMap.keys()).map(key => {
+        var tempData = diagnosisList.filter(diagnosis => diagnosis.PROVCLAIMNO == key);
+        diagnosisMap.set(key,tempData);
+      });
+      
+      Array.from(diagnosisMap.keys()).map(key => {
+        var diagnosisData = diagnosisMap.get(key);
+        var diagnosisList = [];
+        for(var x=0;x<diagnosisData.length;x++){
+        const diagnosis = require('../models/Diagnosis.js');
+        diagnosis.setDiagnosisCode(diagnosisData[x].DIAGNOSISCODE);
+        diagnosis.setDiagnosisDescription(diagnosisData[x].DIAGNOSISDESC);
+        diagnosis.setDiagnosisNumber(null);
+        diagnosis.setDiagnosisType(null);
+        diagnosisList.push(diagnosis.getDiagnosisInfo());
+        }
+        claimMap.get(key).caseInformation.caseDescription.diagnosis=diagnosisList;
+      });
+      callback(claimMap);
+}
+async function MapInvoiceData(claimMap,invoiceList,callbackInvoice){
+    await updateInvoiceData(claimMap,invoiceList,function(claimMap){
+        callbackInvoice(claimMap);
+    })
+}
+function updateInvoiceData(claimMap,invoiceList,callback){
+    let invoiceMap = new Map();
+    
+    Array.from(claimMap.keys()).map(key => {
+        var temp = invoiceList.filter(invoice => invoice.PROVCLAIMNO == key);
+        invoiceMap.set(key,temp);
+      });
+      Array.from(invoiceMap.keys()).map(key => {
+        var invoiceData = invoiceMap.get(key);
+        var invoiceList = [];
+        for(var j=0;j<invoiceData.length;j++){
+        //invoicelist check current element else fetch
+        var tempInvoice = [];
+        if (invoiceList.length > 0) {
+            tempInvoice = invoiceList.filter(invoice => 
+                invoice.invoiceNumber == invoiceData[j].INVOICEID);
+        }
+        
+        const amount = require('../models/Amount.js');
+        const invoice = require('../models/Invoice.js');
+        const invoiceGDPN = require('../models/GDPN.js');
+        const service = require('../models/Service.js');
+        const serviceGDPN = require('../models/GDPN.js');
+        const serviceamount = require('../models/Amount.js');
+        if(tempInvoice.length == 0){
+            invoice.setInvoiceNumber(invoiceData[j].INVOICEID);
+            invoice.setInvoiceDate(invoiceData[j].INVOICEDATE);
+            invoice.setInvoiceDepartment(invoiceData[j].INVOICEDEPT);
+            invoiceGDPN.setGDPNData(
+                amount.getAmountValue(invoiceData[j].TOTINVNETAMT, "SAR"),
+                amount.getAmountValue(0.0, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTINVNETVATAMOUNT, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTINVPATSHARE, "SAR"),
+                amount.getAmountValue(0.0, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTINVPATSHAREVATAMOUNT, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTINVDISC, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTINVGRSAMT, "SAR"),
+                amount.getAmountValue(0.0, "SAR"),
+                amount.getAmountValue(0.0, "SAR"));
+            invoice.setInvoiceGDPN(invoiceGDPN.getGDPNInfo());
+            var serviceList = [];
+            service.setDrugUse(null);
+            service.setRequestedQuantity(invoiceData[j].QTY);
+            service.setServiceCode(invoiceData[j].SERVICECODE);
+            service.setServiceComment(null);
+            service.setServiceDate(invoiceData[j].SERVICEDATE);
+            service.setServiceDescription(invoiceData[j].SERVICEDESC);
+            service.setServiceNumber(null);
+            service.setServiceType(invoiceData[j].UNITSERVICETYPE);
+            service.setToothNumber(invoiceData[j].TOOTHNO);
+            service.setUnitPrice(amount.getAmountValue(invoiceData[j].UNITSERVICEPRICE, "SAR"));
+            serviceGDPN.setGDPNData(
+                amount.getAmountValue(invoiceData[j].TOTSERVICENETAMT, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTSERVICENETVATRATE, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTSERVICENETVATAMOUNT, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTSERVICEPATSHARE, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTSERVICEPATSHAREVATRATE, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTSERVICEPATSHAREVATAMOUNT, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTSERVICEDISC, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTSERVICEGRSAMT, "SAR"),
+                amount.getAmountValue(0.0, "SAR"),
+                amount.getAmountValue(0.0, "SAR"));
+            service.setServiceGDPN(serviceGDPN.getGDPNInfo());
+            serviceList.push(service.getServiceInfo());
+            invoice.setService(serviceList);
+            invoiceList.push(invoice.getInvoiceInfo());
+        }
+        else{
+            var tempServiceList = tempInvoice[0].service;
+            service.setDrugUse(null);
+            service.setRequestedQuantity(invoiceData[j].QTY);
+            service.setServiceCode(invoiceData[j].SERVICECODE);
+            service.setServiceComment(null);
+            service.setServiceDate(invoiceData[j].SERVICEDATE);
+            service.setServiceDescription(invoiceData[j].SERVICEDESC);
+            service.setServiceNumber(null);
+            service.setServiceType(invoiceData[j].UNITSERVICETYPE);
+            service.setToothNumber(invoiceData[j].TOOTHNO);
+            service.setUnitPrice(amount.getAmountValue(invoiceData[j].UNITSERVICEPRICE, "SAR"));
+            serviceGDPN.setGDPNData(
+                amount.getAmountValue(invoiceData[j].TOTSERVICENETAMT, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTSERVICENETVATRATE, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTSERVICENETVATAMOUNT, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTSERVICEPATSHARE, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTSERVICEPATSHAREVATRATE, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTSERVICEPATSHAREVATAMOUNT, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTSERVICEDISC, "SAR"),
+                amount.getAmountValue(invoiceData[j].TOTSERVICEGRSAMT, "SAR"),
+                amount.getAmountValue(0.0, "SAR"),
+                amount.getAmountValue(0.0, "SAR"));
+            service.setServiceGDPN(serviceGDPN.getGDPNInfo());
+            tempServiceList.push(service.getServiceInfo());
+            tempInvoice[0].service = tempServiceList;
+        }
+
+        }
+        claimMap.get(key).invoice=invoiceList;
+      });
+      callback(claimMap);
 }
