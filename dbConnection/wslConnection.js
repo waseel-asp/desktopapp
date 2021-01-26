@@ -3,11 +3,12 @@ var jwt_decode = require('jwt-decode')
 const environment = require('../environment.js');
 const oracledb = require('oracledb');
 oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
+var isOracleInitialized = false;
 var tempPath = require('electron-root-path').rootPath;
 var oracleClientPath = tempPath + "\\resources\\oracle client 18_5";
 console.log(oracleClientPath);
-oracledb.initOracleClient({ libDir: oracleClientPath });
-oracledb.fetchAsString = [ oracledb.CLOB ];
+
+oracledb.fetchAsString = [oracledb.CLOB];
 let connection, dbParams = localStorage.getItem("dbParams");
 var encrypt = true;
 
@@ -18,13 +19,16 @@ function getProviderId() {
 }
 
 module.exports = {
-    checkConnection: function () {
+    checkConnection: function() {
 
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
 
             if (dbParams) {
                 if (dbParams.db_type.toUpperCase() == "ORACLE") {
-
+                    if (!isOracleInitialized) {
+                        oracledb.initOracleClient({ libDir: oracleClientPath });
+                        isOracleInitialized = true;
+                    }
                     oracle().then(data => {
                         console.log("Successfully connected to Oracle!");
                         this.connection = data;
@@ -33,7 +37,7 @@ module.exports = {
                         console.log(err);
                         reject(err);
                     });
-                    setTimeout(function () { reject("Connection Timed out!"); }, 60000);
+                    setTimeout(function() { reject("Connection Timed out!"); }, 60000);
 
                 } else if (dbParams.db_type.toUpperCase() == "SQLSERVER" || dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY") {
 
@@ -49,7 +53,7 @@ module.exports = {
                         console.log(err);
                         reject(err);
                     });
-                    setTimeout(function () { reject("Connection Timed out!"); }, 60000);
+                    setTimeout(function() { reject("Connection Timed out!"); }, 60000);
                 } else if (dbParams.db_type.toUpperCase() == "MYSQL") {
                     mysql().then(data => {
                         console.log("Successfully connected to MYSQL!");
@@ -58,7 +62,7 @@ module.exports = {
                         console.log(err);
                         reject(err);
                     });
-                    setTimeout(function () { reject("Connection Timed out!"); }, 60000);
+                    setTimeout(function() { reject("Connection Timed out!"); }, 60000);
                 } else {
                     reject("Invalid DB Configuration")
                 }
@@ -68,10 +72,10 @@ module.exports = {
         });
 
     },
-    connect: function () {
+    connect: function() {
 
-        return new Promise(function (resolve, reject) {
-            fetchDbConfig(function (isConnectionAvailable, data, message) {
+        return new Promise(function(resolve, reject) {
+            fetchDbConfig(function(isConnectionAvailable, data, message) {
 
                 if (isConnectionAvailable) {
                     dbParams = data;
@@ -115,10 +119,10 @@ module.exports = {
             });
         });
     },
-    query: async function (queryString) {
+    query: async function(queryString) {
         if (dbParams) {
             if (dbParams.db_type.toUpperCase() == "ORACLE") {
-                return new Promise(function (resolve, reject) {
+                return new Promise(function(resolve, reject) {
                     oracleQuery(queryString).then(data => {
                         resolve(data.rows);
                     }, error => {
@@ -127,7 +131,7 @@ module.exports = {
                 });
 
             } else if (dbParams.db_type.toUpperCase() == "SQLSERVER" || dbParams.db_type.toUpperCase() == "SQLSERVERLEGACY") {
-                return new Promise(function (resolve, reject) {
+                return new Promise(function(resolve, reject) {
                     mssqlQuery(queryString).then(data => {
                         resolve(data.recordset);
                     }, error => {
@@ -136,7 +140,7 @@ module.exports = {
                 });
 
             } else if (dbParams.db_type.toUpperCase() == "MYSQL") {
-                return new Promise(function (resolve, reject) {
+                return new Promise(function(resolve, reject) {
                     mysqlQuery(queryString).then(data => {
                         resolve(data);
                     }, error => {
@@ -146,12 +150,12 @@ module.exports = {
             }
         }
     },
-    fetchDatabase: function (callback) {
-        fetchDbConfig(function (isConnectionAvailable, params, message) {
+    fetchDatabase: function(callback) {
+        fetchDbConfig(function(isConnectionAvailable, params, message) {
 
             if (isConnectionAvailable) {
                 dbParams = params;
-                localStorage.setItem("dbParams",dbParams);
+                localStorage.setItem("dbParams", dbParams);
             }
             callback(isConnectionAvailable, dbParams, message);
         });
@@ -230,8 +234,8 @@ async function mssql() {
         database: dbParams.database_name,
         encrypt: this.encrypt
     };
-    return new Promise(function (resolve, reject) {
-        sql.connect(dbConfig, function (err) {
+    return new Promise(function(resolve, reject) {
+        sql.connect(dbConfig, function(err) {
             if (err)
                 reject(err)
 
@@ -242,13 +246,13 @@ async function mssql() {
 }
 
 async function oracle() {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
         try {
             oracledb.getConnection({
                 user: dbParams.username,
                 password: dbParams.password,
                 connectString: dbParams.hostname + "/" + dbParams.database_name
-            }, function (error, connection) {
+            }, function(error, connection) {
                 if (error)
                     reject(error)
 
@@ -269,8 +273,8 @@ async function mysql() {
         password: dbParams.password,
         database: dbParams.database_name
     });
-    return new Promise(function (resolve, reject) {
-        this.connection.connect(function (err) {
+    return new Promise(function(resolve, reject) {
+        this.connection.connect(function(err) {
             if (err)
                 reject(err);
             resolve(this.connection);
@@ -279,8 +283,8 @@ async function mysql() {
 }
 
 async function mssqlQuery(queryString) {
-    return new Promise(function (resolve, reject) {
-        this.connection.query(queryString, function (err, result) {
+    return new Promise(function(resolve, reject) {
+        this.connection.query(queryString, function(err, result) {
             if (err)
                 reject(err);
             resolve(result);
@@ -289,8 +293,8 @@ async function mssqlQuery(queryString) {
 }
 
 async function oracleQuery(queryString) {
-    return new Promise(function (resolve, reject) {
-        this.connection.execute(queryString, function (err, result) {
+    return new Promise(function(resolve, reject) {
+        this.connection.execute(queryString, function(err, result) {
             if (err)
                 reject(err);
             resolve(result);
@@ -300,8 +304,8 @@ async function oracleQuery(queryString) {
 }
 
 async function mysqlQuery(queryString) {
-    return new Promise(function (resolve, reject) {
-        this.connection.query(queryString, function (err, rows, fields) {
+    return new Promise(function(resolve, reject) {
+        this.connection.query(queryString, function(err, rows, fields) {
             // Call reject on error states,
             // call resolve with results
             if (err) {
