@@ -1,6 +1,6 @@
 {
     "name": "waseele_desktop",
-    "version": "1.1.11",
+    "version": "1.1.12",
     "description": "waseele desktop app",
     "main": "autoupdater/autoupdater.js",
     "scripts": {
