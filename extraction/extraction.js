@@ -241,8 +241,15 @@ function connect() {
                     
                     getDataBaseData(invoiceQuery, function(data){
                         var invoiceList = data;
-                        var diagnosisQuery = "select cd.* from WSL_CLAIM_DIAGNOSIS cd,WSL_GENINFO gen where gen.PROVCLAIMNO=cd.PROVCLAIMNO AND "
-                        +"gen.PROVIDERID='" + providerMappingCode + "' AND gen.CLAIMTYPE IN(" + claimType + ") AND gen.PAYERID='" + selectedPayer + "'";
+                        var diagnosisQuery = "";
+                        if(database.toLowerCase() == "mysql"){
+                            diagnosisQuery = "select cd.provclaimno AS PROVCLAIMNO,cd.diagnosiscode AS DIAGNOSISCODE,cd.diagnosisdesc AS DIAGNOSISDESC"
+                            +" from WSL_CLAIM_DIAGNOSIS cd,WSL_GENINFO gen where gen.PROVCLAIMNO=cd.PROVCLAIMNO AND "
+                            +"gen.PROVIDERID='" + providerMappingCode + "' AND gen.CLAIMTYPE IN(" + claimType + ") AND gen.PAYERID='" + selectedPayer + "'";
+                        }else{
+                            diagnosisQuery = "select cd.* from WSL_CLAIM_DIAGNOSIS cd,WSL_GENINFO gen where gen.PROVCLAIMNO=cd.PROVCLAIMNO AND "
+                            +"gen.PROVIDERID='" + providerMappingCode + "' AND gen.CLAIMTYPE IN(" + claimType + ") AND gen.PAYERID='" + selectedPayer + "'";
+                        }
                         if(database.toLowerCase() == "oracle"){
                             diagnosisQuery = diagnosisQuery + "AND gen.CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd HH24:MI') AND TO_DATE('" + endDate + "','yyyy-mm-dd HH24:MI')";
                         }else{
@@ -260,39 +267,59 @@ function connect() {
                             }
                             getDataBaseData(labResultQuery, function(labResultRes){
                                 var labResultList = labResultRes;
-                                progressBar.style.width = "50%";
-                                progressStatus.innerHTML = "Mapping ..."
-                                MapDataToClaim(genInfoList,function(claimMap){
-                                    MapDiagnosisData(claimMap,diagnosisList,function(responseClaimMap){
-                                        console.log("diagnosis");
-                                        MapLabResultData(responseClaimMap,labResultList, function(responseClaimMap){
-                                            console.log("investigation");
-                                            MapInvoiceData(responseClaimMap,invoiceList,function(updatedClaimMap){
-                                                console.log("invoice");
-                                                //latest list call 
-                                                var claimList = [];
-                                                Array.from(updatedClaimMap.keys()).map(key => {
-                                                    claimList.push(updatedClaimMap.get(key));
-                                                });
-                                                console.log("after convert",claimList);
-                                                
-                                                if (claimList.length > 0) {
-                                                    var claimBody = {
-                                                        extractionName: extractionName,
-                                                        claimList: claimList
-                                                    };
-                                                    sendClaim.sendClaim(claimBody);
-                                                } else {
-                                                    document.getElementById("claim-progress-bar").style.display = "none";
-                                                    progressBar.style.width = "0%";
-                                                    document.getElementById('summary-error').style.display = 'block';
-                                                    document.getElementById('summary-error').innerHTML =
-                                                        "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
-                                                    document.getElementById("extract-button").disabled = false;
-                                                    document.getElementById("extraction-refresh-button").disabled = false;
-                                                }
-                                            })
-                                        });
+                                var illnessQuery = "";
+                                if(database.toLowerCase() == "mysql"){
+                                    illnessQuery = "select cil.provclaimno AS PROVCLAIMNO, cil.illnesstype AS ILLNESSTYPE"
+                                    +" from WSL_CLAIM_ILLNESS cil,WSL_GENINFO gen where gen.PROVCLAIMNO=cil.PROVCLAIMNO AND "
+                                    +"gen.PROVIDERID='" + providerMappingCode + "' AND gen.CLAIMTYPE IN(" + claimType + ") AND gen.PAYERID='" + selectedPayer + "'";
+                                }else{
+                                    illnessQuery = "select cil.* from WSL_CLAIM_ILLNESS cil,WSL_GENINFO gen where gen.PROVCLAIMNO=cil.PROVCLAIMNO AND "
+                                    +"gen.PROVIDERID='" + providerMappingCode + "' AND gen.CLAIMTYPE IN(" + claimType + ") AND gen.PAYERID='" + selectedPayer + "'";
+                                }
+                                if(database.toLowerCase() == "oracle"){
+                                    illnessQuery = illnessQuery + "AND gen.CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd HH24:MI') AND TO_DATE('" + endDate + "','yyyy-mm-dd HH24:MI')";
+                                }else{
+                                    illnessQuery = illnessQuery + "AND gen.CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "'";
+                                }
+                                getDataBaseData(illnessQuery, function(illnessRes){
+                                    var illnessList = illnessRes;
+                                    progressBar.style.width = "50%";
+                                    progressStatus.innerHTML = "Mapping ..."
+                                    MapDataToClaim(genInfoList,function(claimMap){
+                                        MapDiagnosisData(claimMap,diagnosisList,function(responseClaimMap){
+                                            console.log("after diagnosis map");
+                                            MapLabResultData(responseClaimMap,labResultList, function(responseClaimMap){
+                                                console.log("after investigation map");
+                                                MapIllnessData(responseClaimMap,illnessList, function(responseClaimMap){
+                                                    console.log("after illness data map");
+                                                    MapInvoiceData(responseClaimMap,invoiceList,function(updatedClaimMap){
+                                                        console.log("after invoice map");
+                                                        //latest list call 
+                                                        var claimList = [];
+                                                        Array.from(updatedClaimMap.keys()).map(key => {
+                                                            claimList.push(updatedClaimMap.get(key));
+                                                        });
+                                                        console.log("after convert",claimList);
+                                                        
+                                                        if (claimList.length > 0) {
+                                                            var claimBody = {
+                                                                extractionName: extractionName,
+                                                                claimList: claimList
+                                                            };
+                                                          sendClaim.sendClaim(claimBody);
+                                                        } else {
+                                                            document.getElementById("claim-progress-bar").style.display = "none";
+                                                            progressBar.style.width = "0%";
+                                                            document.getElementById('summary-error').style.display = 'block';
+                                                            document.getElementById('summary-error').innerHTML =
+                                                                "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
+                                                            document.getElementById("extract-button").disabled = false;
+                                                            document.getElementById("extraction-refresh-button").disabled = false;
+                                                        }
+                                                    })
+                                                })
+                                            });
+                                        })
                                     })
                                 })
                             });
@@ -681,4 +708,25 @@ function updateLabResultData(claimMap,labResultList,callback){
         claimMap.get(key).caseInformation.caseDescription.investigation=investigationList;
     });
     callback(claimMap);
+}
+async function MapIllnessData(claimMap,illnessList,callbackIllnessResult){
+    await updateIllnessResultData(claimMap,illnessList,function(claimMap){
+        callbackIllnessResult(claimMap);
+    })
+}
+function updateIllnessResultData(claimMap,illnessList,callback){
+    let illnessMap = new Map();
+    Array.from(claimMap.keys()).map(key => {
+        var tempData = illnessList.filter(illness => illness.PROVCLAIMNO == key);
+        illnessMap.set(key,tempData);
+        });
+    Array.from(illnessMap.keys()).map(key => {
+        var illnessData = illnessMap.get(key);
+        var illnessList = [];
+        for(var x=0;x<illnessData.length;x++){
+            illnessList.push(illnessData[x].ILLNESSTYPE);
+        }
+        claimMap.get(key).caseInformation.caseDescription.IllnessCategory=illnessList;
+    });
+        callback(claimMap);
 }
