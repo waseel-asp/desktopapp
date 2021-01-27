@@ -248,44 +248,54 @@ function connect() {
                         }else{
                             diagnosisQuery = diagnosisQuery + "AND gen.CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "'";
                         }
-                        var progressBar = document.getElementById("progress-bar");
-                        progressBar.style.width = "50%";
-                        progressStatus.innerHTML = "Mapping ..."
                         getDataBaseData(diagnosisQuery, function(diagnosisRes){
                             var diagnosisList = diagnosisRes;
-                            MapDataToClaim(genInfoList,function(claimMap){
-                                MapDiagnosisData(claimMap,diagnosisList,function(responseClaimMap){
-                                    console.log("diagnosis");
-                                    MapInvoiceData(responseClaimMap,invoiceList,function(updatedClaimMap){
-                                        console.log("invoice");
-                                        //latest list call 
-                                        var claimList = [];
-                                        Array.from(updatedClaimMap.keys()).map(key => {
-                                            claimList.push(updatedClaimMap.get(key));
+                            var labResultQuery = "SELECT lr.*, lc.*, lr.PROVCLAIMNO as PROVIDERCLAIMNUMBER, lr.SERIAL as SERIALNO, lr.LABTESTCODE as LABORATORYTESTCODE FROM WSL_LAB_RESULT lr, WSL_LAB_COMPONENT lc, WSL_GENINFO gen WHERE "
+                            +"gen.PROVCLAIMNO=lr.PROVCLAIMNO AND lr.PROVCLAIMNO=lc.PROVCLAIMNO AND lr.SERIAL = lc.SERIAL AND lr.LABTESTCODE = lc.LABTESTCODE AND "
+                            +"gen.PROVIDERID='" + providerMappingCode + "' AND gen.CLAIMTYPE IN(" + claimType + ") AND gen.PAYERID='" + selectedPayer + "'";
+                            if(database.toLowerCase() == "oracle"){
+                                labResultQuery = labResultQuery + "AND gen.CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd HH24:MI') AND TO_DATE('" + endDate + "','yyyy-mm-dd HH24:MI')";
+                            }else{
+                                labResultQuery = labResultQuery + "AND gen.CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "'";
+                            }
+                            getDataBaseData(labResultQuery, function(labResultRes){
+                                var labResultList = labResultRes;
+                                progressBar.style.width = "50%";
+                                progressStatus.innerHTML = "Mapping ..."
+                                MapDataToClaim(genInfoList,function(claimMap){
+                                    MapDiagnosisData(claimMap,diagnosisList,function(responseClaimMap){
+                                        console.log("diagnosis");
+                                        MapLabResultData(responseClaimMap,labResultList, function(responseClaimMap){
+                                            console.log("investigation");
+                                            MapInvoiceData(responseClaimMap,invoiceList,function(updatedClaimMap){
+                                                console.log("invoice");
+                                                //latest list call 
+                                                var claimList = [];
+                                                Array.from(updatedClaimMap.keys()).map(key => {
+                                                    claimList.push(updatedClaimMap.get(key));
+                                                });
+                                                console.log("after convert",claimList);
+                                                
+                                                if (claimList.length > 0) {
+                                                    var claimBody = {
+                                                        extractionName: extractionName,
+                                                        claimList: claimList
+                                                    };
+                                                    sendClaim.sendClaim(claimBody);
+                                                } else {
+                                                    document.getElementById("claim-progress-bar").style.display = "none";
+                                                    progressBar.style.width = "0%";
+                                                    document.getElementById('summary-error').style.display = 'block';
+                                                    document.getElementById('summary-error').innerHTML =
+                                                        "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
+                                                    document.getElementById("extract-button").disabled = false;
+                                                    document.getElementById("extraction-refresh-button").disabled = false;
+                                                }
+                                            })
                                         });
-                                        console.log("after convert",claimList);
-                                        
-                                        if (claimList.length > 0) {
-                                            var progressBar = document.getElementById("progress-bar");
-                                            progressBar.style.width = "75%";
-                                            progressStatus.innerHTML = "Sending Claims ..."
-                                            var claimBody = {
-                                                extractionName: extractionName,
-                                                claimList: claimList
-                                            };
-                                            sendClaim.sendClaim(claimBody);
-                                        } else {
-                                            document.getElementById("claim-progress-bar").style.display = "none";
-                                            progressBar.style.width = "0%";
-                                            document.getElementById('summary-error').style.display = 'block';
-                                            document.getElementById('summary-error').innerHTML =
-                                                "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
-                                            document.getElementById("extract-button").disabled = false;
-                                            document.getElementById("extraction-refresh-button").disabled = false;
-                                        }
                                     })
                                 })
-                            })
+                            });
                         });
                     })
                 })
@@ -612,4 +622,63 @@ function updateInvoiceData(claimMap,invoiceList,callback){
         claimMap.get(key).invoice=invoiceList;
       });
       callback(claimMap);
+}
+
+async function MapLabResultData(claimMap,labResultList,callbackLabResult){
+    await updateLabResultData(claimMap,labResultList,function(claimMap){
+        callbackLabResult(claimMap);
+    })
+}
+function updateLabResultData(claimMap,labResultList,callback){
+    let labResultMap = new Map();
+    
+    Array.from(claimMap.keys()).map(key => {
+        var temp = labResultList.filter(labResult => labResult.PROVIDERCLAIMNUMBER == key);
+        labResultMap.set(key,temp);
+    });
+    Array.from(labResultMap.keys()).map(key => {
+        var labResultData = labResultMap.get(key);
+        var investigationList = [];
+        for(var j=0;j<labResultData.length;j++){
+            //labResultList check current element else fetch
+            var tempInvestigation = [];
+            if (investigationList.length > 0) {
+                tempInvestigation = investigationList.filter(investigation => 
+                    investigation.investigationCode == labResultData[j].LABORATORYTESTCODE &&
+                    investigation.investigationType == labResultData[j].SERIALNO
+                );
+            }
+            const investigation = require('../models/Investigation.js');
+            const observation = require('../models/Observation.js');
+
+            if(tempInvestigation.length == 0){
+                investigation.setInvestigationCode(labResultData[j].LABORATORYTESTCODE);
+                investigation.setInvestigationDate(labResultData[j].LABTESTDATE);
+                investigation.setInvestigationDescription(labResultData[j].LABDESC);
+                investigation.setInvestigationType(labResultData[j].SERIALNO);
+                investigation.setInvestigationComments(null);
+                var observationList = [];
+                observation.setObservationCode(labResultData[j].LABCOMPCODE);
+                observation.setObservationDescription(labResultData[j].LABCOMPDESC);
+                observation.setObservationValue(labResultData[j].LABRESULT);
+                observation.setObservationUnit(labResultData[j].LABRESULTUNIT);
+                observation.setObservationComment(labResultData[j].LABRESULTCOMMENT);
+                observationList.push(observation.getObservationInfo());
+                investigation.setObservation(observationList);
+                investigationList.push(investigation.getInvestigationInfo());
+            }
+            else{
+                var tempObservationList = tempInvestigation[0].observation;
+                observation.setObservationCode(labResultData[j].LABCOMPCODE);
+                observation.setObservationDescription(labResultData[j].LABCOMPDESC);
+                observation.setObservationValue(labResultData[j].LABRESULT);
+                observation.setObservationUnit(labResultData[j].LABRESULTUNIT);
+                observation.setObservationComment(labResultData[j].LABRESULTCOMMENT);
+                tempObservationList.push(observation.getObservationInfo());
+                tempInvestigation[0].observation = tempObservationList;
+            }
+        }
+        claimMap.get(key).caseInformation.caseDescription.investigation=investigationList;
+    });
+    callback(claimMap);
 }
