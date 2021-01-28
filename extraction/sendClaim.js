@@ -13,8 +13,8 @@ exports.sendClaim = function (claims) {
     var responseData;
     var body = JSON.stringify(claims);
     var url = environment.selectURL(localStorage.getItem('environment'));
-    var urlPath = '/upload/providers/'+ getProviderId() +'/json/filter';
-    var authorizationToken = 'Bearer '+ localStorage.getItem('access_token');
+    var urlPath = '/upload/providers/' + getProviderId() + '/json/filter';
+    var authorizationToken = 'Bearer ' + localStorage.getItem('access_token');
     const options = {
         hostname: url,
         path: urlPath,
@@ -28,7 +28,7 @@ exports.sendClaim = function (claims) {
     };
     var progressStatus = document.getElementById("claim-progress-status");
     var progressBar = document.getElementById("progress-bar");
-    progressBar.style.width = "85%";
+    progressBar.style.width = "75%";
     progressStatus.innerHTML = "Sending Claims ...";
     zlib.gzip(body, (err, buffer) => {
         const req = httpRequest.request(options, (res) => {
@@ -51,7 +51,7 @@ exports.sendClaim = function (claims) {
                     document.getElementById("netAmountOfUploadedClaims").innerHTML = responseData['netAmountOfUploadedClaims'];
                     document.getElementById("netVATAmountOfUploadedClaims").innerHTML = responseData['netVATAmountOfUploadedClaims'];
                     document.getElementById("noOfNotUploadedClaims").innerHTML = responseData['noOfNotUploadedClaims'];
-                } 
+                }
                 else {
                     if (res.statusCode == 401) {
                         alert("Invalid Token. Please sign in again.")
@@ -59,8 +59,8 @@ exports.sendClaim = function (claims) {
                     } else if (res.statusCode <= 500 && res.statusCode >= 400) {
                         console.log("In eroror");
                         document.getElementById("summary-error").style.display = "block";
-                        document.getElementById("summary-error").innerHTML = 
-                        "<p>Error Message : " + responseData.message + "</p>";
+                        document.getElementById("summary-error").innerHTML =
+                            "<p>Error Message : " + responseData.message + "</p>";
                     }
                 }
                 document.getElementById("claim-progress-bar").style.display = "none";
