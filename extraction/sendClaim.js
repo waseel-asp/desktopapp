@@ -1,6 +1,7 @@
 const httpRequest = require('https');
 var jwt_decode = require('jwt-decode')
 const environment = require('../environment.js');
+const zlib = require('zlib');
 
 function getProviderId() {
     const token = localStorage.getItem('access_token');
@@ -19,6 +20,8 @@ exports.sendClaim = function (claims) {
         path: urlPath,
         method: 'POST',
         headers: {
+            'Accept-Encoding': 'gzip',
+            'Content-Encoding': 'gzip',
             'Content-Type': 'application/json',
             'Authorization': authorizationToken
         }
@@ -27,53 +30,55 @@ exports.sendClaim = function (claims) {
     var progressBar = document.getElementById("progress-bar");
     progressBar.style.width = "85%";
     progressStatus.innerHTML = "Sending Claims ...";
-    const req = httpRequest.request(options, (res) => {
-        progressBar.style.width = "100%";
-        progressStatus.innerHTML = "Sending Claims ...";
-        // console.log(res);
-        let chunks_of_data = [];
-        res.on('data', (chunk) => {
-            chunks_of_data.push(chunk);
-        });
-        res.on('end', () => {
-            let response_body = Buffer.concat(chunks_of_data);
-            responseData = JSON.parse(response_body.toString());
-            console.log(responseData);
-            if (res.statusCode == 200 || res.statusCode == 201) {
-                document.getElementById("summary-container").style.display = "block";
-                document.getElementById("uploadName").innerHTML = responseData['uploadName'];
-                document.getElementById("uploadSummaryID").innerHTML = responseData['uploadSummaryID'];
-                document.getElementById("noOfUploadedClaims").innerHTML = responseData['noOfUploadedClaims'];
-                document.getElementById("netAmountOfUploadedClaims").innerHTML = responseData['netAmountOfUploadedClaims'];
-                document.getElementById("netVATAmountOfUploadedClaims").innerHTML = responseData['netVATAmountOfUploadedClaims'];
-                document.getElementById("noOfNotUploadedClaims").innerHTML = responseData['noOfNotUploadedClaims'];
-            } 
-            else {
-                if (res.statusCode == 401) {
-                    alert("Invalid Token. Please sign in again.")
-                    window.location.href = "../login/loginui.html";
-                } else if (res.statusCode <= 500 && res.statusCode >= 400) {
-                    console.log("In eroror");
-                    document.getElementById("summary-error").style.display = "block";
-                    document.getElementById("summary-error").innerHTML = 
-                    "<p>Error Message : " + responseData.message + "</p>";
+    zlib.gzip(body, (err, buffer) => {
+        const req = httpRequest.request(options, (res) => {
+            progressBar.style.width = "100%";
+            progressStatus.innerHTML = "Sending Claims ...";
+            // console.log(res);
+            let chunks_of_data = [];
+            res.on('data', (chunk) => {
+                chunks_of_data.push(chunk);
+            });
+            res.on('end', () => {
+                let response_body = Buffer.concat(chunks_of_data);
+                responseData = JSON.parse(response_body.toString());
+                console.log(responseData);
+                if (res.statusCode == 200 || res.statusCode == 201) {
+                    document.getElementById("summary-container").style.display = "block";
+                    document.getElementById("uploadName").innerHTML = responseData['uploadName'];
+                    document.getElementById("uploadSummaryID").innerHTML = responseData['uploadSummaryID'];
+                    document.getElementById("noOfUploadedClaims").innerHTML = responseData['noOfUploadedClaims'];
+                    document.getElementById("netAmountOfUploadedClaims").innerHTML = responseData['netAmountOfUploadedClaims'];
+                    document.getElementById("netVATAmountOfUploadedClaims").innerHTML = responseData['netVATAmountOfUploadedClaims'];
+                    document.getElementById("noOfNotUploadedClaims").innerHTML = responseData['noOfNotUploadedClaims'];
+                } 
+                else {
+                    if (res.statusCode == 401) {
+                        alert("Invalid Token. Please sign in again.")
+                        window.location.href = "../login/loginui.html";
+                    } else if (res.statusCode <= 500 && res.statusCode >= 400) {
+                        console.log("In eroror");
+                        document.getElementById("summary-error").style.display = "block";
+                        document.getElementById("summary-error").innerHTML = 
+                        "<p>Error Message : " + responseData.message + "</p>";
+                    }
                 }
-            }
+                document.getElementById("claim-progress-bar").style.display = "none";
+                progressBar.style.width = "0%";
+            });
+            document.getElementById("extract-button").disabled = false;
+            document.getElementById("extraction-refresh-button").disabled = false;
+        });
+        req.write(buffer);
+        req.on('error', (e) => {
+            document.getElementById("extract-button").disabled = false;
+            document.getElementById("extraction-refresh-button").disabled = false;
             document.getElementById("claim-progress-bar").style.display = "none";
             progressBar.style.width = "0%";
+            document.getElementById('summary-error').style.display = 'block';
+            document.getElementById('summary-error').innerHTML = `${e.message}`;
+            console.error(`problem with request: ${e.message}`);
         });
-        document.getElementById("extract-button").disabled = false;
-        document.getElementById("extraction-refresh-button").disabled = false;
+        req.end();
     });
-    req.write(body);
-    req.on('error', (e) => {
-        document.getElementById("extract-button").disabled = false;
-        document.getElementById("extraction-refresh-button").disabled = false;
-        document.getElementById("claim-progress-bar").style.display = "none";
-        progressBar.style.width = "0%";
-        document.getElementById('summary-error').style.display = 'block';
-        document.getElementById('summary-error').innerHTML = `${e.message}`;
-        console.error(`problem with request: ${e.message}`);
-    });
-    req.end();
 }

@@ -244,7 +244,7 @@ function connect() {
                         var diagnosisQuery = "";
                         if(database.toLowerCase() == "mysql"){
                             diagnosisQuery = "select cd.provclaimno AS PROVCLAIMNO,cd.diagnosiscode AS DIAGNOSISCODE,cd.diagnosisdesc AS DIAGNOSISDESC"
-                            +" from WSL_CLAIM_DIAGNOSIS cd,WSL_GENINFO gen where gen.PROVCLAIMNO=cd.PROVCLAIMNO AND "
+                            +" from WSL_CLAIM_DIAGNOSIS cd,WSL_GENINFO gen where gen.PROVCLAIMNO=cd.provclaimno AND "
                             +"gen.PROVIDERID='" + providerMappingCode + "' AND gen.CLAIMTYPE IN(" + claimType + ") AND gen.PAYERID='" + selectedPayer + "'";
                         }else{
                             diagnosisQuery = "select cd.* from WSL_CLAIM_DIAGNOSIS cd,WSL_GENINFO gen where gen.PROVCLAIMNO=cd.PROVCLAIMNO AND "
@@ -270,7 +270,7 @@ function connect() {
                                 var illnessQuery = "";
                                 if(database.toLowerCase() == "mysql"){
                                     illnessQuery = "select cil.provclaimno AS PROVCLAIMNO, cil.illnesstype AS ILLNESSTYPE"
-                                    +" from WSL_CLAIM_ILLNESS cil,WSL_GENINFO gen where gen.PROVCLAIMNO=cil.PROVCLAIMNO AND "
+                                    +" from WSL_CLAIM_ILLNESS cil,WSL_GENINFO gen where gen.PROVCLAIMNO=cil.provclaimno AND "
                                     +"gen.PROVIDERID='" + providerMappingCode + "' AND gen.CLAIMTYPE IN(" + claimType + ") AND gen.PAYERID='" + selectedPayer + "'";
                                 }else{
                                     illnessQuery = "select cil.* from WSL_CLAIM_ILLNESS cil,WSL_GENINFO gen where gen.PROVCLAIMNO=cil.PROVCLAIMNO AND "
@@ -726,7 +726,7 @@ function updateIllnessResultData(claimMap,illnessList,callback){
         for(var x=0;x<illnessData.length;x++){
             illnessList.push(illnessData[x].ILLNESSTYPE);
         }
-        claimMap.get(key).caseInformation.caseDescription.IllnessCategory=illnessList;
+        claimMap.get(key).caseInformation.caseDescription.illnessCategory=illnessList;
     });
         callback(claimMap);
 }
