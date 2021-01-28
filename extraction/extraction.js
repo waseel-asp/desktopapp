@@ -723,10 +723,12 @@ function updateIllnessResultData(claimMap,illnessList,callback){
     Array.from(illnessMap.keys()).map(key => {
         var illnessData = illnessMap.get(key);
         var illnessList = [];
+        const illnessCategory = require('../models/IllnessCategory.js');
         for(var x=0;x<illnessData.length;x++){
             illnessList.push(illnessData[x].ILLNESSTYPE);
         }
-        claimMap.get(key).caseInformation.caseDescription.illnessCategory=illnessList;
+        illnessCategory.setInllnessCode(illnessList);
+        claimMap.get(key).caseInformation.caseDescription.illnessCategory=illnessCategory.getInllnessCode();
     });
         callback(claimMap);
 }
