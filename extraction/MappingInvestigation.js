@@ -1,11 +1,11 @@
-exports.updateLabResultData = async function (claimMap, labResultList, callback) {
+exports.updateLabResultData = function (claimMap, labResultList, callback) {
     let labResultMap = new Map();
 
     Array.from(claimMap.keys()).map(key => {
         var temp = labResultList.filter(labResult => labResult.PROVIDERCLAIMNUMBER == key);
         labResultMap.set(key, temp);
     });
-    Array.from(labResultMap.keys()).map(async key => {
+    Array.from(labResultMap.keys()).map(key => {
         var labResultData = labResultMap.get(key);
         var investigationList = [];
         for (var j = 0; j < labResultData.length; j++) {
@@ -17,41 +17,37 @@ exports.updateLabResultData = async function (claimMap, labResultList, callback)
                     investigation.investigationType == labResultData[j].SERIALNO
                 );
             }
-            var investigation, observation;
+            const investigation = require('../models/Investigation.js');
+            const observation = require('../models/Observation.js');
+
             if (tempInvestigation.length == 0) {
+                investigation.setInvestigationCode(labResultData[j].LABORATORYTESTCODE);
+                investigation.setInvestigationDate(labResultData[j].LABTESTDATE);
+                investigation.setInvestigationDescription(labResultData[j].LABDESC);
+                investigation.setInvestigationType(labResultData[j].SERIALNO);
+                investigation.setInvestigationComments(null);
                 var observationList = [];
-                await setObservation(labResultData[j], function (callback) { observation = callback; })
-                observationList.push(observation);
-                await setInvestigation(labResultData[j], observationList, function (callback) { investigation = callback });
-                investigationList.push(investigation);
+                observation.setObservationCode(labResultData[j].LABCOMPCODE);
+                observation.setObservationDescription(labResultData[j].LABCOMPDESC);
+                observation.setObservationValue(labResultData[j].LABRESULT);
+                observation.setObservationUnit(labResultData[j].LABRESULTUNIT);
+                observation.setObservationComment(labResultData[j].LABRESULTCOMMENT);
+                observationList.push(observation.getObservationInfo());
+                investigation.setObservation(observationList);
+                investigationList.push(investigation.getInvestigationInfo());
             }
             else {
                 var tempObservationList = tempInvestigation[0].observation;
-                await setObservation(labResultData[j], function (callback) { observation = callback; })
-                tempObservationList.push(observation);
+                observation.setObservationCode(labResultData[j].LABCOMPCODE);
+                observation.setObservationDescription(labResultData[j].LABCOMPDESC);
+                observation.setObservationValue(labResultData[j].LABRESULT);
+                observation.setObservationUnit(labResultData[j].LABRESULTUNIT);
+                observation.setObservationComment(labResultData[j].LABRESULTCOMMENT);
+                tempObservationList.push(observation.getObservationInfo());
                 tempInvestigation[0].observation = tempObservationList;
             }
         }
         claimMap.get(key).caseInformation.caseDescription.investigation = investigationList;
     });
     callback(claimMap);
-}
-async function setObservation(labResultData, callback) {
-    const observation = require('../models/Observation.js');
-    observation.setObservationCode(labResultData.LABCOMPCODE);
-    observation.setObservationDescription(labResultData.LABCOMPDESC);
-    observation.setObservationValue(labResultData.LABRESULT);
-    observation.setObservationUnit(labResultData.LABRESULTUNIT);
-    observation.setObservationComment(labResultData.LABRESULTCOMMENT);
-    callback(observation.getObservationInfo());
-}
-async function setInvestigation(labResultData, observationList, callback) {
-    const investigation = require('../models/Investigation.js');
-    investigation.setInvestigationCode(labResultData.LABORATORYTESTCODE);
-    investigation.setInvestigationDate(labResultData.LABTESTDATE);
-    investigation.setInvestigationDescription(labResultData.LABDESC);
-    investigation.setInvestigationType(labResultData.SERIALNO);
-    investigation.setInvestigationComments(null);
-    investigation.setObservation(observationList);
-    callback(investigation.getInvestigationInfo());
 }

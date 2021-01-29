@@ -127,5 +127,5 @@ async function setVisitInformation(genInfoData, callback) {
     visitInformation.setdepartmentCode(genInfoData.DEPTCODE);
     visitInformation.setVisitDate(genInfoData.CLAIMDATE);
     visitInformation.setVisitType(genInfoData.VISITTYPE);
-    callback(visitInformation.getVisitInfo);
+    callback(visitInformation.getVisitInfo());
 }

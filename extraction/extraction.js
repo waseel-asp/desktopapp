@@ -259,6 +259,14 @@ function connect() {
 async function getDataBaseData(query, callback) {
     await wslConnection.query(query).then(async queryResponse => {
         callback(queryResponse);
+    }, (error) => {
+        document.getElementById("claim-progress-bar").style.display = "none";
+        progressBar.style.width = "0%";
+        document.getElementById('summary-error').style.display = 'block';
+        document.getElementById('summary-error').innerHTML =
+            "<p>There is some issue with database configuration. Please check.</p>";
+        document.getElementById("extract-button").disabled = false;
+        document.getElementById("extraction-refresh-button").disabled = false;
     })
 }
 async function MapDataToClaim(genInfoList,callbackGenInfo){
