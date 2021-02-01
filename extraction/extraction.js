@@ -3,6 +3,7 @@ const environment = require('../environment.js');
 const shareFunction = require('./SharedFunction.js');
 var claimTypeMap = new Map();
 var sendpayerId;
+
 $(function() {
     $("#nav-placeholder").load("../home/page.html");
     shareFunction.getPayerMapping();
@@ -257,6 +258,7 @@ function connect() {
 }
 
 async function getDataBaseData(query, callback) {
+    var progressBar = document.getElementById("progress-bar");
     await wslConnection.query(query).then(async queryResponse => {
         callback(queryResponse);
     }, (error) => {
