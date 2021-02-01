@@ -10,6 +10,10 @@ var schema = {
     WSL_SERVICE_OPTICAL: new Array('INVOICENO', 'SERVICETYPE', 'LENSESTYPE', 'SERVICEDATE', 'REGLENSESTYPE', 'CONLENSESTYPE', 'NOOFPAIRS', 'LENSESGRSAMT', 'LENSESDISC', 'LENSESPATSHARE', 'LENSESNETAMT', 'FRAMEGRSAMT', 'FRAMEDISC', 'FRAMEPATSHARE', 'FRAMENETAMT', 'LENSESNETVATRATE', 'LENSESNETVATAMOUNT', 'LENSESPATSHAREVATRATE', 'LENSESPATSHAREVATAMOUNT', 'FRAMENETVATRATE', 'FRAMENETVATAMOUNT', 'FRAMEPATSHAREVATRATE', 'FRAMEPATSHAREVATAMOUNT'),
     WSL_OPTICAL_DIAGNOSIS: new Array('PROVCLAIMNO', 'RIGHTEYESPHEREDIST', 'RIGHTEYECYLDIST', 'RIGHTEYESPHERENEAR', 'RIGHTEYECYLNEAR', 'LEFTEYESPHEREDIST', 'LEFTEYECYLDIST', 'LEFTEYESPHERENEAR', 'LEFTEYECYLNEAR'),
 };
+var schemaUsed = [
+    'WSL_GENINFO', 'WSL_CLAIM_DIAGNOSIS', 'WSL_INVOICES', 'WSL_SERVICE_DETAILS', 'WSL_LAB_RESULT',
+    'WSL_LAB_COMPONENT', 'WSL_CLAIM_ILLNESS'
+]
 
 async function validateDatabase(wslConnection, dbParams, callback) {
     document.getElementById("warning-block").style.display = "none";
@@ -26,6 +30,7 @@ async function validateDatabase(wslConnection, dbParams, callback) {
 
             var warningsColumns = new Array();
             var warningTables = new Array();
+            var errorTables = new Array();
             for (var tableName in schema) {
                 var query;
 
@@ -65,7 +70,11 @@ async function validateDatabase(wslConnection, dbParams, callback) {
                             callback(false);
                         });
                     } else {
-                        warningTables.push(tableName);
+                        if(schemaUsed.includes(tableName)) {
+                            errorTables.push(tableName);
+                        } else {
+                            warningTables.push(tableName);
+                        }
                     }
 
                 }, err => {
@@ -82,6 +91,11 @@ async function validateDatabase(wslConnection, dbParams, callback) {
                 var dbWarnings = document.getElementById("db-warnings");
                 dbWarnings.innerHTML += "<p>Table " + warningTables.join(", ") + " not present in database";
             }
+            if (errorTables.length > 0) {
+                document.getElementById("error-block").style.display = "flex";
+                var dberrors = document.getElementById("db-errors");
+                dberrors.innerHTML += "<p>Table " + errorTables.join(", ") + " not present in database";
+            }
 
             if (warningsColumns.length > 0) {
                 document.getElementById("warning-block").style.display = "flex";
@@ -95,6 +109,7 @@ async function validateDatabase(wslConnection, dbParams, callback) {
 
             var warningsColumns = new Array();
             var warningTables = new Array();
+            var errorTables = new Array();
             for (var tableName in schema) {
 
                 await wslConnection.query("SELECT TABLE_NAME from USER_TABLES where TABLE_NAME='" + tableName + "'").then(async data => {
@@ -118,7 +133,11 @@ async function validateDatabase(wslConnection, dbParams, callback) {
                             callback(false);
                         });
                     } else {
-                        warningTables.push(tableName);
+                        if(schemaUsed.includes(tableName)) {
+                            errorTables.push(tableName);
+                        } else {
+                            warningTables.push(tableName);
+                        }
                     }
 
                 }, err => {
@@ -134,6 +153,11 @@ async function validateDatabase(wslConnection, dbParams, callback) {
                 document.getElementById("warning-block").style.display = "flex";
                 var dbWarnings = document.getElementById("db-warnings");
                 dbWarnings.innerHTML += "<p>Table " + warningTables.join(", ") + " not present in database";
+            }
+            if (errorTables.length > 0) {
+                document.getElementById("error-block").style.display = "flex";
+                var dberrors = document.getElementById("db-errors");
+                dberrors.innerHTML += "<p>Table " + errorTables.join(", ") + " not present in database";
             }
 
             if (warningsColumns.length > 0) {
