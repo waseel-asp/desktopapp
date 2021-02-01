@@ -201,10 +201,10 @@ function connect() {
                                 }else{
                                     illnessQuery = illnessQuery + "AND gen.CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "'";
                                 }
+                                document.getElementById("progress-bar").style.width = "50%";
+                                document.getElementById("claim-progress-status").innerHTML = "Mapping ..."
                                 getDataBaseData(illnessQuery, function(illnessRes){
                                     var illnessList = illnessRes;
-                                    progressBar.style.width = "50%";
-                                    progressStatus.innerHTML = "Mapping ..."
                                     MapDataToClaim(genInfoList,function(claimMap){
                                         MapDiagnosisData(claimMap,diagnosisList,function(responseClaimMap){
                                             console.log("after diagnosis map");
@@ -263,7 +263,7 @@ async function getDataBaseData(query, callback) {
         callback(queryResponse);
     }, (error) => {
         document.getElementById("claim-progress-bar").style.display = "none";
-        progressBar.style.width = "0%";
+        document.getElementById("progress-bar").style.width = "0%";
         document.getElementById('summary-error').style.display = 'block';
         document.getElementById('summary-text').innerHTML =
             "<p>There is some issue with database configuration. Please check.</p>";
