@@ -17,7 +17,8 @@
                 <div class="row" style="padding: 12px 0 0; align-items: center;">
                     <h5 class="col-sm-6">Extract Claims</h5>
                     <div class="col-sm-6 text-right">
-                        <button type="submit" id="extraction-refresh-button" class="btn btn-primary btn-signin" onclick="refresh()">
+                        <button type="submit" id="extraction-refresh-button" class="btn btn-primary btn-signin"
+                            onclick="refresh()">
                             <img src="../images/refreshing.svg" width="20px" alt="Refresh" class="normal-img">
                             <img src="../images/refreshing-h.svg" width="20px" alt="Refresh" class="hover-img">
                         </button>
@@ -41,13 +42,15 @@
                     <div>
                         <div class="form-group row date-row">
                             <div class="col-sm-6">
-                                <select id="selectedPayer" class="form-control select-bg" required oninvalid="this.setCustomValidity('Please select a payer')"
+                                <select id="selectedPayer" class="form-control select-bg" required
+                                    oninvalid="this.setCustomValidity('Please select a payer')"
                                     oninput="setCustomValidity('')">
                                     <option name="Select Payer" value="">Select Payer</option>
                                 </select>
                             </div>
                             <div class="col-sm-6">
-                                <select id="selectedClaim" class="form-control select-bg" required oninvalid="this.setCustomValidity('Please select a claim type')"
+                                <select id="selectedClaim" class="form-control select-bg" required
+                                    oninvalid="this.setCustomValidity('Please select a claim type')"
                                     oninput="setCustomValidity('')">
                                     <option name="Claim Type" value="">Claim Type</option>
                                     <option value="ALL">ALL</option>
@@ -58,17 +61,19 @@
                         </div>
                         <div class="form-group row date-row">
                             <div class="col-sm-6">
-                                <input type="text" id="startDate" class="form-control select-bg select-date" name="startDate" placeholder="startDate" required
-                                    oninvalid="this.setCustomValidity('Please provide a start date')" oninput="setCustomValidity('')"
-                                    value="Start Date" onfocus="(this.type='date')">
+                                <input type="text" id="startDate" class="form-control select-bg select-date"
+                                    name="startDate" placeholder="startDate" required
+                                    oninvalid="this.setCustomValidity('Please provide a start date')"
+                                    oninput="setCustomValidity('')" value="Start Date" onfocus="(this.type='date')">
                                 <!-- <i class="cal_icon">
                                     <img src="../images/calendar_icon.svg" alt="Calendar Icon" />
                                 </i> -->
                             </div>
                             <div class="col-sm-6">
-                                <input type="text" id="endDate" class="form-control select-bg select-date" name="endDate" placeholder="endDate" required
-                                    oninvalid="this.setCustomValidity('Please provide an end date')" oninput="setCustomValidity('')"
-                                    value="End Date" onfocus="(this.type='date')">
+                                <input type="text" id="endDate" class="form-control select-bg select-date"
+                                    name="endDate" placeholder="endDate" required
+                                    oninvalid="this.setCustomValidity('Please provide an end date')"
+                                    oninput="setCustomValidity('')" value="End Date" onfocus="(this.type='date')">
                                 <!-- <i class="cal_icon">
                                     <img src="../images/calendar_icon.svg" alt="Calendar Icon" />
                                 </i> -->
@@ -76,25 +81,38 @@
                         </div>
                         <div class="form-group row date-row">
                             <div class="col-sm-8">
-                                <input type="text" id="extractionName" class="form-control select-bg" placeholder="Enter Extraction Name here ..." required
-                                oninvalid="this.setCustomValidity('Please enter the extraction name')"
-                                oninput="setCustomValidity('')">
+                                <input type="text" id="extractionName" class="form-control select-bg"
+                                    placeholder="Enter Extraction Name here ..." required
+                                    oninvalid="this.setCustomValidity('Please enter the extraction name')"
+                                    oninput="setCustomValidity('')">
                             </div>
                             <div class="col extract-btn">
-                                <button id="extract-button" type="submit" class="btn btn-primary btn-signin">Extract Claims</button>
+                                <button id="extract-button" type="submit" class="btn btn-primary btn-signin">Extract
+                                    Claims</button>
                             </div>
                         </div>
                     </div>
                 </form>
                 <div style="display: none;" id="claim-progress-bar" class="pb-4">
-                        <hr>
-                        <p id="claim-progress-status"></p>
-                        <div id="myProgress">
+                    <hr>
+                    <p id="claim-progress-status"></p>
+                    <div id="myProgress">
                         <div class="progress">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated"
-                            id="progress-bar" style="width: 25%; background-color: #3060AA"></div>
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" id="progress-bar"
+                                style="width: 25%; background-color: #3060AA"></div>
                         </div>
                     </div>
+                </div>
+                <div class="alert alert-danger alert-dismissible fade show mb-4" id="summary-error" role="alert"
+                    style="display: none;">
+                    <div class="icon"></div>
+                    <div class="middle-block">
+                        <h6>Error</h6>
+                        <span id="summary-text">
+                            <!-- <p>Error message.</p> -->
+                        </span>
+                    </div>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
                 </div>
                 <div style="display: none;" id="summary-container">
                     <hr>
@@ -117,7 +135,8 @@
                                         <div class="uploaded-claim-header" style="font-weight: 500">
                                             Number Of Claims
                                         </div>
-                                        <div class="uploaded-claim-body" id="noOfUploadedClaims" style="font-weight: bold">
+                                        <div class="uploaded-claim-body" id="noOfUploadedClaims"
+                                            style="font-weight: bold">
 
                                         </div>
                                     </div>
@@ -127,7 +146,8 @@
                                             <div class="uploaded-claim-header" style="font-weight: 500">
                                                 Amount
                                             </div>
-                                            <div class="uploaded-claim-body" id="netAmountOfUploadedClaims" style="font-weight: bold">
+                                            <div class="uploaded-claim-body" id="netAmountOfUploadedClaims"
+                                                style="font-weight: bold">
 
                                             </div>
                                         </div>
@@ -135,7 +155,8 @@
                                             <div class="uploaded-claim-header" style="font-weight: 500">
                                                 VAT
                                             </div>
-                                            <div class="uploaded-claim-body" id="netVATAmountOfUploadedClaims" style="font-weight: bold">
+                                            <div class="uploaded-claim-body" id="netVATAmountOfUploadedClaims"
+                                                style="font-weight: bold">
 
                                             </div>
                                         </div>
@@ -147,7 +168,8 @@
                                     <div class="not-uploaded-claim-header" style="font-weight: 500">
                                         Number Of Not Upload Claims
                                     </div>
-                                    <div class="not-uploaded-claim-body" id="noOfNotUploadedClaims" style="font-weight: bold">
+                                    <div class="not-uploaded-claim-body" id="noOfNotUploadedClaims"
+                                        style="font-weight: bold">
 
                                     </div>
                                 </div>
@@ -156,11 +178,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="container">
-        <div class="card" style="display: none;" id="summary-error">
-
         </div>
     </div>
     <script src="extraction.js"></script>

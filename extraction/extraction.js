@@ -229,8 +229,8 @@ function connect() {
                                                         } else {
                                                             document.getElementById("claim-progress-bar").style.display = "none";
                                                             progressBar.style.width = "0%";
-                                                            document.getElementById('summary-error').style.display = 'block';
-                                                            document.getElementById('summary-error').innerHTML =
+                                                            document.getElementById('summary-error').style.display = 'flex';
+                                                            document.getElementById('summary-text').innerHTML =
                                                                 "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
                                                             document.getElementById("extract-button").disabled = false;
                                                             document.getElementById("extraction-refresh-button").disabled = false;
@@ -263,7 +263,7 @@ async function getDataBaseData(query, callback) {
         document.getElementById("claim-progress-bar").style.display = "none";
         progressBar.style.width = "0%";
         document.getElementById('summary-error').style.display = 'block';
-        document.getElementById('summary-error').innerHTML =
+        document.getElementById('summary-text').innerHTML =
             "<p>There is some issue with database configuration. Please check.</p>";
         document.getElementById("extract-button").disabled = false;
         document.getElementById("extraction-refresh-button").disabled = false;

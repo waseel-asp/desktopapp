@@ -58,9 +58,11 @@ exports.sendClaim = function (claims) {
                         window.location.href = "../login/loginui.html";
                     } else if (res.statusCode <= 500 && res.statusCode >= 400) {
                         console.log("In eroror");
-                        document.getElementById("summary-error").style.display = "block";
-                        document.getElementById("summary-error").innerHTML =
-                            "<p>Error Message : " + responseData.message + "</p>";
+                        document.getElementById("summary-error").style.display = "flex";
+                        document.getElementById("summary-text").innerHTML =
+                            "<p>" + responseData.message + "</p>";
+                    } else {
+                        alert("error in response");
                     }
                 }
                 document.getElementById("claim-progress-bar").style.display = "none";
@@ -75,8 +77,8 @@ exports.sendClaim = function (claims) {
             document.getElementById("extraction-refresh-button").disabled = false;
             document.getElementById("claim-progress-bar").style.display = "none";
             progressBar.style.width = "0%";
-            document.getElementById('summary-error').style.display = 'block';
-            document.getElementById('summary-error').innerHTML = `${e.message}`;
+            document.getElementById('summary-error').style.display = 'flex';
+            document.getElementById('summary-text').innerHTML = "<p>Problem with request " + `${e.message}` + "</p>";
             console.error(`problem with request: ${e.message}`);
         });
         req.end();
