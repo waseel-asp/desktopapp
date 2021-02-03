@@ -4,6 +4,9 @@ exports.setAccCode = function (data) {
     accCode = data;
 };
 exports.setPlanType = function (data) {
+    if(data!=null && data!= undefined){
+        data = data.trim();
+    }
     planType = data;
 };
 exports.setMemberID = function (data) {

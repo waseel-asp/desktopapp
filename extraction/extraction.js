@@ -148,6 +148,7 @@ function connect() {
                     query = "select * from WSL_GENINFO where PROVIDERID='" + providerMappingCode + "' AND CLAIMTYPE IN(" + claimType + ") AND PAYERID='" + selectedPayer + "' AND CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "' ";
                 }
                 console.log(query);
+                console.log("Extraction start time : ", new Date());
                 getDataBaseData(query, function(data){
                     var genInfoList = data;
                     var invoiceQuery = "select inv.*,sd.*,inv.INVOICENO AS INVOICEID from WSL_INVOICES inv, WSL_SERVICE_DETAILS sd ,WSL_GENINFO gen where "
@@ -205,6 +206,7 @@ function connect() {
                                 document.getElementById("claim-progress-status").innerHTML = "Mapping ..."
                                 getDataBaseData(illnessQuery, function(illnessRes){
                                     var illnessList = illnessRes;
+                                    console.log("Extracation end time", new Date());
                                     MapDataToClaim(genInfoList,function(claimMap){
                                         MapDiagnosisData(claimMap,diagnosisList,function(responseClaimMap){
                                             console.log("after diagnosis map");
@@ -219,7 +221,7 @@ function connect() {
                                                         Array.from(updatedClaimMap.keys()).map(key => {
                                                             claimList.push(updatedClaimMap.get(key));
                                                         });
-                                                        console.log("after convert",claimList);
+                                                        console.log("after convert",claimList, "mapping end time :", new Date());
                                                         
                                                         if (claimList.length > 0) {
                                                             var claimBody = {
