@@ -9,6 +9,9 @@ exports.setPhysicianName = function(data) {
 }
 
 exports.setPhysicianCategory = function(data) {
+    if(data!=null && data!=undefined){
+    data = data.trim();
+    }
     physicianCategory = data;
 }
 

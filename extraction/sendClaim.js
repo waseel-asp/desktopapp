@@ -11,6 +11,7 @@ function getProviderId() {
 
 exports.sendClaim = function (claims) {
     var responseData;
+    console.log("sending claim start time : ", new Date());
     var body = JSON.stringify(claims);
     var url = environment.selectURL(localStorage.getItem('environment'));
     var urlPath = '/upload/providers/' + getProviderId() + '/json/filter';
@@ -34,16 +35,16 @@ exports.sendClaim = function (claims) {
         const req = httpRequest.request(options, (res) => {
             progressBar.style.width = "100%";
             progressStatus.innerHTML = "Sending Claims ...";
-            // console.log(res);
+             console.log(res);
             let chunks_of_data = [];
             res.on('data', (chunk) => {
                 chunks_of_data.push(chunk);
             });
             res.on('end', () => {
                 let response_body = Buffer.concat(chunks_of_data);
-                responseData = JSON.parse(response_body.toString());
-                console.log(responseData);
                 if (res.statusCode == 200 || res.statusCode == 201) {
+                    responseData = JSON.parse(response_body.toString());
+                    console.log("sending claim end time : ", new Date());
                     document.getElementById("summary-container").style.display = "block";
                     document.getElementById("uploadName").innerHTML = responseData['uploadName'];
                     document.getElementById("uploadSummaryID").innerHTML = responseData['uploadSummaryID'];
@@ -58,10 +59,16 @@ exports.sendClaim = function (claims) {
                         window.location.href = "../login/loginui.html";
                     } else if (res.statusCode <= 500 && res.statusCode >= 400) {
                         console.log("In eroror");
+                        responseData = JSON.parse(response_body.toString());
                         document.getElementById("summary-error").style.display = "flex";
                         document.getElementById("summary-text").innerHTML =
                             "<p>" + responseData.message + "</p>";
-                    } else {
+                    } else if(res.statusCode == 504){
+                        document.getElementById("summary-error").style.display = "flex";
+                        document.getElementById("summary-text").innerHTML =
+                            "<p>" + "Gateway Timeout." + "</p>";
+                    }
+                    else {
                         alert("error in response");
                     }
                 }
@@ -80,6 +87,7 @@ exports.sendClaim = function (claims) {
             document.getElementById('summary-error').style.display = 'flex';
             document.getElementById('summary-text').innerHTML = "<p>Problem with request " + `${e.message}` + "</p>";
             console.error(`problem with request: ${e.message}`);
+            console.log("sending in error : ", new Date());
         });
         req.end();
     });
