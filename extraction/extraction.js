@@ -73,16 +73,14 @@ function connect() {
     document.getElementById("summary-container").style.display = "none";
     document.getElementById("summary-error").style.display = "none";
     document.getElementById("name-errors").innerHTML = "";
-    var progressStatus = document.getElementById("claim-progress-status");
-    var progressBar = document.getElementById("progress-bar");
     document.getElementById("claim-progress-bar").style.display = "block";
-    progressBar.style.width = "25%";
-    progressStatus.innerHTML = "Extracting ...";
+    document.getElementById("progress-bar").style.width = "25%";
+    document.getElementById("claim-progress-status").innerHTML = "Extracting ...";
 
     if (new Date(startDate) > new Date(endDate)) {
         alert("Please ensure that the End Date is greater than or equal to the Start Date.");
         document.getElementById("claim-progress-bar").style.display = "none";
-        progressBar.style.width = "0%";
+        document.getElementById("progress-bar").style.width = "0%";
         document.getElementById("extract-button").disabled = false;
         document.getElementById("extraction-refresh-button").disabled = false;
         return false;
@@ -96,7 +94,7 @@ function connect() {
             document.getElementById("name-errors").innerHTML += "<p>" + "Extraction name already exists. Please enter a different extraction name." + "</p>"
             $("#error-extraction-block").fadeOut(10000);
             document.getElementById("claim-progress-bar").style.display = "none";
-            progressBar.style.width = "0%";
+            document.getElementById("progress-bar").style.width = "0%";
             document.getElementById("extract-button").disabled = false;
             document.getElementById("extraction-refresh-button").disabled = false;
             return false;
@@ -108,7 +106,7 @@ function connect() {
             document.getElementById("name-errors").innerHTML += "<p>" + "There is internal server technical issue." + "</p>"
             $("#error-extraction-block").fadeOut(10000);
             document.getElementById("claim-progress-bar").style.display = "none";
-            progressBar.style.width = "0%";
+            document.getElementById("progress-bar").style.width = "0%";
             document.getElementById("extract-button").disabled = false;
             document.getElementById("extraction-refresh-button").disabled = false;
             return false;
@@ -231,7 +229,7 @@ function connect() {
                                                             sendClaim.sendClaim(claimBody);
                                                         } else {
                                                             document.getElementById("claim-progress-bar").style.display = "none";
-                                                            progressBar.style.width = "0%";
+                                                            document.getElementById("progress-bar").style.width = "0%";
                                                             document.getElementById('summary-error').style.display = 'flex';
                                                             document.getElementById('summary-text').innerHTML =
                                                                 "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
@@ -251,7 +249,7 @@ function connect() {
             }, err => {
                 alert(err.message);
                 document.getElementById("claim-progress-bar").style.display = "none";
-                progressBar.style.width = "0%";
+                document.getElementById("progress-bar").style.width = "0%";
                 document.getElementById("extract-button").disabled = false;
                 document.getElementById("extraction-refresh-button").disabled = false;
             });
@@ -260,7 +258,6 @@ function connect() {
 }
 
 async function getDataBaseData(query, callback) {
-    var progressBar = document.getElementById("progress-bar");
     await wslConnection.query(query).then(async queryResponse => {
         callback(queryResponse);
     }, (error) => {
