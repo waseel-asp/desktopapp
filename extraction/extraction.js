@@ -43,27 +43,32 @@ function openConnection() {
 
 function connect() {
     environment.refreshCurrentToken();
-    var startDate = document.getElementById('startDate').value;
-    var endDate = document.getElementById('endDate').value;
-    if (startDate == "Start Date") {
-        var startDateInput = document.getElementById('startDate');
-        startDateInput.focus();
-        startDateInput.setCustomValidity('Please provide a start date');
-        startDateInput.reportValidity();
-        return false;
-    }
-    if (endDate == "End Date") {
-        var endDateInput = document.getElementById('endDate');
-        endDateInput.focus();
-        endDateInput.setCustomValidity('Please provide an end date');
-        endDateInput.reportValidity();
-        return false;
-    }
+    var startDate = document.getElementById('startDate').value.split("-").reverse().join("-");
+    var endDate = document.getElementById('endDate').value.split("-").reverse().join("-");
+    console.log(startDate);
+    console.log(endDate);
+    
+    // if (startDate == "Start Date") {
+    //     var startDateInput = document.getElementById('startDate');
+    //     startDateInput.focus();
+    //     startDateInput.setCustomValidity('Please provide a start date');
+    //     startDateInput.reportValidity();
+    //     return false;
+    // }
+    // if (endDate == "End Date") {
+    //     var endDateInput = document.getElementById('endDate');
+    //     endDateInput.focus();
+    //     endDateInput.setCustomValidity('Please provide an end date');
+    //     endDateInput.reportValidity();
+    //     return false;
+    // }
+    
     console.log("test connect");
     var selectedPayer = document.getElementById('selectedPayer').value;
     var selectedClaim = document.getElementById('selectedClaim').value;
     startDate = startDate + ' 00:00';
     endDate = endDate + ' 23:59';
+
     var payerEle = document.getElementById("selectedPayer");
     var selectedText = payerEle.options[payerEle.selectedIndex].text;
     selectedPayer = selectedText.match(/\(([^)]+)\)/)[1];

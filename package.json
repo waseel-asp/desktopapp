@@ -30,6 +30,7 @@
         "electron-log": "^4.3.1",
         "electron-root-path": "^1.0.16",
         "electron-updater": "^4.3.5",
+        "gijgo": "^1.9.13",
         "http-server": "^0.12.3",
         "jwt-decode": "^3.1.2",
         "mssql": "^6.2.3",

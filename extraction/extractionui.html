@@ -4,7 +4,6 @@
 <head>
     <title>Database Configuration</title>
     <link href="../webjars/bootstrap.min.css" rel="stylesheet">
-    <link href="../style.css" rel="stylesheet">
     <script>window.$ = window.jQuery = require('../webjars/jquery.min.js');</script>
 </head>
 
@@ -61,19 +60,26 @@
                         </div>
                         <div class="form-group row date-row">
                             <div class="col-sm-6">
-                                <input type="text" id="startDate" class="form-control select-bg select-date"
+                                <!-- <input type="text" id="startDate" class="form-control select-bg select-date"
                                     name="startDate" placeholder="startDate" required
                                     oninvalid="this.setCustomValidity('Please provide a start date')"
-                                    oninput="setCustomValidity('')" value="Start Date" onfocus="(this.type='date')">
+                                    oninput="setCustomValidity('')" value="Start Date" onfocus="(this.type='date')"> -->
+                                <input type="text" id="startDate" class="form-control" name="startDate"
+                                    placeholder="Start Date dd-mm-yyyy"
+                                    oninvalid="this.setCustomValidity('Please provide a start date')" required
+                                    readonly />
                                 <!-- <i class="cal_icon">
                                     <img src="../images/calendar_icon.svg" alt="Calendar Icon" />
                                 </i> -->
                             </div>
                             <div class="col-sm-6">
-                                <input type="text" id="endDate" class="form-control select-bg select-date"
+                                <!-- <input type="text" id="endDate" class="form-control select-bg select-date"
                                     name="endDate" placeholder="endDate" required
                                     oninvalid="this.setCustomValidity('Please provide an end date')"
-                                    oninput="setCustomValidity('')" value="End Date" onfocus="(this.type='date')">
+                                    oninput="setCustomValidity('')" value="End Date" onfocus="(this.type='date')"> -->
+                                <input type="text" id="endDate" class="form-control" name="end-date"
+                                    placeholder="End Date dd-mm-yyyy"
+                                    oninvalid="this.setCustomValidity('Please provide a end date')" required readonly />
                                 <!-- <i class="cal_icon">
                                     <img src="../images/calendar_icon.svg" alt="Calendar Icon" />
                                 </i> -->
@@ -181,6 +187,13 @@
         </div>
     </div>
     <script src="extraction.js"></script>
+    <link href="../node_modules/gijgo/css/gijgo.min.css" rel="stylesheet">
+    <script src="../node_modules/gijgo/js/gijgo.min.js"></script>
+    <script>
+        $('#endDate').datepicker({ format: 'dd-mm-yyyy' });
+        $('#startDate').datepicker({ format: 'dd-mm-yyyy' });
+    </script>
+    <link href="../style.css" rel="stylesheet">
     <!-- <script src="../dbConnection.js"></script> -->
 </body>
 
