@@ -39,9 +39,15 @@ exports.setInvestigation = function(data) {
     investigation = data;
 }
 exports.setChiefComplaintSymptoms = function(data) {
+    if(data!=null && data!= undefined){
+        data = data.trim();
+    }
     chiefComplaintSymptoms = data;
 }
 exports.setSignicantSigns = function(data) {
+    if(data!=null && data!= undefined){
+        data = data.trim();
+    }
     signicantSigns = data;
 }
 exports.getCaseDescriptionInfo = function () {

@@ -1,22 +1,32 @@
 exports.updateDiagnosisData = function (claimMap, diagnosisList, callback) {
     let diagnosisMap = new Map();
-    Array.from(claimMap.keys()).map(key => {
-        var tempData = diagnosisList.filter(diagnosis => diagnosis.PROVCLAIMNO == key);
-        diagnosisMap.set(key, tempData);
+
+    diagnosisList.forEach(diagnosis => {
+        var claimKey = diagnosis.PROVCLAIMNO;
+
+        const diagnosisObj = require('../models/Diagnosis.js');
+        diagnosisObj.setDiagnosisCode(diagnosis.DIAGNOSISCODE);
+        diagnosisObj.setDiagnosisDescription(diagnosis.DIAGNOSISDESC);
+        diagnosisObj.setDiagnosisNumber(null);
+        diagnosisObj.setDiagnosisType(null);
+
+        if (diagnosisMap.get(claimKey)) {
+            var existingList = diagnosisMap.get(claimKey);
+            existingList.push(diagnosisObj.getDiagnosisInfo());
+        } else {
+            var diagnosisList = new Array();
+            diagnosisList.push(diagnosisObj.getDiagnosisInfo());
+            diagnosisMap.set(claimKey, diagnosisList);
+        }
     });
 
-    Array.from(diagnosisMap.keys()).map(key => {
-        var diagnosisData = diagnosisMap.get(key);
-        var diagnosisList = [];
-        for (var x = 0; x < diagnosisData.length; x++) {
-            const diagnosis = require('../models/Diagnosis.js');
-            diagnosis.setDiagnosisCode(diagnosisData[x].DIAGNOSISCODE);
-            diagnosis.setDiagnosisDescription(diagnosisData[x].DIAGNOSISDESC);
-            diagnosis.setDiagnosisNumber(null);
-            diagnosis.setDiagnosisType(null);
-            diagnosisList.push(diagnosis.getDiagnosisInfo());
+    Array.from(claimMap.keys()).map(key => {
+        if (diagnosisMap.get(key)) {
+            claimMap.get(key).caseInformation.caseDescription.diagnosis = diagnosisMap.get(key);
+        } else {
+            claimMap.get(key).caseInformation.caseDescription.diagnosis = new Array();
         }
-        claimMap.get(key).caseInformation.caseDescription.diagnosis = diagnosisList;
+
     });
     callback(claimMap);
 }

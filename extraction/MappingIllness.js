@@ -1,5 +1,6 @@
 exports.updateIllnessResultData = function (claimMap, illnessList, callback) {
     let illnessMap = new Map();
+    
     Array.from(claimMap.keys()).map(key => {
         var tempData = illnessList.filter(illness => illness.PROVCLAIMNO == key);
         illnessMap.set(key, tempData);
