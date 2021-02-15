@@ -14,6 +14,22 @@ exports.selectURL = function(urlOption){
     return serviceURL;
 }
 
+var stagSummaryURL = "https://stg-eclaims.waseel.com";
+var prodSummaryURL = "https://eclaims.waseel.com";
+var qaSummaryURL = "https://qa-eclaims.waseel.com";
+var summaryURL = "";
+
+exports.selectSummaryURL = function(urlOpt){
+    if(urlOpt == "STAG"){
+        summaryURL = stagSummaryURL;
+    }else if(urlOpt == "PROD"){
+        summaryURL = prodSummaryURL;
+    }else{
+        summaryURL = qaSummaryURL;
+    }
+    return summaryURL;
+}
+
 exports.refreshCurrentToken = function() {
     const expireTime = new Date(localStorage.getItem('expire_time'));
     const diff = (expireTime.getTime() - new Date().getTime()) / (1000*60);

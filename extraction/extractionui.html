@@ -120,6 +120,33 @@
                     </div>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
                 </div>
+                <div class="alert alert-info alert-dismissible fade show mb-4" role="alert" style="display: none;"
+                    id="no-summary">
+                    <div class="middle-block">
+                        <span id="summary-text" style="font-weight: bold">
+                            These are the criteria present in midtables according to your date selection.
+                        </span>
+                    </div>
+                    <hr>
+                    <div class="p-2 row">
+                        <div class="col-sm-3" style="font-weight: bold" id="midTableProviderIdHeader">
+                            Provider Id
+                        </div>
+                        <div class="col-sm-8" style="font-weight: 500" id="midTableProviderIdBody"></div>
+                    </div>
+                    <div class="p-2 row">
+                        <div class="col-sm-3" style="font-weight: bold" id="midTablePayerIdHeader">
+                            Payer Id
+                        </div>
+                        <div class="col-sm-8" style="font-weight: 500" id="midTablePayerIdBody"></div>
+                    </div>
+                    <div class="p-2 row">
+                        <div class="col-sm-3" style="font-weight: bold" id="midTableClaimTypeHeader">
+                            Claim Type
+                        </div>
+                        <div class="col-sm-8" style="font-weight: 500" id="midTableClaimTypeBody"></div>
+                    </div>
+                </div>
                 <div style="display: none;" id="summary-container">
                     <hr>
                     <div class="summary-card">
@@ -131,6 +158,15 @@
                             <div class="col-sm-4 text-right" style="font-size: 15px;font-weight: 500;">
                                 Upload Summary ID :
                                 <label style="font-weight: bold" id="uploadSummaryID"></label>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="px-2">
+                            <div style="font-size: 15px;font-weight: 500;">
+                                Summary URL :
+                                <label style="font-weight: bold" id="uploadSummaryURL"></label>
+                                <button class="btn btn-secondary btn-sm ml-3" onclick="copyText()">copy</button>
+                                <label style="display: none; color: firebrick" id="showCopied">Copied !!</label>
                             </div>
                         </div>
                         <hr>

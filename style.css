@@ -450,9 +450,11 @@ form .form-group .custom-checkbox input:checked ~ .form-check-label {
 .alert-success{background:#e6f4e7;border-left-color:#80c683;}
 .alert-warning{background:#fff1db;border-left-color:#ffba53;}
 .alert-danger{background:#ffe7e0;border-left-color:#ff8761;}
+.alert-info{background:#e0eefb;border-left-color:#5fabed;}
 .alert-success>.icon{background-image: url('./images/ic-success.svg');}
 .alert-warning>.icon{background-image: url('./images/ic-warning.svg');}
 .alert-danger>.icon{background-image: url('./images/ic-error.svg');}
+.alert-info>.icon{background-image: url('./images/ic-info.svg');}
 .alert>.middle-block{padding-right: 12px;}
 .alert>.middle-block>h6{font-size: 16px;line-height: 22px;font-weight: 700;margin: 0;color:inherit;}
 .alert>.middle-block ul,.alert>.middle-block ul>li,.alert>.middle-block p{font-size: 14px;line-height: 20px;color:inherit;padding: 0;margin: 0;list-style: none;}

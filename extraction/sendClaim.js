@@ -46,6 +46,9 @@ exports.sendClaim = function (claims) {
                     responseData = JSON.parse(response_body.toString());
                     console.log("sending claim end time : ", new Date());
                     document.getElementById("summary-container").style.display = "block";
+                    var summaryURL = environment.selectSummaryURL(localStorage.getItem('environment'))
+                        + '/en/summary?id=' + responseData['uploadSummaryID'];
+                    document.getElementById("uploadSummaryURL").innerHTML = summaryURL;
                     document.getElementById("uploadName").innerHTML = responseData['uploadName'];
                     document.getElementById("uploadSummaryID").innerHTML = responseData['uploadSummaryID'];
                     document.getElementById("noOfUploadedClaims").innerHTML = responseData['noOfUploadedClaims'];

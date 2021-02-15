@@ -15,6 +15,17 @@ function refresh() {
     location.reload();
 }
 
+function copyText() {
+    var copyText = document.getElementById("uploadSummaryURL");
+    const el = document.createElement('textarea');
+    el.value = copyText.innerHTML;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    document.getElementById("showCopied").style.display = 'unset';
+}
+
 const wslConnection = require('../dbConnection/wslConnection.js')
 const sendClaim = require('./sendClaim.js');
 
@@ -77,6 +88,7 @@ function connect() {
     document.getElementById("extraction-refresh-button").disabled = true;
     document.getElementById("summary-container").style.display = "none";
     document.getElementById("summary-error").style.display = "none";
+    document.getElementById('no-summary').style.display = 'none';
     document.getElementById("name-errors").innerHTML = "";
     document.getElementById("claim-progress-bar").style.display = "block";
     document.getElementById("progress-bar").style.width = "25%";
@@ -153,6 +165,7 @@ function connect() {
                 console.log(query);
                 console.log("Extraction start time : ", new Date());
                 getDataBaseData(query, function(data){
+                    if(data.length > 0) {
                     var genInfoList = data;
                     var invoiceQuery = "select inv.*,sd.*,inv.INVOICENO AS INVOICEID from WSL_INVOICES inv, WSL_SERVICE_DETAILS sd ,WSL_GENINFO gen where "
                     + "inv.INVOICENO=sd.INVOICENO and inv.PROVCLAIMNO=gen.PROVCLAIMNO and"
@@ -224,7 +237,7 @@ function connect() {
                                                         Array.from(updatedClaimMap.keys()).map(key => {
                                                             claimList.push(updatedClaimMap.get(key));
                                                         });
-                                                        console.log("after convert",claimList, "mapping end time :", new Date());
+                                                        console.log("after convert claim-list length",claimList.length, "mapping end time :", new Date());
                                                         
                                                         if (claimList.length > 0) {
                                                             var claimBody = {
@@ -250,6 +263,41 @@ function connect() {
                             });
                         });
                     })
+                    } else {
+                        if (database.toLowerCase() == "oracle") {
+                            query = "select DISTINCT PROVIDERID, PAYERID, CLAIMTYPE from WSL_GENINFO where CLAIMDATE BETWEEN TO_DATE('" + startDate + "','yyyy-mm-dd HH24:MI') AND TO_DATE('" + endDate + "','yyyy-mm-dd HH24:MI') ";
+                        } else {
+                            query = "select DISTINCT PROVIDERID, PAYERID, CLAIMTYPE from WSL_GENINFO where CLAIMDATE BETWEEN '" + startDate + "' AND '" + endDate + "' ";
+                        }
+                        var tempProviderId = [], tempPayerId = [], tempClaimType = [];
+                        getDataBaseData(query, function(data){
+                            for (const temp of data) {
+                                if(tempProviderId.includes(temp.PROVIDERID) == false)
+                                    tempProviderId.push(temp.PROVIDERID)
+                                if(tempPayerId.includes(temp.PAYERID) == false)
+                                    tempPayerId.push(temp.PAYERID)
+                                if(tempClaimType.includes(temp.CLAIMTYPE) == false)
+                                    tempClaimType.push(temp.CLAIMTYPE)
+                            }
+                            document.getElementById("claim-progress-bar").style.display = "none";
+                            document.getElementById("progress-bar").style.width = "0%";
+                            document.getElementById("extract-button").disabled = false;
+                            document.getElementById("extraction-refresh-button").disabled = false;
+                            if(tempProviderId.length > 0 || tempPayerId.length > 0 || tempClaimType.length > 0) {
+                                document.getElementById('summary-error').style.display = 'flex';
+                                document.getElementById('summary-text').innerHTML =
+                                    "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
+                                document.getElementById('no-summary').style.display = 'block';
+                                document.getElementById('midTableProviderIdBody').innerHTML = ' : ' + tempProviderId;
+                                document.getElementById('midTablePayerIdBody').innerHTML = ' : ' + tempPayerId;
+                                document.getElementById('midTableClaimTypeBody').innerHTML = ' : ' + tempClaimType;
+                            } else {
+                                document.getElementById('summary-error').style.display = 'flex';
+                                document.getElementById('summary-text').innerHTML =
+                                    "<pre>There is no data in selected criteria.\nPlease select different criteria.</pre>";
+                            }
+                        })
+                    }
                 })
             }, err => {
                 alert(err.message);
@@ -278,7 +326,7 @@ async function getDataBaseData(query, callback) {
 async function MapDataToClaim(genInfoList,callbackGenInfo){
     const mapGenInfo = require('./MappingGenInfo.js');
     await mapGenInfo.generateGenInfo(genInfoList, function(claimMap){
-        console.log(claimMap);
+        console.log("ClaimMap Size",claimMap.size);
         callbackGenInfo(claimMap);
     })
 }
