@@ -59,20 +59,20 @@ function connect() {
     console.log(startDate);
     console.log(endDate);
     
-    // if (startDate == "Start Date") {
-    //     var startDateInput = document.getElementById('startDate');
-    //     startDateInput.focus();
-    //     startDateInput.setCustomValidity('Please provide a start date');
-    //     startDateInput.reportValidity();
-    //     return false;
-    // }
-    // if (endDate == "End Date") {
-    //     var endDateInput = document.getElementById('endDate');
-    //     endDateInput.focus();
-    //     endDateInput.setCustomValidity('Please provide an end date');
-    //     endDateInput.reportValidity();
-    //     return false;
-    // }
+    if (startDate == "") {
+        var startDateInput = document.getElementById('startDate');
+        startDateInput.focus();
+        startDateInput.setCustomValidity('Please provide a start date');
+        startDateInput.reportValidity();
+        return false;
+    }
+    if (endDate == "") {
+        var endDateInput = document.getElementById('endDate');
+        endDateInput.focus();
+        endDateInput.setCustomValidity('Please provide an end date');
+        endDateInput.reportValidity();
+        return false;
+    }
     
     console.log("test connect");
     var selectedPayer = document.getElementById('selectedPayer').value;
